@@ -78,13 +78,14 @@ class CsvToJson {
             const item = arr[index++]
             if (!item) return
 
+            let value: string | number
+
             if (numberKeys.includes(key)) {
-                try {
-                    object[key] = +item as unknown as undefined
-                    return
-                } catch (err) {}
+                value = Number.isNaN(Number(item)) ? item : Number(item)
+            } else {
+                value = item
             }
-            object[key] = item as unknown as undefined
+            object[key] = value as unknown as undefined
         })
 
         return object as TableLine
@@ -130,7 +131,7 @@ function test() {
     }
 
     const rows: TableLine[] = []
-    fs.createReadStream('data/test.csv')
+    fs.createReadStream('data/spares.csv')
         .pipe(csv())
         .on('data', (row) => {
             rows.push(foo(row))
