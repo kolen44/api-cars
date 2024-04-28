@@ -5,6 +5,7 @@ import { CsvParser } from 'nest-csv-parser';
 import { TableLine } from 'types/types';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 import { createReadStream } from 'fs';
+import { Readable } from 'stream';
 
 @Injectable()
 export class SparesCsvService {
@@ -29,7 +30,7 @@ export class SparesCsvService {
     });
   }
 
-  public async parseCvsToJson() {
+  public async parseCvsToJson(file) {
     // const readStream = fs.createReadStream('data/spares.csv')
 
     // const writeStream = fs.createWriteStream('data/test.json')
@@ -50,7 +51,8 @@ export class SparesCsvService {
     const rows: TableLine[] = [];
 
     return new Promise((resolve, reject) => {
-      createReadStream('data/spares.csv')
+      const readableStream = Readable.from(file);
+      readableStream
         .pipe(csv())
         .on('data', (row) => {
           rows.push(foo(row));

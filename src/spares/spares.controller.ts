@@ -7,5 +7,9 @@ export class SparesController {
 
   @Post()
   @HttpCode(200)
-  uploadFile() {}
+  async uploadFile() {
+    return this.sparesService.cvsDownload(
+      'https://db.f-opt.com/csvfiles/abw/spares.csv',
+    );
+  }
 }
