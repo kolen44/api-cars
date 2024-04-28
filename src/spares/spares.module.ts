@@ -1,7 +1,7 @@
-import { Module } from '@nestjs/common'
-import { SparesCsvModule } from '@sparescsv/sparescsv'
-import { SparesController } from './spares.controller'
-import { SparesService } from './spares.service'
+import { SparesCsvModule } from '@app/sparescsv';
+import { Module } from '@nestjs/common';
+import { SparesController } from './spares.controller';
+import { SparesService } from './spares.service';
 
 @Module({
   imports: [SparesCsvModule],

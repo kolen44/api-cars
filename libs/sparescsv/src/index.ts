@@ -1,2 +1,2 @@
-export * from './spares-csv.module'
-export * from './spares-csv.service'
+export * from './sparescsv.module';
+export * from './sparescsv.service';

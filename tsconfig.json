@@ -18,17 +18,11 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@sparescsv/sparescsv": [
+      "@app/sparescsv": [
         "libs/sparescsv/src"
       ],
-      "@sparescsv/sparescsv/*": [
+      "@app/sparescsv/*": [
         "libs/sparescsv/src/*"
-      ],
-      "@repository/repository": [
-        "libs/repository/src"
-      ],
-      "@repository/repository/*": [
-        "libs/repository/src/*"
       ]
     }
   }

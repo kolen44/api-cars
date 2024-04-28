@@ -1,5 +1,5 @@
-import { Controller, Get } from '@nestjs/common'
-import { SparesService } from './spares.service'
+import { Controller, Get } from '@nestjs/common';
+import { SparesService } from './spares.service';
 
 @Controller('spares')
 export class SparesController {
@@ -7,6 +7,6 @@ export class SparesController {
 
   @Get()
   create() {
-    return this.sparesService.cvsToJson()
+    return this.sparesService.cvsToJson();
   }
 }
