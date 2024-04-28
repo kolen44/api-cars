@@ -23,6 +23,12 @@
       ],
       "@sparescsv/sparescsv/*": [
         "libs/sparescsv/src/*"
+      ],
+      "@repository/repository": [
+        "libs/repository/src"
+      ],
+      "@repository/repository/*": [
+        "libs/repository/src/*"
       ]
     }
   }

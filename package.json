@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" \"libs/**/*.ts\" \"classes/**/*.ts\"",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
@@ -76,7 +76,8 @@
       "<rootDir>/libs/"
     ],
     "moduleNameMapper": {
-      "^@sparescsv/sparescsv(|/.*)$": "<rootDir>/libs/sparescsv/src/$1"
+      "^@sparescsv/sparescsv(|/.*)$": "<rootDir>/libs/sparescsv/src/$1",
+      "^@repository/repository(|/.*)$": "<rootDir>/libs/repository/src/$1"
     }
   }
 }

@@ -12,6 +12,8 @@
   },
   "moduleNameMapper": {
     "@sparescsv/sparescsv/(.*)": "<rootDir>/../libs/sparescsv/src/$1",
-    "@sparescsv/sparescsv": "<rootDir>/../libs/sparescsv/src"
+    "@sparescsv/sparescsv": "<rootDir>/../libs/sparescsv/src",
+    "@repository/repository/(.*)": "<rootDir>/../libs/repository/src/$1",
+    "@repository/repository": "<rootDir>/../libs/repository/src"
   }
 }
