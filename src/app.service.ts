@@ -12,14 +12,18 @@ export class AppService {
   ) {}
 
   public testFindAll() {
+    // TODO Удалить
     return this.cardProductService.findAll()
   }
 
   public testFindOne() {
+    // TODO Удалить
     return this.cardProductService.findByArticle('71G21E701_A33948')
   }
 
   public async testCreate() {
+    // TODO Удалить
+    // Сука не удалять пока рабита не будет
     const handleStream = async (rows: CardProductDB[]) => {
       console.log('перед бд')
 
