@@ -1,0 +1,17 @@
+{
+  "moduleFileExtensions": [
+    "js",
+    "json",
+    "ts"
+  ],
+  "rootDir": ".",
+  "testEnvironment": "node",
+  "testRegex": ".e2e-spec.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "moduleNameMapper": {
+    "@app/sparescsv/(.*)": "<rootDir>/../libs/sparescsv/src/$1",
+    "@app/sparescsv": "<rootDir>/../libs/sparescsv/src"
+  }
+}
