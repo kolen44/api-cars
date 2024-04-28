@@ -1,85 +1,83 @@
+import { CardProductDB } from '@repository/repository/card-product/types/card-product-db'
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
 
 @Entity()
-export class CardProduct {
+export class CardProduct implements CardProductDB {
   @PrimaryGeneratedColumn()
   id: number
 
-  @Column()
+  @Column({ nullable: true })
   article: string
 
-  @Column()
+  @Column({ nullable: true })
   in_stock: number
 
-  @Column()
+  @Column({ nullable: true })
   detail_name: string
 
   @Column({ nullable: true })
   included_in_unit?: string
 
-  @Column()
+  @Column({ nullable: true })
   brand: string
 
-  @Column()
+  @Column({ nullable: true })
   model: string
 
-  @Column()
-  version: number
+  @Column({ nullable: true })
+  version?: string
 
-  @Column()
-  body_type: string
+  @Column({ nullable: true })
+  body_type?: string
 
-  @Column()
-  year: number
-
-  @Column()
+  @Column({ nullable: true })
   engine: string
 
-  @Column()
+  @Column({ nullable: true })
   volume: string
 
   @Column({ nullable: true })
   engine_type?: string
 
-  @Column()
+  @Column({ nullable: true })
   gearbox: string
 
   @Column({ nullable: true })
   original_number?: string
 
-  @Column()
+  @Column({ type: 'double precision' })
   price: number
 
   @Column({ nullable: true })
   for_naked?: string
 
-  @Column()
+  @Column({ nullable: true })
   currency: string
 
-  @Column()
+  @Column({ nullable: true })
   discount: number
 
-  @Column()
+  @Column({ nullable: true })
   description: string
 
-  @Column()
+  @Column({ nullable: true })
   year_start_production: number
 
-  @Column()
+  @Column({ nullable: true })
   year_end_production: number
 
-  @Column()
+  @Column({ nullable: true })
   url_photo_details: string
 
-  @Column()
-  url_car_photo: string
+  @Column({ nullable: true })
+  url_car_photo?: string
 
   @Column({ nullable: true })
   video?: string
 
-  @Column()
+  @Column({ nullable: true })
   phone: string
 
-  @Column()
-  vin: string
+  @Column({ nullable: true })
+  vin?: string
 }

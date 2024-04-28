@@ -34,7 +34,6 @@ export class SparesCsvService {
         })
         .on('end', () => {
           resolve(rows)
-          console.log(rows)
           console.log('Чтение CSV файла завершено')
         })
         .on('error', (error) => {

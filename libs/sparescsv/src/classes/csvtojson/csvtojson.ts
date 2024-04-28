@@ -12,6 +12,9 @@ export class CsvToJson {
 
       let value: string | number
 
+      // FIXME Опять непонятная ошибка
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       if (cardProductNumericKeys.includes(key)) {
         value = Number.isNaN(Number(item)) ? item : Number(item)
       } else {
@@ -29,10 +32,6 @@ export class CsvToJson {
   }
 
   public convertFullFile(text: string) {
-    return text
-      .split('"\r\n')
-      .slice(1)
-      .map((line) => this.convertLine(line))
-    // .slice(undefined, 1000);
+    return text.split('"\r\n').map((line) => this.convertLine(line))
   }
 }

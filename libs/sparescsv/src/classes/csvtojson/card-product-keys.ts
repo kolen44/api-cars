@@ -29,10 +29,17 @@ export const cardProductKeys: (keyof CardProduct)[] = [
   'vin',
 ]
 
-export const cardProductNumericKeys: (keyof CardProduct)[] = [
+type CardProductNumericKeys = {
+  [key in keyof CardProduct]: CardProduct[key] extends number ? key : never
+}
+
+// Эта тема нужно что бы нельзя было просто так подставить любую строку
+// Нужно сначала в типе CardProduct поменять поле, а потом уже добавлять в этот массив
+// Этот массив потом нужен для определения строк и чисел в spares.csv
+type NumericKeys = CardProductNumericKeys[keyof CardProduct]
+
+export const cardProductNumericKeys: NumericKeys[] = [
   'in_stock',
-  'version',
-  'year',
   'price',
   'discount',
   'year_start_production',

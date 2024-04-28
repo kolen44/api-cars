@@ -1,13 +1,15 @@
-export type CardProduct = {
+// Главный интерфейс по файлу spares.csv
+
+export interface CardProduct {
   article: string
   in_stock: number
   detail_name: string
   included_in_unit?: string
   brand: string
   model: string
-  version: number
-  body_type: string
-  year: number
+  version?: string
+  body_type?: string
+  year: number[]
   engine: string
   volume: string
   engine_type?: string
@@ -21,8 +23,8 @@ export type CardProduct = {
   year_start_production: number
   year_end_production: number
   url_photo_details: string
-  url_car_photo: string
+  url_car_photo?: string
   video?: string
   phone: string
-  vin: string
+  vin?: string
 }
