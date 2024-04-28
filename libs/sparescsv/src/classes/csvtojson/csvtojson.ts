@@ -1,4 +1,4 @@
-import { CardProduct } from 'types/types'
+import { CardProduct } from '@sparescsv/sparescsv/classes/csvtojson/types'
 import { cardProductKeys, cardProductNumericKeys } from './card-product-keys'
 
 export class CsvToJson {

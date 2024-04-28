@@ -1,4 +1,4 @@
-import { CardProduct } from 'types/types'
+import { CardProduct } from '@sparescsv/sparescsv/classes/csvtojson/types'
 
 export const cardProductKeys: (keyof CardProduct)[] = [
   'article',

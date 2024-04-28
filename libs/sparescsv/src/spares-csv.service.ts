@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common'
-import { CsvToJson } from 'classes/csvtojson/csvtojson'
+import { CsvToJson } from '@sparescsv/sparescsv/classes/csvtojson/csvtojson'
+import { CardProduct } from '@sparescsv/sparescsv/classes/csvtojson/types'
 import csv from 'csv-parser'
 import fs from 'fs'
-import { CardProduct } from 'types/types'
 
 @Injectable()
 export class SparesCsvService {
