@@ -10,6 +10,25 @@ import { createReadStream } from 'fs';
 export class SparesCsvService {
   constructor(public csvParser: CsvParser) {}
 
+  public async cvsUpdate(file) {
+    const results = [];
+    return new Promise((resolve, reject) => {
+      createReadStream(file.path)
+        .pipe(csv())
+        .on('data', (row) => {
+          results.push(row);
+          // console.log(row)
+        })
+        .on('end', () => {
+          resolve(results);
+          console.log('Чтение CSV файла завершено');
+        })
+        .on('error', (error) => {
+          reject(error);
+        });
+    });
+  }
+
   public async parseCvsToJson() {
     // const readStream = fs.createReadStream('data/spares.csv')
 

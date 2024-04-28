@@ -8,4 +8,9 @@ export class SparesService {
     const response = await this.sparesService.parseCvsToJson();
     return response;
   }
+
+  public async cvsUpdate(file) {
+    const response = await this.sparesService.cvsUpdate(file);
+    return response;
+  }
 }

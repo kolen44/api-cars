@@ -8,7 +8,7 @@ import { SparesCsvService } from './sparescsv.service';
     CsvModule,
     CsvParser,
     MulterModule.register({
-      dest: '../../../data',
+      dest: './data',
     }),
   ],
   providers: [SparesCsvService],
