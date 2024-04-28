@@ -33,6 +33,7 @@ export class SparesCsvService {
           rows.push(convertRow(row))
         })
         .on('end', () => {
+          resolve(rows)
           console.log(rows)
           console.log('Чтение CSV файла завершено')
         })
