@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import { CsvToJson } from '@sparescsv/sparescsv/classes/csvtojson/csvtojson'
 import { CardProduct } from '@sparescsv/sparescsv/classes/csvtojson/types'
-import csv from 'csv-parser'
-import fs from 'fs'
+import * as csv from 'csv-parser'
+import * as fs from 'fs'
 
 @Injectable()
 export class SparesCsvService {
@@ -23,15 +23,22 @@ export class SparesCsvService {
       return result as CardProduct
     }
 
-    const rows: CardProduct[] = []
-    fs.createReadStream('data/spares.csv')
-      .pipe(csv())
-      .on('data', (row) => {
-        rows.push(convertRow(row))
-      })
-      .on('end', () => {
-        console.log(rows)
-        console.log('Чтение CSV файла завершено')
-      })
+    return new Promise((resolve, reject) => {
+      const rows: CardProduct[] = []
+
+      return fs
+        .createReadStream('data/spares.csv')
+        .pipe(csv())
+        .on('data', (row) => {
+          rows.push(convertRow(row))
+        })
+        .on('end', () => {
+          console.log(rows)
+          console.log('Чтение CSV файла завершено')
+        })
+        .on('error', (error) => {
+          reject(error)
+        })
+    })
   }
 }
