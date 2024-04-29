@@ -8,7 +8,6 @@ export class TestttController {
 
   @Get()
   getProduct(@Query() query: FindTestttDto) {
-    console.log(query);
     return this.testttService.getProduct(query);
   }
 

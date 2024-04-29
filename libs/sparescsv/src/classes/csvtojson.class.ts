@@ -20,7 +20,7 @@ export class CsvToJson {
       } else {
         value = item;
       }
-      object[key] = value as unknown as undefined;
+      object[key] = value;
     });
 
     return object as CardProduct;

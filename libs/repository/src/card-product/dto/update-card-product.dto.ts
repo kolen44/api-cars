@@ -1,7 +1,7 @@
 import { cardProductKeys } from '@repository/repository/card-product/card-product-keys';
 import { CardProductDB } from '../types/card-product-db';
 
-export class UpdateCardProductDto {
+export class UpdateCardProductDto implements Partial<CardProductDB> {
   public article?: string;
   public in_stock?: number;
   public detail_name?: string;
@@ -10,6 +10,7 @@ export class UpdateCardProductDto {
   public model?: string;
   public version?: string;
   public body_type?: string;
+  public year?: number;
   public engine?: string;
   public volume?: string;
   public engine_type?: string;
@@ -29,9 +30,10 @@ export class UpdateCardProductDto {
   public vin?: string;
 
   constructor(params: Partial<CardProductDB>) {
-    cardProductKeys.forEach((key) => {
+    (cardProductKeys as (keyof CardProductDB)[]).forEach((key) => {
       if (key in params) {
-        this[key] = params[key];
+        // @ts-ignore
+        this[key] = params[key] as keyof CardProductDB;
       }
     });
   }
@@ -41,6 +43,7 @@ export class UpdateCardProductDto {
 
     cardProductKeys.forEach((key) => {
       if (key in this && !!this[key]) {
+        // @ts-ignore
         updateData[key] = this[key];
       }
     });

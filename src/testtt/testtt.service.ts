@@ -1,18 +1,19 @@
 import { SparesCsvService } from '@app/sparescsv';
 import { CsvToJson } from '@app/sparescsv/classes/csvtojson.class';
 import { CardProduct } from '@app/sparescsv/interface/types';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CardProductService } from '@repository/repository/card-product/card-product.service';
 import { CreateCardProductDto } from '@repository/repository/card-product/dto/create-card-product.dto';
 import { UpdateCardProductDto } from '@repository/repository/card-product/dto/update-card-product.dto';
 import { CardProductDB } from '@repository/repository/card-product/types/card-product-db';
-import console from 'console';
 import * as csv from 'csv-parser';
 import * as fs from 'fs';
 import { FindTestttDto } from './dto/find-testtt.dto';
 
 @Injectable()
 export class TestttService {
+  private readonly logger = new Logger(TestttService.name);
+
   constructor(
     private readonly sparesService: SparesCsvService,
     private readonly cardProductService: CardProductService,
@@ -68,15 +69,15 @@ export class TestttService {
   // REFACTOR Это потом удалим
   async downloadDatabase() {
     const handleStream = async (rows: CardProductDB[]) => {
-      console.log('перед бд');
+      this.logger.log('перед бд');
 
       // for (let i = 0; i < rows.length; i++) {
       //   const row = rows[i];
 
-      //   if (row.year_start_production === 0) {
-      //     row.year_start_production = 2023;
+      //   if (row.year_end_production < 1900) {
+      //     row.year_end_production = 2023;
       //   } else if (row.year_end_production - row.year_start_production > 9) {
-      //     row.year_start_production = row.year_end_production + 9;
+      //     row.year_end_production = row.year_start_production + 9;
       //   }
 
       //   if (i % 10 === 0) console.log('i', i);
@@ -89,9 +90,10 @@ export class TestttService {
       //       console.log(`строка с артиклем ${row.article} прошла в бд`);
       //       return false;
       //     })
-      //     .catch(() => {
+      //     .catch((err) => {
       //       console.log(
       //         `ERROR: строка с артиклем ${row.article} не прошла в бд`,
+      //         err,
       //       );
       //       return true;
       //     });
@@ -107,7 +109,7 @@ export class TestttService {
         }
 
         if (index % 10 === 0) {
-          console.log('index', index);
+          this.logger.log(`index ${index}`);
         }
 
         const createCardProductDto = new CreateCardProductDto(row);
@@ -115,11 +117,12 @@ export class TestttService {
         await this.cardProductService
           .create(createCardProductDto)
           // .then(() => {
-          //   console.log(`строка с артиклем ${row.article} прошла в бд`);
+          //   this.logger.log(`строка с артиклем ${row.article} прошла в бд`);
           // })
-          .catch(() => {
-            console.log(
+          .catch((err) => {
+            this.logger.log(
               `ERROR: строка с артиклем ${row.article} не прошла в бд`,
+              err,
             );
           });
       });
@@ -150,7 +153,7 @@ export class TestttService {
           })
           .on('end', () => {
             resolve(rows);
-            console.log('Чтение CSV файла завершено');
+            this.logger.log('Чтение CSV файла завершено');
           })
           .on('error', (error) => {
             reject(error);
@@ -160,27 +163,63 @@ export class TestttService {
 
     await parseCsvToJson()
       .then(async (rows) => {
-        console.log('После парсинга CSV-файла');
-        console.time('createInDatabase');
+        this.logger.log('После парсинга CSV-файла');
+        // console.time('createInDatabase');
         await handleStream(rows as CardProductDB[]);
-        console.log('после загрузки в бд');
-        console.timeEnd('createInDatabase');
+        this.logger.log('после загрузки в бд');
+        // console.timeEnd('createInDatabase');
       })
       .catch((error) => {
-        console.error('Произошла ошибка:', error);
+        this.logger.error('Произошла ошибка:', error);
       });
   }
 
   async test() {
-    const article = '3TD01J301';
-    const updateCardProductDto = new UpdateCardProductDto({
-      year_start_production: 2012,
-      year_end_production: null,
-      model: undefined,
-    });
-    return await this.cardProductService.updateByArticle(
-      article,
-      updateCardProductDto,
-    );
+    const testUpdate = async () => {
+      const article = '3TD01J301';
+      const updateCardProductDto = new UpdateCardProductDto({
+        year_start_production: 2011,
+        year_end_production: null,
+        model: undefined,
+      });
+      return await this.cardProductService.updateByArticle(
+        article,
+        updateCardProductDto,
+      );
+    };
+
+    const testCreate = async () => {
+      const createCardProductDto = new CreateCardProductDto({
+        article: 'asdasdasd',
+        in_stock: 1212,
+        detail_name: 'asdasdasd',
+        included_in_unit: 'asdasdasd',
+        brand: 'asdasdasd',
+        model: 'asdasdasd',
+        version: 'asdasdasd',
+        body_type: 'asdasdasd',
+        year: 1232131,
+        engine: 'asdasdasd',
+        volume: 'asdasdasd',
+        engine_type: 'asdasdasd',
+        gearbox: 'asdasdasd',
+        original_number: 'asdasdasd',
+        price: 12313.123213,
+        for_naked: 'asdasdasd',
+        currency: 'asdasdasd',
+        discount: 123123213,
+        description: 'asdasdasd',
+        year_start_production: 123213,
+        year_end_production: 123,
+        url_photo_details: 'asdasdasd',
+        url_car_photo: 'asdasdasd',
+        video: 'asdasdasd',
+        phone: 'asdasdasd',
+        vin: 'asdasdasd',
+      });
+      return await this.cardProductService.create(createCardProductDto);
+    };
+
+    return [await testUpdate(), await testCreate()];
   }
 }
