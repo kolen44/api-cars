@@ -1,7 +1,7 @@
 import { cardProductKeys } from '@repository/repository/card-product/card-product-keys';
 import { CardProductDB } from '../types/card-product-db';
 
-export class CreateCardProductDto {
+export class CreateCardProductDto implements CardProductDB {
   public article: string;
   public in_stock: number;
   public detail_name: string;
@@ -10,6 +10,7 @@ export class CreateCardProductDto {
   public model: string;
   public version: string;
   public body_type: string;
+  public year: number;
   public engine: string;
   public volume: string;
   public engine_type?: string;
@@ -31,6 +32,7 @@ export class CreateCardProductDto {
   constructor(params: CardProductDB) {
     cardProductKeys.forEach((key) => {
       if (key in params) {
+        // @ts-ignore
         this[key] = params[key];
       }
     });
@@ -41,6 +43,7 @@ export class CreateCardProductDto {
 
     cardProductKeys.forEach((key) => {
       if (key in this) {
+        // @ts-ignore
         createData[key] = this[key];
       }
     });

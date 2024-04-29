@@ -30,6 +30,9 @@ export class CardProduct {
   body_type?: string;
 
   @Column({ nullable: true })
+  year?: number;
+
+  @Column({ nullable: true })
   engine: string;
 
   @Column({ nullable: true })
