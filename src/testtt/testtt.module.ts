@@ -1,8 +1,11 @@
+import { SparesCsvModule } from '@app/sparescsv';
 import { Module } from '@nestjs/common';
-import { TestttService } from './testtt.service';
+import { CardProductModule } from '@repository/repository/card-product/card-product.module';
 import { TestttController } from './testtt.controller';
+import { TestttService } from './testtt.service';
 
 @Module({
+  imports: [CardProductModule, SparesCsvModule],
   controllers: [TestttController],
   providers: [TestttService],
 })

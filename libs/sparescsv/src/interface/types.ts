@@ -9,7 +9,7 @@ export interface CardProduct {
   model: string;
   version?: string;
   body_type?: string;
-  year: number;
+  year?: number;
   engine: string;
   volume: string;
   engine_type?: string;

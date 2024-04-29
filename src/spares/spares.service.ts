@@ -27,9 +27,14 @@ export class SparesService {
 
   public async cvsDownload(url: string) {
     console.log('started parsing');
-    const response = await this.sparesService.parseCvsToJson(url);
+    const response: any = await this.sparesService.parseCvsToJson(url);
     console.log('ended parsing. starting db creating');
-    this.dbCreate.create(response as CreateCardProductDto);
+    for (const element of response) {
+      const data = new CreateCardProductDto(element);
+      const used = await this.dbCreate.updateByArticle(data.article, element);
+      console.log(used);
+    }
+
     console.log('created');
     return response;
   }
