@@ -18,7 +18,7 @@ export class SparesCsvService {
         .pipe(csv())
         .on('data', (row) => {
           results.push(row);
-          // console.log(row)
+          console.log(row);
         })
         .on('end', () => {
           resolve(results);
