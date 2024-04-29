@@ -1,12 +1,19 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Post, Query } from '@nestjs/common';
 import { TestttService } from './testtt.service';
 
-@Controller('testtt')
+@Controller('route')
 export class TestttController {
   constructor(private readonly testttService: TestttService) {}
 
   @Get()
-  test() {
-    return this.testttService.test();
+  async getProduct(@Query() a: any) {
+    console.log(a);
+    return await this.testttService.getProduct(a);
+  }
+
+  @Post('d')
+  downloadDatabase() {
+    console.log(1);
+    return this.testttService.downloadDatabase();
   }
 }

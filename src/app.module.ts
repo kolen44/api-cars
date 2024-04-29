@@ -4,12 +4,14 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DatabaseModule } from './database/database.module';
 import { SparesModule } from './spares/spares.module';
+import { TestttModule } from './testtt/testtt.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     SparesModule,
     DatabaseModule,
+    TestttModule,
   ],
   controllers: [AppController],
   providers: [AppService],

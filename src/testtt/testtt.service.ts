@@ -3,15 +3,38 @@ import { Injectable } from '@nestjs/common';
 import { CardProductService } from '@repository/repository/card-product/card-product.service';
 import { CreateCardProductDto } from '@repository/repository/card-product/dto/create-card-product.dto';
 import { CardProductDB } from '@repository/repository/card-product/types/card-product-db';
+import { join } from 'path';
+
+/*
+
+марка
+модель
+год выпуска
+
+*/
 
 @Injectable()
 export class TestttService {
   constructor(
-    private readonly sparesCsvService: SparesCsvService,
+    private readonly sparesService: SparesCsvService,
     private readonly cardProductService: CardProductService,
   ) {}
 
-  test() {
+  async getProduct({
+    brand,
+    model,
+    year,
+  }: {
+    brand: string;
+    model: string;
+    year: number;
+  }) {
+    return await this.cardProductService.findMany({
+      where: { brand, model },
+    });
+  }
+
+  async downloadDatabase() {
     const handleStream = async (rows: CardProductDB[]) => {
       console.log('перед бд');
 
@@ -41,17 +64,17 @@ export class TestttService {
       await Promise.all(promises);
     };
 
-    // await this.sparesCsvService
-    //   .parseCvsToJson()
-    //   .then(async (rows) => {
-    //     console.log('После парсинга CSV-файла');
-    //     console.time('createInDatabase');
-    //     await handleStream(rows as CardProductDB[]);
-    //     console.log('после загрузки в бд');
-    //     console.timeEnd('createInDatabase');
-    //   })
-    //   .catch((error) => {
-    //     console.error('Произошла ошибка:', error);
-    //   });
+    await this.sparesService
+      .cvsUpdate({ path: join(process.cwd(), 'data/spares.csv') })
+      .then(async (rows) => {
+        console.log('После парсинга CSV-файла');
+        console.time('createInDatabase');
+        await handleStream(rows as CardProductDB[]);
+        console.log('после загрузки в бд');
+        console.timeEnd('createInDatabase');
+      })
+      .catch((error) => {
+        console.error('Произошла ошибка:', error);
+      });
   }
 }
