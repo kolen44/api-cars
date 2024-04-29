@@ -11,8 +11,8 @@ export class TestttService {
     private readonly cardProductService: CardProductService,
   ) {}
 
-  test() {
-    const handleStream = async (rows: CardProductDB[]) => {
+  public test(rows: CardProductDB[]) {
+    const handleStream = async (rows) => {
       console.log('перед бд');
 
       const promises = rows.map(async (row, index) => {
@@ -28,9 +28,9 @@ export class TestttService {
 
         await this.cardProductService
           .create(createCardProductDto)
-          // .then(() => {
-          //   console.log(`строка с артиклем ${row.article} прошла в бд`)
-          // })
+          .then(() => {
+            console.log(`строка с артиклем ${row.article} прошла в бд`);
+          })
           .catch(() => {
             console.log(
               `ERROR: строка с артиклем ${row.article} не прошла в бд`,

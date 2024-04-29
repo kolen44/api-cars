@@ -1,6 +1,7 @@
 import { SparesCsvModule } from '@app/sparescsv';
 import { Module } from '@nestjs/common';
 import { MulterModule } from '@nestjs/platform-express';
+import { CardProductModule } from '@repository/repository/card-product/card-product.module';
 import { SparesController } from './spares.controller';
 import { SparesService } from './spares.service';
 
@@ -10,6 +11,7 @@ import { SparesService } from './spares.service';
     MulterModule.register({
       dest: './data',
     }),
+    CardProductModule,
   ],
   controllers: [SparesController],
   providers: [SparesService],
