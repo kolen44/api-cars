@@ -1,10 +1,10 @@
 import { SparesCsvService } from '@app/sparescsv';
-import { Injectable } from '@nestjs/common';
-import axios from 'axios';
+import { Injectable, Logger } from '@nestjs/common';
 
 @Injectable()
 export class SparesService {
   constructor(public sparesService: SparesCsvService) {}
+  private readonly logger = new Logger(SparesService.name);
 
   public async cvsUpdate(file) {
     const response = await this.sparesService.cvsUpdate(file);
@@ -12,10 +12,11 @@ export class SparesService {
   }
 
   public async cvsDownload(url: string) {
-    const response = await axios.get(url);
-    const data = response.data;
-    const res = await this.sparesService.parseCvsToJson(data);
-    console.log(res);
+    const res = await this.sparesService.parseCvsToJson(url);
     return res;
+  }
+
+  public async handlerTimeout(data) {
+    this.logger.log('Start test', data);
   }
 }

@@ -1,4 +1,5 @@
 import { Controller, HttpCode, Post } from '@nestjs/common';
+import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 import { SparesService } from './spares.service';
 
 @Controller('spares')
@@ -8,8 +9,13 @@ export class SparesController {
   @Post()
   @HttpCode(200)
   async uploadFile() {
-    return this.sparesService.cvsDownload(
+    this.sparesService.cvsDownload(
       'https://db.f-opt.com/csvfiles/abw/spares.csv',
     );
+  }
+
+  @EventPattern('start')
+  async handlerTimer(@Payload() data: any, @Ctx() context: RmqContext) {
+    this.sparesService.handlerTimeout(data);
   }
 }
