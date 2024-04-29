@@ -82,4 +82,8 @@ export class CardProductService {
   async remove(id: number) {
     return await this.cardProductRepository.delete(id);
   }
+
+  getQueryBuilder(table?: string) {
+    return this.cardProductRepository.createQueryBuilder(table || 'product');
+  }
 }

@@ -5,16 +5,10 @@ import { Injectable } from '@nestjs/common';
 import { CardProductService } from '@repository/repository/card-product/card-product.service';
 import { CreateCardProductDto } from '@repository/repository/card-product/dto/create-card-product.dto';
 import { CardProductDB } from '@repository/repository/card-product/types/card-product-db';
+import console from 'console';
 import * as csv from 'csv-parser';
 import * as fs from 'fs';
-
-/*
-
-марка
-модель
-год выпуска
-
-*/
+import { FindTestttDto } from './dto/find-testtt.dto';
 
 @Injectable()
 export class TestttService {
@@ -23,20 +17,54 @@ export class TestttService {
     private readonly cardProductService: CardProductService,
   ) {}
 
-  async getProduct({
-    brand,
-    model,
-    year,
-  }: {
-    brand: string;
-    model: string;
-    year: number;
-  }) {
-    return await this.cardProductService.findMany({
-      where: { brand, model },
-    });
+  async getProduct(query: FindTestttDto) {
+    const { page, limit, brand, model, year, year_start, year_end } = query;
+    const skip = (page - 1) * limit;
+
+    let queryBuilder = this.cardProductService.getQueryBuilder();
+
+    const getQueryForYearInterval = () => {
+      return `
+        (
+          (product.year_start_production >= :year_start
+          AND 
+          product.year_start_production <= :year_end)
+          
+          OR 
+
+          (product.year_end_production >= :year_start 
+          AND
+          product.year_end_production <= :year_end)
+        )
+      `;
+    };
+
+    const getQueryForOneYear = () => {
+      return '(product.year_start_production <= :year AND product.year_end_production >= :year)';
+    };
+
+    if (brand) {
+      queryBuilder = queryBuilder.andWhere('product.brand = :brand', { brand });
+    }
+    if (model) {
+      queryBuilder = queryBuilder.andWhere('product.model = :model', { model });
+    }
+
+    if (year_start && year_end) {
+      queryBuilder = queryBuilder.andWhere(getQueryForYearInterval(), {
+        year_start,
+        year_end,
+      });
+    } else if (year) {
+      queryBuilder = queryBuilder.andWhere(getQueryForOneYear(), { year });
+    }
+
+    const result = await queryBuilder.skip(skip).take(limit).getMany();
+
+    return { page, limit, search_count: result.length, data: result };
   }
 
+  // REFACTOR Это потом удалим
   async downloadDatabase() {
     const handleStream = async (rows: CardProductDB[]) => {
       console.log('перед бд');
@@ -71,13 +99,15 @@ export class TestttService {
       // }
 
       const promises = rows.map(async (row, index) => {
-        if (row.year_start_production === 0) {
-          row.year_start_production = 2023;
+        if (row.year_end_production < 1900) {
+          row.year_end_production = 2023;
         } else if (row.year_end_production - row.year_start_production > 9) {
-          row.year_start_production = row.year_end_production + 9;
+          row.year_end_production = row.year_start_production + 9;
         }
 
-        if (index % 10 === 0) console.log('index', index);
+        if (index % 10 === 0) {
+          console.log('index', index);
+        }
 
         const createCardProductDto = new CreateCardProductDto(row);
 

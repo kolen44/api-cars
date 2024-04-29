@@ -31,9 +31,6 @@ export class CreateCardProductDto {
   constructor(params: CardProductDB) {
     cardProductKeys.forEach((key) => {
       if (key in params) {
-        // Почему то не видит поля в классе
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         this[key] = params[key];
       }
     });
@@ -44,9 +41,6 @@ export class CreateCardProductDto {
 
     cardProductKeys.forEach((key) => {
       if (key in this) {
-        // Тут тоже не робит :(
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
         createData[key] = this[key];
       }
     });
