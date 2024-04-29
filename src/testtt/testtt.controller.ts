@@ -7,13 +7,18 @@ export class TestttController {
   constructor(private readonly testttService: TestttService) {}
 
   @Get()
-  async getProduct(@Query() query: FindTestttDto) {
+  getProduct(@Query() query: FindTestttDto) {
     console.log(query);
-    return await this.testttService.getProduct(query);
+    return this.testttService.getProduct(query);
   }
 
   @Post('d')
   downloadDatabase() {
     return this.testttService.downloadDatabase();
+  }
+
+  @Get('test')
+  test() {
+    return this.testttService.test();
   }
 }

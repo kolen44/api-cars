@@ -4,6 +4,7 @@ import { CardProduct } from '@app/sparescsv/interface/types';
 import { Injectable } from '@nestjs/common';
 import { CardProductService } from '@repository/repository/card-product/card-product.service';
 import { CreateCardProductDto } from '@repository/repository/card-product/dto/create-card-product.dto';
+import { UpdateCardProductDto } from '@repository/repository/card-product/dto/update-card-product.dto';
 import { CardProductDB } from '@repository/repository/card-product/types/card-product-db';
 import console from 'console';
 import * as csv from 'csv-parser';
@@ -168,5 +169,18 @@ export class TestttService {
       .catch((error) => {
         console.error('Произошла ошибка:', error);
       });
+  }
+
+  async test() {
+    const article = '3TD01J301';
+    const updateCardProductDto = new UpdateCardProductDto({
+      year_start_production: 2012,
+      year_end_production: null,
+      model: undefined,
+    });
+    return await this.cardProductService.updateByArticle(
+      article,
+      updateCardProductDto,
+    );
   }
 }

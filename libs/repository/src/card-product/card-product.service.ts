@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { isEqual } from 'lodash';
 import { CardProduct } from 'src/database/entities/product.entity';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { CreateCardProductDto } from './dto/create-card-product.dto';
+import { UpdateCardProductDto } from './dto/update-card-product.dto';
 
 @Injectable()
 export class CardProductService {
@@ -43,28 +43,22 @@ export class CardProductService {
       .getMany();
   }
 
-  async updateByArticle(article: string, element) {
-    const { year, ...newElement } = element;
-    //Поиск существующего элемента в базе данных
-    const existingProduct = await this.findByArticle(article);
+  async updateByArticle(
+    article: string,
+    updateCardProductDto: UpdateCardProductDto,
+  ) {
+    const finedProduct = await this.findByArticle(article);
 
-    // Если элемент существует и его значения отличаются от переданного элемента
-    if (existingProduct && !isEqual(existingProduct, newElement)) {
-      // Обновляем элемент
-      await this.cardProductRepository.update(
-        { existingProduct: newElement },
-        newElement,
-      );
-      return 'errror on update';
-    } else if (!existingProduct) {
-      // Если элемент не существует, создаем новый элемент
-      const newProduct = await this.cardProductRepository.create(newElement);
-      await this.cardProductRepository.save(newProduct);
-      return 'create new';
-    } else {
-      // Если элемент существует и его значения совпадают с переданным элементом, возвращаем его без изменений
-      return 'уже существует';
+    if (!finedProduct) {
+      throw new Error('Product not found');
     }
+
+    const updatedProductData = {
+      ...finedProduct,
+      ...updateCardProductDto.getUpdateData(),
+    };
+
+    return await this.cardProductRepository.save(updatedProductData);
   }
 
   // async update(id: number, updateCardProductDto: UpdateCardProductDto) {

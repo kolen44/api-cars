@@ -9,7 +9,6 @@ export const cardProductKeys: (keyof CardProduct)[] = [
   'model',
   'version',
   'body_type',
-  'year',
   'engine',
   'volume',
   'engine_type',
