@@ -28,17 +28,22 @@
     "@nestjs/microservices": "^10.3.8",
     "@nestjs/platform-express": "^10.3.8",
     "@nestjs/schedule": "^4.0.2",
+    "@nestjs/typeorm": "^10.0.2",
     "amqp-connection-manager": "^4.1.14",
     "amqplib": "^0.10.4",
-    "axios": "^1.6.8",
+    "axios": "^0.21.1",
+    "class-transformer": "^0.5.1",
     "csv-parser": "^3.0.0",
     "fs": "^0.0.1-security",
     "global": "^4.4.0",
     "joi": "^17.13.0",
     "multer": "^1.4.5-lts.1",
     "nest-csv-parser": "^2.0.4",
+    "pg": "^8.11.5",
     "reflect-metadata": "^0.2.0",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "superagent": "^9.0.1",
+    "typeorm": "^0.3.20"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
@@ -84,7 +89,8 @@
       "<rootDir>/libs/"
     ],
     "moduleNameMapper": {
-      "^@app/sparescsv(|/.*)$": "<rootDir>/libs/sparescsv/src/$1"
+      "^@app/sparescsv(|/.*)$": "<rootDir>/libs/sparescsv/src/$1",
+      "^@repository/repository(|/.*)$": "<rootDir>/libs/repository/src/$1"
     }
   }
 }
