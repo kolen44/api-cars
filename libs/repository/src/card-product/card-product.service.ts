@@ -20,15 +20,15 @@ export class CardProductService {
   }
 
   async findAll(): Promise<CardProduct[]> {
-    return this.cardProductRepository.find();
+    return await this.cardProductRepository.find();
   }
 
   async findMany(query: FindManyOptions<CardProduct>): Promise<CardProduct[]> {
-    return this.cardProductRepository.find(query);
+    return await this.cardProductRepository.find(query);
   }
 
   async findOne(query: FindOneOptions<CardProduct>): Promise<CardProduct> {
-    return this.cardProductRepository.findOne(query);
+    return await this.cardProductRepository.findOne(query);
   }
 
   async findByArticle(article: string): Promise<CardProduct> {
