@@ -1,10 +1,21 @@
 import { SparesCsvService } from '@app/sparescsv';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class SparesService {
   constructor(public sparesService: SparesCsvService) {}
-  private readonly logger = new Logger(SparesService.name);
+  @Cron(CronExpression.EVERY_DAY_AT_3AM)
+  handleCron() {
+    try {
+      this.sparesService.cvsUpdate(
+        'https://db.f-opt.com/csvfiles/abw/spares.csv',
+      );
+    } catch (error) {
+      console.log(error);
+      return error;
+    }
+  }
 
   public async cvsUpdate(file) {
     const response = await this.sparesService.cvsUpdate(file);
@@ -14,9 +25,5 @@ export class SparesService {
   public async cvsDownload(url: string) {
     const res = await this.sparesService.parseCvsToJson(url);
     return res;
-  }
-
-  public async handlerTimeout(data) {
-    this.logger.log('Start test', data);
   }
 }

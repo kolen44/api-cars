@@ -1,21 +1,16 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CsvToJson } from 'classes/csvtojson/csvtojson';
 import * as csv from 'csv-parser';
 import { CsvParser } from 'nest-csv-parser';
 import { TableLine } from 'types/types';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-import { ClientProxy } from '@nestjs/microservices';
 import axios from 'axios';
 import { createReadStream, writeFileSync } from 'fs';
-import { lastValueFrom } from 'rxjs';
 import { Readable } from 'stream';
 
 @Injectable()
 export class SparesCsvService {
-  constructor(
-    public csvParser: CsvParser,
-    @Inject('billing') private sparesCsv: ClientProxy,
-  ) {}
+  constructor(public csvParser: CsvParser) {}
 
   public async cvsUpdate(file) {
     const results = [];
@@ -37,11 +32,6 @@ export class SparesCsvService {
   }
 
   public async parseCvsToJson(url) {
-    await lastValueFrom(
-      this.sparesCsv.emit('start', {
-        message: 'тестовое сообщение микросервисов',
-      }),
-    );
     // const readStream = fs.createReadStream('data/spares.csv')
 
     // const writeStream = fs.createWriteStream('data/test.json')
@@ -73,8 +63,8 @@ export class SparesCsvService {
           // console.log(row)
         })
         .on('end', () => {
-          console.log(rows);
-          console.log('Чтение CSV файла завершено');
+          //console.log(rows);
+          //console.log('Чтение CSV файла завершено');
           resolve(rows);
         })
         .on('error', (error) => {
