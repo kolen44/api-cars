@@ -27,7 +27,7 @@ export const cardProductKeys: (keyof CardProduct)[] = [
   'video',
   'phone',
   'vin',
-];
+] as const;
 
 // Массив, где хранятся только числовые ключи
 export const cardProductNumericKeys: (keyof CardProduct)[] = [
@@ -36,4 +36,4 @@ export const cardProductNumericKeys: (keyof CardProduct)[] = [
   'discount',
   'year_start_production',
   'year_end_production',
-];
+] as const;

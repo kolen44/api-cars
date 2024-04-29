@@ -32,8 +32,7 @@ export class CreateCardProductDto implements CardProductDB {
   constructor(params: CardProductDB) {
     cardProductKeys.forEach((key) => {
       if (key in params) {
-        // @ts-ignore
-        this[key] = params[key];
+        this[key as string] = params[key];
       }
     });
   }
@@ -43,8 +42,7 @@ export class CreateCardProductDto implements CardProductDB {
 
     cardProductKeys.forEach((key) => {
       if (key in this) {
-        // @ts-ignore
-        createData[key] = this[key];
+        createData[key as string] = this[key];
       }
     });
 
