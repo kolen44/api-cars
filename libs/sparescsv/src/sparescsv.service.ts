@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { CsvToJson } from 'classes/csvtojson/csvtojson';
-import * as csv from 'csv-parser';
-import { CsvParser } from 'nest-csv-parser';
-import { TableLine } from 'types/types';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 import axios from 'axios';
+import * as csv from 'csv-parser';
 import { createReadStream, writeFileSync } from 'fs';
+import { CsvParser } from 'nest-csv-parser';
 import { Readable } from 'stream';
+import { CsvToJson } from './classes/csvtojson.class';
+import { CardProduct } from './interface/types';
 
 @Injectable()
 export class SparesCsvService {
@@ -39,7 +38,7 @@ export class SparesCsvService {
     const csvToJson = new CsvToJson();
 
     const foo = (obj: Record<string, string>) => {
-      let result: Partial<TableLine> = {};
+      let result: Partial<CardProduct> = {};
 
       // value = value.replace(/"/g, '').split(';') as string[]
       result = csvToJson.createObjectByArray(
@@ -47,9 +46,9 @@ export class SparesCsvService {
       );
       // console.log(value, '\n\n\n\n')
 
-      return result as TableLine;
+      return result as CardProduct;
     };
-    const rows: TableLine[] = [];
+    const rows: CardProduct[] = [];
     const response = await axios.get(url);
 
     writeFileSync('./data/file.csv', `${response.data}`);
