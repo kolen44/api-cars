@@ -2,7 +2,7 @@ import { SparesCsvService } from '@app/sparescsv';
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { CardProductService } from '@repository/repository';
-import { CreateCardProductDto } from '@repository/repository/card-product/dto/create-card-product.dto';
+import { UpdateCardProductDto } from '@repository/repository/card-product/dto/update-card-product.dto';
 
 @Injectable()
 export class SparesService {
@@ -30,12 +30,15 @@ export class SparesService {
     const response: any = await this.sparesService.parseCvsToJson(url);
     console.log('ended parsing. starting db creating');
     for (const element of response) {
-      const data = new CreateCardProductDto(element);
-      const used = await this.dbCreate.updateByArticle(data.article, element);
+      const data = new UpdateCardProductDto(element);
+      const used = await this.dbCreate.updateDatabase(data);
       console.log(used);
     }
-
+    changingTransactionDatabase();
     console.log('created');
     return response;
   }
+}
+function changingTransactionDatabase() {
+  throw new Error('Function not implemented.');
 }

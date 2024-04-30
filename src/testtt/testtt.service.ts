@@ -176,16 +176,12 @@ export class TestttService {
 
   async test() {
     const testUpdate = async () => {
-      const article = '3TD01J301';
       const updateCardProductDto = new UpdateCardProductDto({
         year_start_production: 2011,
         year_end_production: null,
         model: undefined,
       });
-      return await this.cardProductService.updateByArticle(
-        article,
-        updateCardProductDto,
-      );
+      return await this.cardProductService.updateDatabase(updateCardProductDto);
     };
 
     const testCreate = async () => {
