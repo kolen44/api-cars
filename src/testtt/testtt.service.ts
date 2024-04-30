@@ -1,5 +1,4 @@
 import { SparesCsvService } from '@app/sparescsv';
-import { CsvToJson } from '@app/sparescsv/classes/csvtojson.class';
 import { CardProduct } from '@app/sparescsv/interface/types';
 import { Injectable, Logger } from '@nestjs/common';
 import { CardProductService } from '@repository/repository/card-product/card-product.service';
@@ -101,45 +100,100 @@ export class TestttService {
       //   if (error) break;
       // }
 
-      const promises = rows.map(async (row, index) => {
+      const createsDto = rows.map((row, index) => {
         if (row.year_end_production < 1900) {
           row.year_end_production = 2023;
         } else if (row.year_end_production - row.year_start_production > 9) {
           row.year_end_production = row.year_start_production + 9;
         }
 
-        if (index % 10 === 0) {
-          this.logger.log(`index ${index}`);
-        }
+        // if (index % 10 === 0) {
+        //   this.logger.log(`index ${index}`);
+        // }
 
         const createCardProductDto = new CreateCardProductDto(row);
 
-        await this.cardProductService
-          .create(createCardProductDto)
-          // .then(() => {
-          //   this.logger.log(`строка с артиклем ${row.article} прошла в бд`);
-          // })
-          .catch((err) => {
-            this.logger.log(
-              `ERROR: строка с артиклем ${row.article} не прошла в бд`,
-              err,
-            );
-          });
+        return createCardProductDto;
+
+        // await this.cardProductService
+        //   .create(createCardProductDto)
+        //   // .then(() => {
+        //   //   this.logger.log(`строка с артиклем ${row.article} прошла в бд`);
+        //   // })
+        //   .catch((err) => {
+        //     this.logger.log(
+        //       `ERROR: строка с артиклем ${row.article} не прошла в бд`,
+        //       err,
+        //     );
+        //   });
       });
 
-      await Promise.all(promises);
+      this.logger.log(`Обработаны все данные для бд`);
+
+      const max = 2500;
+
+      for (let i = 0; i < createsDto.length; i += max) {
+        if (i % max === 0) {
+          await this.cardProductService.createMany(
+            createsDto.slice(i, i + max),
+          );
+        }
+      }
+
+      // return await this.cardProductService.createMany(createsDtpResult);
+
+      // await Promise.all(fs.promises);
     };
 
     const parseCsvToJson = () => {
       const convertRow = (obj: Record<string, string>) => {
-        let result: Partial<CardProduct> = {};
-        const csvToJson = new CsvToJson();
+        const toNumber = (num: string | number | undefined) => {
+          if (!num) return undefined;
+          return Number.isNaN(Number(num)) ? undefined : Number(num);
+        };
 
-        result = csvToJson.createObjectByArray(
-          Object.values(obj)[0].replace(/"/g, '').split(';'),
-        );
+        const convertString = (val: string) => {
+          return !!val ? val : undefined;
+        };
 
-        return result as CardProduct;
+        const result: CardProduct = {
+          article: convertString(obj['Артикул']),
+          in_stock: toNumber(obj['В наличии']),
+          detail_name: convertString(obj['Наименование детали']),
+          included_in_unit: convertString(obj['В составе агрегата']),
+          brand: convertString(obj['Марка']),
+          model: convertString(obj['Модель']),
+          version: convertString(obj['Версия']),
+          body_type: convertString(obj['Тип кузова']),
+          year: toNumber(obj['Год']),
+          engine: convertString(obj['Двигатель']),
+          volume: convertString(obj['Объем']),
+          engine_type: convertString(obj['Тип ДВС']),
+          gearbox: convertString(obj['КПП']),
+          original_number: convertString(obj['Оригинальный номер']),
+          price: toNumber(obj['Цена']),
+          for_naked: convertString(obj['За голую']),
+          currency: convertString(obj['Валюта']),
+          discount: toNumber(obj['Скидка']),
+          description: convertString(obj['Описание']),
+          year_start_production: toNumber(obj['Год начала выпуска']),
+          year_end_production: toNumber(obj['Год окончания выпуска']),
+          url_photo_details: convertString(obj['URL фото детали']),
+          url_car_photo: convertString(obj['URL фото автомобиля']),
+          video: convertString(obj['Видео']),
+          phone: convertString(obj['Телефон']),
+          vin: convertString(obj['VIN']),
+        } as CardProduct;
+
+        return result;
+
+        // result = csvToJson.createObjectByArray(
+        //   Object.values(obj)[0].split('";"'),
+        // );
+
+        // console.log(obj);
+
+        // return result as CardProduct;
       };
 
       return new Promise((resolve, reject) => {
@@ -147,7 +201,7 @@ export class TestttService {
 
         return fs
           .createReadStream('data/spares.csv')
-          .pipe(csv())
+          .pipe(csv({ separator: ';' }))
           .on('data', (row) => {
             rows.push(convertRow(row));
           })
@@ -171,6 +225,7 @@ export class TestttService {
       })
       .catch((error) => {
         this.logger.error('Произошла ошибка:', error);
+        if (console) console.log(error);
       });
   }
 
@@ -220,6 +275,101 @@ export class TestttService {
       return await this.cardProductService.create(createCardProductDto);
     };
 
-    return [await testUpdate(), await testCreate()];
+    const testCreateMany = async () => {
+      const createCardProductDtos: CreateCardProductDto[] = [
+        new CreateCardProductDto({
+          article: 'asdasdasdsa',
+          in_stock: 1212,
+          detail_name: 'asdasdasd',
+          included_in_unit: 'asdasdasd',
+          brand: 'asdasdasd',
+          model: 'asdasdasd',
+          version: 'asdasdasd',
+          body_type: 'asdasdasd',
+          year: 1232131,
+          engine: 'asdasdasd',
+          volume: 'asdasdasd',
+          engine_type: 'asdasdasd',
+          gearbox: 'asdasdasd',
+          original_number: 'asdasdasd',
+          price: 12313.123213,
+          for_naked: 'asdasdasd',
+          currency: 'asdasdasd',
+          discount: 123123213,
+          description: 'asdasdasd',
+          year_start_production: 123213,
+          year_end_production: 123,
+          url_photo_details: 'asdasdasd',
+          url_car_photo: 'asdasdasd',
+          video: 'asdasdasd',
+          phone: 'asdasdasd',
+          vin: 'asdasdasd',
+        }),
+        new CreateCardProductDto({
+          article: 'asdasdasd',
+          in_stock: 1212,
+          detail_name: 'asdasdasd',
+          included_in_unit: 'asdasdasd',
+          brand: 'asdasdasd',
+          model: 'asdasdasd',
+          version: 'asdasdasd',
+          body_type: 'asdasdasd',
+          year: 1232131,
+          engine: 'asdasdasd',
+          volume: 'asdasdasd',
+          engine_type: 'asdasdasd',
+          gearbox: 'asdasdasd',
+          original_number: 'asdasdasd',
+          price: 12313.123213,
+          for_naked: 'asdasdasd',
+          currency: 'asdasdasd',
+          discount: 123123213,
+          description: 'asdasdasd',
+          year_start_production: 123213,
+          year_end_production: 123,
+          url_photo_details: 'asdasdasd',
+          url_car_photo: 'asdasdasd',
+          video: 'asdasdasd',
+          phone: 'asdasdasd',
+          vin: 'asdasdasd',
+        }),
+        new CreateCardProductDto({
+          article: 'hgfhfghfg',
+          in_stock: 1212,
+          detail_name: 'asdasdasd',
+          included_in_unit: 'asdasdasd',
+          brand: 'asdasdasd',
+          model: 'asdasdasd',
+          version: 'asdasdasd',
+          body_type: 'asdasdasd',
+          year: 1232131,
+          engine: 'asdasdasd',
+          volume: 'asdasdasd',
+          engine_type: 'asdasdasd',
+          gearbox: 'asdasdasd',
+          original_number: 'asdasdasd',
+          price: 12313.123213,
+          for_naked: 'asdasdasd',
+          currency: 'asdasdasd',
+          discount: 123123213,
+          description: 'asdasdasd',
+          year_start_production: 123213,
+          year_end_production: 123,
+          url_photo_details: 'asdasdasd',
+          url_car_photo: 'asdasdasd',
+          video: 'asdasdasd',
+          phone: 'asdasdasd',
+          vin: 'asdasdasd',
+        }),
+      ];
+
+      const result = await this.cardProductService.createMany(
+        createCardProductDtos,
+      );
+
+      return result;
+    };
+
+    return await testCreateMany();
   }
 }

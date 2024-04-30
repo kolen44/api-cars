@@ -20,6 +20,12 @@ export class CardProductService {
     return await this.cardProductRepository.save(cardProduct);
   }
 
+  async createMany(createCardProductDto: CreateCardProductDto[]) {
+    const createData = createCardProductDto.map((dto) => dto.getCreateData());
+    const cardProduct = this.cardProductRepository.create(createData);
+    return await this.cardProductRepository.save(cardProduct);
+  }
+
   async findAll(): Promise<CardProduct[]> {
     return await this.cardProductRepository.find();
   }
