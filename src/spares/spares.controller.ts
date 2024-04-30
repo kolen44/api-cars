@@ -1,4 +1,5 @@
-import { Controller, HttpCode, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post } from '@nestjs/common';
+import { searchByCriteriaDto } from './dto/searchbycriteria.dto';
 import { SparesService } from './spares.service';
 
 @Controller('spares')
@@ -6,10 +7,16 @@ export class SparesController {
   constructor(private readonly sparesService: SparesService) {}
 
   @Post()
-  @HttpCode(200)
+  @HttpCode(201)
   async uploadFile() {
     this.sparesService.cvsDownload(
       'https://db.f-opt.com/csvfiles/abw/spares.csv',
     );
+  }
+
+  @Post('find')
+  @HttpCode(201)
+  async searchFile(@Body() data: searchByCriteriaDto) {
+    return this.sparesService.searchByCriteria(data);
   }
 }

@@ -1,7 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CardProduct } from 'src/database/entities/product.entity';
-import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
+import {
+  FindManyOptions,
+  FindOneOptions,
+  LessThanOrEqual,
+  MoreThanOrEqual,
+  Repository,
+} from 'typeorm';
 import { CreateCardProductDto } from './dto/create-card-product.dto';
 import { UpdateCardProductDto } from './dto/update-card-product.dto';
 
@@ -123,6 +129,37 @@ export class CardProductService {
       return this.cardProductRepositorySecond.createQueryBuilder(
         table || 'product',
       );
+    }
+  }
+
+  async searchByCriteria(
+    brand: string,
+    model: string,
+    year: number,
+  ): Promise<CardProduct[]> {
+    if (this.cardProductRepository.count()) {
+      const result = await this.cardProductRepository.find({
+        where: {
+          brand,
+          model,
+          year,
+
+          year_start_production: LessThanOrEqual(year),
+          year_end_production: MoreThanOrEqual(year),
+        },
+      });
+      return result;
+    } else {
+      const result = await this.cardProductRepositorySecond.find({
+        where: {
+          brand,
+          model,
+          year,
+          year_start_production: LessThanOrEqual(year),
+          year_end_production: MoreThanOrEqual(year),
+        },
+      });
+      return result;
     }
   }
 }

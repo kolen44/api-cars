@@ -33,9 +33,20 @@ export class SparesService {
       const data = new UpdateCardProductDto(element);
       const used = await this.dbCreate.updateDatabase(data);
       console.log(used);
+      return;
     }
     changingTransactionDatabase();
     console.log('created');
+    return response;
+  }
+
+  public async searchByCriteria({ brand, model, year }): Promise<any> {
+    const response = await this.dbCreate.searchByCriteria(brand, model, year);
+    if (!response) {
+      return 'Убедитесь что вы правильно передали параметры или что элемент существует в базе данных';
+    }
+    response.sort((a, b) => a.price - b.price);
+    console.log(response);
     return response;
   }
 }

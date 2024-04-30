@@ -1,4 +1,4 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { CreateSpareDto } from './create-spare.dto';
+import { searchByCriteriaDto } from './searchbycriteria.dto';
 
-export class UpdateSpareDto extends PartialType(CreateSpareDto) {}
+export class UpdateSpareDto extends PartialType(searchByCriteriaDto) {}
