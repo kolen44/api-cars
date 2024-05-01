@@ -6,17 +6,19 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    env_file:
+      - .env
     ports:
       - 3000:3000
     environment:
       - DB_HOST=database
-    links:
+    depends_on:
       - database
 
   database:
     container_name: api-card-database
-    image: postgres:latest
+    image: postgres:13.5
     environment:
-      POSTGRES_USER: ${DB_USERNAME}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_DATABASE}
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: db

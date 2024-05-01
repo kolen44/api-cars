@@ -1,7 +1,7 @@
 import { cardProductKeys } from '@repository/repository/card-product/card-product-keys';
 import { CardProductDB } from '../types/card-product-db';
 
-export class CreateCardProductDto implements CardProductDB {
+export class CreateCardProductDto {
   public article: string;
   public in_stock: number;
   public detail_name: string;
@@ -10,7 +10,6 @@ export class CreateCardProductDto implements CardProductDB {
   public model: string;
   public version: string;
   public body_type: string;
-  public year: number;
   public engine: string;
   public volume: string;
   public engine_type?: string;
@@ -32,7 +31,10 @@ export class CreateCardProductDto implements CardProductDB {
   constructor(params: CardProductDB) {
     cardProductKeys.forEach((key) => {
       if (key in params) {
-        this[key as string] = params[key];
+        // Почему то не видит поля в классе
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        this[key] = params[key];
       }
     });
   }
@@ -42,7 +44,10 @@ export class CreateCardProductDto implements CardProductDB {
 
     cardProductKeys.forEach((key) => {
       if (key in this) {
-        createData[key as string] = this[key];
+        // Тут тоже не робит :(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        createData[key] = this[key];
       }
     });
 

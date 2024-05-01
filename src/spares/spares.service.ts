@@ -27,15 +27,15 @@ export class SparesService {
 
   public async cvsDownload(url: string) {
     console.log('started parsing');
+    const fullestRepository: string | null =
+      this.dbCreate.checkFullBooleanFunction();
     const response: any = await this.sparesService.parseCvsToJson(url);
     console.log('ended parsing. starting db creating');
     for (const element of response) {
       const data = new UpdateCardProductDto(element);
-      const used = await this.dbCreate.updateDatabase(data);
-      console.log(used);
-      return;
+      await this.dbCreate.updateDatabase(data);
     }
-    changingTransactionDatabase();
+    this.dbCreate.changingTransactionDatabase(fullestRepository);
     console.log('created');
     return response;
   }
@@ -45,11 +45,11 @@ export class SparesService {
     if (!response) {
       return 'Убедитесь что вы правильно передали параметры или что элемент существует в базе данных';
     }
-    response.sort((a, b) => a.price - b.price);
-    console.log(response);
+    try {
+      response.sort((a, b) => a.price - b.price);
+    } catch (error) {
+      return response;
+    }
     return response;
   }
-}
-function changingTransactionDatabase() {
-  throw new Error('Function not implemented.');
 }

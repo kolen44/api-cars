@@ -21,7 +21,7 @@ export class CardProductService {
   ) {}
 
   async create(createCardProductDto: CreateCardProductDto) {
-    if (this.cardProductRepository.count()) {
+    if (this.checkWhichRepositoryBigger()) {
       const cardProduct = this.cardProductRepository.create(
         createCardProductDto.getCreateData(),
       );
@@ -37,7 +37,7 @@ export class CardProductService {
   }
 
   async findAll(): Promise<CardProduct[]> {
-    if (this.cardProductRepository.count()) {
+    if (this.checkWhichRepositoryBigger()) {
       return await this.cardProductRepository.find();
     } else {
       return await this.cardProductRepositorySecond.find();
@@ -45,7 +45,7 @@ export class CardProductService {
   }
 
   async findMany(query: FindManyOptions<CardProduct>): Promise<CardProduct[]> {
-    if (this.cardProductRepository.count()) {
+    if (this.checkWhichRepositoryBigger()) {
       return await this.cardProductRepository.find(query);
     } else {
       return await this.cardProductRepositorySecond.find(query);
@@ -53,7 +53,7 @@ export class CardProductService {
   }
 
   async findOne(query: FindOneOptions<CardProduct>): Promise<CardProduct> {
-    if (this.cardProductRepository.count()) {
+    if (this.checkWhichRepositoryBigger()) {
       return await this.cardProductRepository.findOne(query);
     } else {
       return await this.cardProductRepositorySecond.findOne(query);
@@ -65,7 +65,7 @@ export class CardProductService {
   }
 
   async findManyByArticle(articles: string[]): Promise<CardProduct[]> {
-    if (this.cardProductRepository.count()) {
+    if (this.checkWhichRepositoryBigger()) {
       return await this.cardProductRepository
         .createQueryBuilder('product')
         .where('product.article IN (:articles)', { articles })
@@ -78,19 +78,50 @@ export class CardProductService {
     }
   }
 
-  async updateDatabase(updateCardProductDto: UpdateCardProductDto) {
-    if (this.cardProductRepository.count()) {
-      return await this.cardProductRepositorySecond.save(updateCardProductDto);
+  checkWhichRepositoryBigger() {
+    if (
+      this.cardProductRepository.count() &&
+      this.cardProductRepositorySecond.count() &&
+      this.cardProductRepository.count() >
+        this.cardProductRepositorySecond.count()
+    ) {
+      return true;
     } else {
-      return await this.cardProductRepository.save(updateCardProductDto);
+      return false;
     }
   }
 
-  changingTransactionDatabase() {
+  async updateDatabase(updateCardProductDto: UpdateCardProductDto) {
+    try {
+      if (this.checkWhichRepositoryBigger()) {
+        return await this.cardProductRepositorySecond.save(
+          updateCardProductDto,
+        );
+      } else {
+        return await this.cardProductRepository.save(updateCardProductDto);
+      }
+    } catch (error) {
+      return;
+    }
+  }
+
+  checkFullBooleanFunction() {
     if (this.cardProductRepository.count()) {
-      this.cardProductRepository.clear();
+      return 'первый репозиторий заполнен';
+    } else if (this.cardProductRepositorySecond.count()) {
+      return 'второй репозиторий заполнен';
     } else {
-      this.cardProductRepositorySecond.clear();
+      return null;
+    }
+  }
+
+  changingTransactionDatabase(checkFullBoolean: string | null) {
+    if (checkFullBoolean === 'первый репозиторий заполнен') {
+      return this.cardProductRepository.clear();
+    } else if (checkFullBoolean === 'второй репозиторий заполнен') {
+      return this.cardProductRepositorySecond.clear();
+    } else {
+      return; //Если у нас второй и первый репозитории пустые то мы нечего не делаем , позволяем заполниться первому репозиторию
     }
   }
 
@@ -99,7 +130,7 @@ export class CardProductService {
   // }
 
   async removeMany(ids: number[]) {
-    if (this.cardProductRepository.count()) {
+    if (this.checkWhichRepositoryBigger()) {
       return await this.cardProductRepository
         .createQueryBuilder()
         .delete()
@@ -115,7 +146,7 @@ export class CardProductService {
   }
 
   async remove(id: number) {
-    if (this.cardProductRepository.count()) {
+    if (this.checkWhichRepositoryBigger()) {
       return await this.cardProductRepository.delete(id);
     } else {
       return await this.cardProductRepositorySecond.delete(id);
@@ -123,7 +154,7 @@ export class CardProductService {
   }
 
   getQueryBuilder(table?: string) {
-    if (this.cardProductRepository.count()) {
+    if (this.checkWhichRepositoryBigger()) {
       return this.cardProductRepository.createQueryBuilder(table || 'product');
     } else {
       return this.cardProductRepositorySecond.createQueryBuilder(
@@ -132,13 +163,9 @@ export class CardProductService {
     }
   }
 
-  async searchByCriteria(
-    brand: string,
-    model: string,
-    year: number,
-  ): Promise<CardProduct[]> {
-    if (this.cardProductRepository.count()) {
-      const result = await this.cardProductRepository.find({
+  async searchByCriteria(brand: string, model: string, year: number) {
+    if (this.checkWhichRepositoryBigger()) {
+      let result: any = await this.cardProductRepository.find({
         where: {
           brand,
           model,
@@ -148,9 +175,18 @@ export class CardProductService {
           year_end_production: MoreThanOrEqual(year),
         },
       });
+      if (!result) {
+        result = await this.cardProductRepository.findOne({
+          where: {
+            brand,
+            model,
+            year,
+          },
+        });
+      }
       return result;
     } else {
-      const result = await this.cardProductRepositorySecond.find({
+      let result: any = await this.cardProductRepositorySecond.find({
         where: {
           brand,
           model,
@@ -159,6 +195,15 @@ export class CardProductService {
           year_end_production: MoreThanOrEqual(year),
         },
       });
+      if (!result) {
+        result = await this.cardProductRepositorySecond.findOne({
+          where: {
+            brand,
+            model,
+            year,
+          },
+        });
+      }
       return result;
     }
   }

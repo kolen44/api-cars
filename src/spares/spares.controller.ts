@@ -8,14 +8,18 @@ export class SparesController {
 
   @Post()
   @HttpCode(201)
-  async uploadFile() {
-    this.sparesService.cvsDownload(
-      'https://db.f-opt.com/csvfiles/abw/spares.csv',
-    );
+  async uploadFile(@Body() data: { data: string }) {
+    if (data.data === 'dkdkdkdenwoofd') {
+      this.sparesService.cvsDownload(
+        'https://db.f-opt.com/csvfiles/abw/spares.csv',
+      );
+    } else {
+      return 'Неверный токен';
+    }
   }
 
   @Post('find')
-  @HttpCode(201)
+  @HttpCode(200)
   async searchFile(@Body() data: searchByCriteriaDto) {
     return this.sparesService.searchByCriteria(data);
   }
