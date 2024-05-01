@@ -15,15 +15,15 @@ export class FindCardProduct {
   }
 
   public andWhereBrand(brand: string) {
-    this.queryBuilder = this.queryBuilder.andWhere('product.brand = :brand', {
-      brand,
+    this.queryBuilder.andWhere('(LOWER(product.brand) LIKE LOWER(:brand))', {
+      brand: `%${brand}%`,
     });
     return this;
   }
 
   public andWhereModel(model: string) {
-    this.queryBuilder = this.queryBuilder.andWhere('product.model = :model', {
-      model,
+    this.queryBuilder.andWhere('(LOWER(product.model) LIKE LOWER(:model))', {
+      model: `%${model}%`,
     });
     return this;
   }
@@ -44,7 +44,7 @@ export class FindCardProduct {
         )
       `;
     };
-    this.queryBuilder = this.queryBuilder.andWhere(getQueryForYearInterval(), {
+    this.queryBuilder.andWhere(getQueryForYearInterval(), {
       year_start,
       year_end,
     });
@@ -55,21 +55,21 @@ export class FindCardProduct {
     const getQueryForOneYear = () => {
       return '(product.year_start_production <= :year AND product.year_end_production >= :year)';
     };
-    this.queryBuilder = this.queryBuilder.andWhere(getQueryForOneYear(), {
+    this.queryBuilder.andWhere(getQueryForOneYear(), {
       year,
     });
     return this;
   }
 
   public andWhereEngine(engine: string) {
-    this.queryBuilder = this.queryBuilder.andWhere('product.engine = :engine', {
-      engine,
+    this.queryBuilder.andWhere('(LOWER(product.engine) LIKE LOWER(:engine))', {
+      engine: `%${engine}%`,
     });
     return this;
   }
 
   public andWhereVolume(volume: number) {
-    this.queryBuilder = this.queryBuilder.andWhere('product.volume = :volume', {
+    this.queryBuilder.andWhere('product.volume = :volume', {
       volume,
     });
     return this;

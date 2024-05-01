@@ -16,6 +16,7 @@ export class FindTestttDto {
 
   @IsOptional()
   @IsNumber()
+  @Type(() => Number)
   volume: number;
 
   @IsOptional()
