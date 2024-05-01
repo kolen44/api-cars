@@ -29,12 +29,15 @@ export class SparesService {
     console.log('started parsing');
     const fullestRepository: string | null =
       this.dbCreate.checkFullBooleanFunction();
+
     const response: any = await this.sparesService.parseCvsToJson(url);
     console.log('ended parsing. starting db creating');
+
     for (const element of response) {
       const data = new UpdateCardProductDto(element);
       await this.dbCreate.updateDatabase(data);
     }
+
     this.dbCreate.changingTransactionDatabase(fullestRepository);
     console.log('created');
     return response;
