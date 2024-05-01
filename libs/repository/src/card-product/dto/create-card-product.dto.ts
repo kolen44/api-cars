@@ -12,7 +12,7 @@ export class CreateCardProductDto implements CardProductDB {
   public body_type: string;
   public year: number;
   public engine: string;
-  public volume: string;
+  public volume: number;
   public engine_type?: string;
   public gearbox: string;
   public original_number?: string;
@@ -29,25 +29,23 @@ export class CreateCardProductDto implements CardProductDB {
   public phone: string;
   public vin: string;
 
-  constructor(params: CardProductDB) {
-    cardProductKeys.forEach((key) => {
+  constructor(params: Partial<CardProductDB>) {
+    (cardProductKeys as (keyof CardProductDB)[]).forEach((key) => {
       if (key in params) {
-        // @ts-ignore
-        this[key] = params[key];
+        this[key as string] = params[key] as keyof CardProductDB;
       }
     });
   }
 
-  public getCreateData() {
-    const createData: Partial<CardProductDB> = {};
+  public getUpdateData() {
+    const updateData: Partial<CardProductDB> = {};
 
     cardProductKeys.forEach((key) => {
-      if (key in this) {
-        // @ts-ignore
-        createData[key] = this[key];
+      if (key in this && !!this[key]) {
+        updateData[key as string] = this[key];
       }
     });
 
-    return createData as CardProductDB;
+    return updateData as CardProductDB;
   }
 }
