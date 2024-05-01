@@ -29,23 +29,23 @@ export class CreateCardProductDto implements CardProductDB {
   public phone: string;
   public vin: string;
 
-  constructor(params: Partial<CardProductDB>) {
-    (cardProductKeys as (keyof CardProductDB)[]).forEach((key) => {
+  constructor(params: CardProductDB) {
+    cardProductKeys.forEach((key) => {
       if (key in params) {
-        this[key as string] = params[key] as keyof CardProductDB;
+        this[key as string] = params[key];
       }
     });
   }
 
-  public getUpdateData() {
-    const updateData: Partial<CardProductDB> = {};
+  public getCreateData() {
+    const createData: Partial<CardProductDB> = {};
 
     cardProductKeys.forEach((key) => {
-      if (key in this && !!this[key]) {
-        updateData[key as string] = this[key];
+      if (key in this) {
+        createData[key as string] = this[key];
       }
     });
 
-    return updateData as CardProductDB;
+    return createData as CardProductDB;
   }
 }

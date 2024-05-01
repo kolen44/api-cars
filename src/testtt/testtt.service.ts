@@ -2,7 +2,6 @@ import { CardProduct } from '@app/sparescsv/interface/types';
 import { Injectable, Logger } from '@nestjs/common';
 import { CardProductService } from '@repository/repository/card-product/card-product.service';
 import { CreateCardProductDto } from '@repository/repository/card-product/dto/create-card-product.dto';
-import { UpdateCardProductDto } from '@repository/repository/card-product/dto/update-card-product.dto';
 import { CardProductDB } from '@repository/repository/card-product/types/card-product-db';
 import * as csv from 'csv-parser';
 import * as fs from 'fs';
@@ -143,53 +142,50 @@ export class TestttService {
   }
 
   async test() {
-    const testUpdate = async () => {
-      const updateCardProductDto = new UpdateCardProductDto({
-        year_start_production: 2011,
-        year_end_production: null,
-        model: undefined,
-      });
-      return await this.cardProductService.updateDatabase(updateCardProductDto);
-    };
-
-    const testCreate = async () => {
-      const createCardProductDto = new CreateCardProductDto({
-        article: 'asdasdasd',
-        in_stock: 1212,
-        detail_name: 'asdasdasd',
-        included_in_unit: 'asdasdasd',
-        brand: 'asdasdasd',
-        model: 'asdasdasd',
-        version: 'asdasdasd',
-        body_type: 'asdasdasd',
-        year: 1232131,
-        engine: 'asdasdasd',
-        volume: 123123,
-        engine_type: 'asdasdasd',
-        gearbox: 'asdasdasd',
-        original_number: 'asdasdasd',
-        price: 12313.123213,
-        for_naked: 'asdasdasd',
-        currency: 'asdasdasd',
-        discount: 123123213,
-        description: 'asdasdasd',
-        year_start_production: 123213,
-        year_end_production: 123,
-        url_photo_details: 'asdasdasd',
-        url_car_photo: 'asdasdasd',
-        video: 'asdasdasd',
-        phone: 'asdasdasd',
-        vin: 'asdasdasd',
-      });
-      return await this.cardProductService.create(createCardProductDto);
-    };
-
-    const testFind = async () => {
-      return await this.cardProductService.findOne({
-        where: { model: 'МОДЕЛЬ' },
-      });
-    };
-
-    return testFind(); //[await testUpdate(), await testCreate()];
+    // const testUpdate = async () => {
+    //   const updateCardProductDto = new UpdateCardProductDto({
+    //     year_start_production: 2011,
+    //     year_end_production: null,
+    //     model: undefined,
+    //   });
+    //   return await this.cardProductService.updateDatabase(updateCardProductDto);
+    // };
+    // const testCreate = async () => {
+    //   const createCardProductDto = new CreateCardProductDto({
+    //     article: 'asdasdasd',
+    //     in_stock: 1212,
+    //     detail_name: 'asdasdasd',
+    //     included_in_unit: 'asdasdasd',
+    //     brand: 'asdasdasd',
+    //     model: 'asdasdasd',
+    //     version: 'asdasdasd',
+    //     body_type: 'asdasdasd',
+    //     year: 1232131,
+    //     engine: 'asdasdasd',
+    //     volume: 123123,
+    //     engine_type: 'asdasdasd',
+    //     gearbox: 'asdasdasd',
+    //     original_number: 'asdasdasd',
+    //     price: 12313.123213,
+    //     for_naked: 'asdasdasd',
+    //     currency: 'asdasdasd',
+    //     discount: 123123213,
+    //     description: 'asdasdasd',
+    //     year_start_production: 123213,
+    //     year_end_production: 123,
+    //     url_photo_details: 'asdasdasd',
+    //     url_car_photo: 'asdasdasd',
+    //     video: 'asdasdasd',
+    //     phone: 'asdasdasd',
+    //     vin: 'asdasdasd',
+    //   });
+    //   return await this.cardProductService.create(createCardProductDto);
+    // };
+    // const testFind = async () => {
+    //   return await this.cardProductService.findOne({
+    //     where: { model: 'МОДЕЛЬ' },
+    //   });
+    // };
+    // return testFind(); //[await testUpdate(), await testCreate()];
   }
 }

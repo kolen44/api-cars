@@ -12,7 +12,7 @@ export class UpdateCardProductDto implements Partial<CardProductDB> {
   public body_type?: string;
   public year?: number;
   public engine?: string;
-  public volume?: string;
+  public volume?: number;
   public engine_type?: string;
   public gearbox?: string;
   public original_number?: string;
