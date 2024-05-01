@@ -4,6 +4,7 @@ import { CardProduct } from 'src/database/entities/product.entity';
 import {
   FindManyOptions,
   FindOneOptions,
+  ILike,
   LessThanOrEqual,
   MoreThanOrEqual,
   Repository,
@@ -164,44 +165,84 @@ export class CardProductService {
   }
 
   async searchByCriteria(brand: string, model: string, year: number) {
+    const criteriaFindOne = {
+      brand,
+      model: ILike(`%${model}%`),
+      year,
+    };
+    const criteriaFindMany = {
+      brand,
+      model: ILike(`%${model}%`),
+      year,
+      year_start_production: LessThanOrEqual(year),
+      year_end_production: MoreThanOrEqual(year),
+    };
     if (this.checkWhichRepositoryBigger()) {
       let result: any = await this.cardProductRepository.find({
-        where: {
-          brand,
-          model,
-          year,
-
-          year_start_production: LessThanOrEqual(year),
-          year_end_production: MoreThanOrEqual(year),
-        },
+        where: criteriaFindMany,
       });
       if (!result) {
         result = await this.cardProductRepository.findOne({
-          where: {
-            brand,
-            model,
-            year,
-          },
+          where: criteriaFindOne,
         });
       }
       return result;
     } else {
       let result: any = await this.cardProductRepositorySecond.find({
-        where: {
-          brand,
-          model,
-          year,
-          year_start_production: LessThanOrEqual(year),
-          year_end_production: MoreThanOrEqual(year),
-        },
+        where: criteriaFindMany,
       });
       if (!result) {
         result = await this.cardProductRepositorySecond.findOne({
-          where: {
-            brand,
-            model,
-            year,
-          },
+          where: criteriaFindOne,
+        });
+      }
+      return result;
+    }
+  }
+
+  async searchByEngineVolumeCriteria(
+    brand: string,
+    model: string,
+    year: number,
+    engine,
+    volume,
+    detail_name,
+  ) {
+    const criteria = {
+      brand,
+      model: ILike(`%${model}%`),
+      year,
+      engine: ILike(`%${engine}%`),
+      volume,
+      detail_name: ILike(`%${detail_name}%`),
+    };
+    const criteriaFindOne = {
+      brand,
+      model: ILike(`%${model}%`),
+      year,
+      engine: ILike(`%${engine}%`),
+      volume,
+      detail_name: ILike(`%${detail_name}%`),
+      year_start_production: LessThanOrEqual(year),
+      year_end_production: MoreThanOrEqual(year),
+    };
+    if (this.checkWhichRepositoryBigger()) {
+      let result: any = await this.cardProductRepository.find({
+        where: criteriaFindOne,
+      });
+      if (!result) {
+        result = await this.cardProductRepository.findOne({
+          where: criteria,
+        });
+      }
+      return result;
+    } else {
+      let result: any = await this.cardProductRepositorySecond.find({
+        where: criteriaFindOne,
+      });
+      if (!result) {
+        result = await this.cardProductRepositorySecond.findOne({
+          where: criteria,
         });
       }
       return result;

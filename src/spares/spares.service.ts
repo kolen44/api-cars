@@ -40,8 +40,7 @@ export class SparesService {
     return response;
   }
 
-  public async searchByCriteria({ brand, model, year }): Promise<any> {
-    const response = await this.dbCreate.searchByCriteria(brand, model, year);
+  sortAndReturnElementForCriteriaFunctions(response) {
     if (!response) {
       return 'Убедитесь что вы правильно передали параметры или что элемент существует в базе данных';
     }
@@ -51,5 +50,30 @@ export class SparesService {
       return response;
     }
     return response;
+  }
+
+  public async searchByCriteria({ brand, model, year }): Promise<any> {
+    const response = await this.dbCreate.searchByCriteria(brand, model, year);
+
+    return this.sortAndReturnElementForCriteriaFunctions(response);
+  }
+
+  public async searchByEngineVolumeCriteria({
+    brand,
+    model,
+    year,
+    engine,
+    volume,
+    detail_name,
+  }) {
+    const response = await this.dbCreate.searchByEngineVolumeCriteria(
+      brand,
+      model,
+      year,
+      engine,
+      volume,
+      detail_name,
+    );
+    return this.sortAndReturnElementForCriteriaFunctions(response);
   }
 }
