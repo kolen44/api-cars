@@ -36,7 +36,7 @@ export class CardProduct implements CardProductDB {
   @Column({ nullable: true })
   engine: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'double precision', nullable: true })
   volume: number;
 
   @Column({ nullable: true })
