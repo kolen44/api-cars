@@ -1,10 +1,9 @@
-FROM node:alpine As development
+FROM node:20.11.0
 
-WORKDIR /usr/src/app
-
-RUN nom install
+WORKDIR /app
 
 COPY . .
 
-RUN npm run build
+RUN npm install
 
+CMD ["npm", "run", "start"]
