@@ -3,12 +3,15 @@ import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { CardProductService } from '@repository/repository';
 import { UpdateCardProductDto } from '@repository/repository/card-product/dto/update-card-product.dto';
+import { FindProductQueryDto } from './dto/find-product-query.dto';
+import { SearcherCardProductService } from './services/searcher-card-product.service';
 
 @Injectable()
 export class SparesService {
   constructor(
     public sparesService: SparesCsvService,
     private dbCreate: CardProductService,
+    private readonly searcherCardProduct: SearcherCardProductService,
   ) {}
   @Cron(CronExpression.EVERY_DAY_AT_3AM)
   handleCron() {
@@ -93,5 +96,16 @@ export class SparesService {
   public async searchFileWithBrandName({ brand }) {
     const response = await this.dbCreate.searchByWithBrandName(brand);
     return this.sortAndReturnElementForCriteriaFunctions(response);
+  }
+
+  public async getProduct(query: FindProductQueryDto) {
+    const { page, limit } = query;
+
+    const findCardProduct = await this.searcherCardProduct.search(query);
+
+    const skip = (page - 1) * limit;
+    const result = await findCardProduct.getMany({ skip, limit });
+
+    return { page, limit, search_count: result.length, data: result };
   }
 }

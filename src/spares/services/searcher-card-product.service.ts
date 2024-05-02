@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { CardProductService } from '@repository/repository';
 import { FindCardProduct } from '../classes/test.class';
-import { FindTestttDto } from '../dto/find-testtt.dto';
+import { FindProductQueryDto } from '../dto/find-product-query.dto';
 
 @Injectable()
 export class SearcherCardProductService {
   constructor(private readonly cardProductService: CardProductService) {}
 
-  public async search(query: FindTestttDto) {
+  public async search(query: FindProductQueryDto) {
     const { brand, model, engine, volume, year, year_start, year_end } = query;
 
     const findCardProduct = new FindCardProduct(this.cardProductService);
@@ -30,6 +30,8 @@ export class SearcherCardProductService {
     } else if (year) {
       findCardProduct.andWhereOneYear(year);
     }
+
+    // Нужно очистить поля от null
 
     return findCardProduct;
   }

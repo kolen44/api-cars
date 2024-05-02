@@ -5,8 +5,7 @@ import { CreateCardProductDto } from '@repository/repository/card-product/dto/cr
 import { CardProductDB } from '@repository/repository/card-product/types/card-product-db';
 import * as csv from 'csv-parser';
 import * as fs from 'fs';
-import { FindTestttDto } from './dto/find-testtt.dto';
-import { SearcherCardProductService } from './services/searcher-card-product.service';
+import { SearcherCardProductService } from '../spares/services/searcher-card-product.service';
 
 @Injectable()
 export class TestttService {
@@ -16,17 +15,6 @@ export class TestttService {
     private readonly cardProductService: CardProductService,
     private readonly searcherCardProduct: SearcherCardProductService,
   ) {}
-
-  async getProduct(query: FindTestttDto) {
-    const { page, limit } = query;
-
-    const findCardProduct = await this.searcherCardProduct.search(query);
-
-    const skip = (page - 1) * limit;
-    const result = await findCardProduct.getMany({ skip, limit });
-
-    return { page, limit, search_count: result.length, data: result };
-  }
 
   // REFACTOR Это потом удалим
   async downloadDatabase() {
