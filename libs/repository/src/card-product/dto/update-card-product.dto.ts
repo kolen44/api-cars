@@ -32,8 +32,7 @@ export class UpdateCardProductDto implements Partial<CardProductDB> {
   constructor(params: Partial<CardProductDB>) {
     (cardProductKeys as (keyof CardProductDB)[]).forEach((key) => {
       if (key in params) {
-        // @ts-ignore
-        this[key] = params[key] as keyof CardProductDB;
+        this[key as string] = params[key] as keyof CardProductDB;
       }
     });
   }
@@ -43,8 +42,7 @@ export class UpdateCardProductDto implements Partial<CardProductDB> {
 
     cardProductKeys.forEach((key) => {
       if (key in this && !!this[key]) {
-        // @ts-ignore
-        updateData[key] = this[key];
+        updateData[key as string] = this[key];
       }
     });
 

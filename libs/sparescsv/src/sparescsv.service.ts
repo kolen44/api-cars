@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import * as csv from 'csv-parser';
-import { createReadStream, writeFileSync } from 'fs';
+import { createReadStream } from 'fs';
 import { CsvParser } from 'nest-csv-parser';
 import { Readable } from 'stream';
 import { CsvToJson } from './classes/csvtojson.class';
@@ -50,8 +50,6 @@ export class SparesCsvService {
     };
     const rows: CardProduct[] = [];
     const response = await axios.get(url);
-
-    writeFileSync('./data/file.csv', `${response.data}`);
 
     return new Promise((resolve, reject) => {
       const readableStream = Readable.from(response.data);

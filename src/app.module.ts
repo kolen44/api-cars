@@ -10,8 +10,8 @@ import { TestttModule } from './testtt/testtt.module';
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     SparesModule,
-    TestttModule,
     DatabaseModule,
+    TestttModule,
   ],
   controllers: [AppController],
   providers: [AppService],

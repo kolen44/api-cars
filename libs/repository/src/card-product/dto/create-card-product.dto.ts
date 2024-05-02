@@ -1,7 +1,7 @@
 import { cardProductKeys } from '@repository/repository/card-product/card-product-keys';
 import { CardProductDB } from '../types/card-product-db';
 
-export class CreateCardProductDto implements CardProductDB {
+export class CreateCardProductDto {
   public article: string;
   public in_stock: number;
   public detail_name: string;
@@ -10,7 +10,6 @@ export class CreateCardProductDto implements CardProductDB {
   public model: string;
   public version: string;
   public body_type: string;
-  public year: number;
   public engine: string;
   public volume: number;
   public engine_type?: string;

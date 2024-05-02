@@ -137,7 +137,6 @@ export class TestttService {
       })
       .catch((error) => {
         this.logger.error('Произошла ошибка:', error);
-        if (console) console.log(error);
       });
   }
 }
