@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { CardProduct } from 'src/database/entities/product.entity';
+import { Injectable } from '@nestjs/common'
+import { InjectRepository } from '@nestjs/typeorm'
+import { CardProduct } from 'src/database/entities/product.entity'
 import {
   FindManyOptions,
   FindOneOptions,
@@ -8,9 +8,9 @@ import {
   LessThanOrEqual,
   MoreThanOrEqual,
   Repository,
-} from 'typeorm';
-import { CreateCardProductDto } from './dto/create-card-product.dto';
-import { UpdateCardProductDto } from './dto/update-card-product.dto';
+} from 'typeorm'
+import { CreateCardProductDto } from './dto/create-card-product.dto'
+import { UpdateCardProductDto } from './dto/update-card-product.dto'
 
 @Injectable()
 export class CardProductService {
@@ -117,13 +117,13 @@ export class CardProductService {
   }
 
   changingTransactionDatabase(checkFullBoolean: string | null) {
-    if (checkFullBoolean === 'первый репозиторий заполнен') {
-      return this.cardProductRepository.clear();
-    } else if (checkFullBoolean === 'второй репозиторий заполнен') {
-      return this.cardProductRepositorySecond.clear();
-    } else {
-      return; //Если у нас второй и первый репозитории пустые то мы нечего не делаем , позволяем заполниться первому репозиторию
-    }
+    // if (checkFullBoolean === 'первый репозиторий заполнен') {
+    //   return this.cardProductRepository.clear();
+    // } else if (checkFullBoolean === 'второй репозиторий заполнен') {
+    //   return this.cardProductRepositorySecond.clear();
+    // } else {
+    //   return; //Если у нас второй и первый репозитории пустые то мы нечего не делаем , позволяем заполниться первому репозиторию
+    // }
   }
 
   // async update(id: number, updateCardProductDto: UpdateCardProductDto) {
