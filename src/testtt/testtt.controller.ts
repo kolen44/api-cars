@@ -15,9 +15,4 @@ export class TestttController {
   downloadDatabase() {
     return this.testttService.downloadDatabase();
   }
-
-  @Get('test')
-  test() {
-    return this.testttService.test();
-  }
 }

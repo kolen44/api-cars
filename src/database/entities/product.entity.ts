@@ -1,7 +1,8 @@
+import { CardProductDB } from '@repository/repository/card-product/types/card-product-db';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class CardProduct {
+export class CardProduct implements CardProductDB {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -35,8 +36,8 @@ export class CardProduct {
   @Column({ nullable: true })
   engine: string;
 
-  @Column({ nullable: true })
-  volume: string;
+  @Column({ type: 'double precision', nullable: true })
+  volume: number;
 
   @Column({ nullable: true })
   engine_type?: string;

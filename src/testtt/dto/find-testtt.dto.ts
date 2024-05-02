@@ -11,6 +11,15 @@ export class FindTestttDto {
   model: string;
 
   @IsOptional()
+  @IsString()
+  engine: string;
+
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  volume: number;
+
+  @IsOptional()
   @IsNumber()
   @Type(() => Number)
   year: number;

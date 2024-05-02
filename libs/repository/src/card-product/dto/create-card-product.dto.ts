@@ -11,7 +11,7 @@ export class CreateCardProductDto {
   public version: string;
   public body_type: string;
   public engine: string;
-  public volume: string;
+  public volume: number;
   public engine_type?: string;
   public gearbox: string;
   public original_number?: string;
@@ -31,10 +31,7 @@ export class CreateCardProductDto {
   constructor(params: CardProductDB) {
     cardProductKeys.forEach((key) => {
       if (key in params) {
-        // Почему то не видит поля в классе
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        this[key] = params[key];
+        this[key as string] = params[key];
       }
     });
   }
@@ -44,10 +41,7 @@ export class CreateCardProductDto {
 
     cardProductKeys.forEach((key) => {
       if (key in this) {
-        // Тут тоже не робит :(
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        createData[key] = this[key];
+        createData[key as string] = this[key];
       }
     });
 
