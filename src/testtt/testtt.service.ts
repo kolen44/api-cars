@@ -8,13 +8,6 @@ import * as fs from 'fs';
 import { FindTestttDto } from './dto/find-testtt.dto';
 import { SearcherCardProductService } from './services/searcher-card-product.service';
 
-/*
-
-двигатель
-объём двигла
-
-*/
-
 @Injectable()
 export class TestttService {
   private readonly logger = new Logger(TestttService.name);
