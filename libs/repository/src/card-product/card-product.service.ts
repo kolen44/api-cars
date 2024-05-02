@@ -248,4 +248,77 @@ export class CardProductService {
       return result;
     }
   }
+
+  async searchByWithDetailName(
+    brand: string,
+    model: string,
+    year: number,
+    detail_name,
+  ) {
+    const criteria = {
+      brand,
+      model: ILike(`%${model}%`),
+      year,
+      detail_name: ILike(`%${detail_name}%`),
+    };
+    const criteriaFindOne = {
+      brand,
+      model: ILike(`%${model}%`),
+      year,
+      detail_name: ILike(`%${detail_name}%`),
+      year_start_production: LessThanOrEqual(year),
+      year_end_production: MoreThanOrEqual(year),
+    };
+    if (this.checkWhichRepositoryBigger()) {
+      let result: any = await this.cardProductRepository.find({
+        where: criteriaFindOne,
+      });
+      if (!result) {
+        result = await this.cardProductRepository.findOne({
+          where: criteria,
+        });
+      }
+      return result;
+    } else {
+      let result: any = await this.cardProductRepositorySecond.find({
+        where: criteriaFindOne,
+      });
+      if (!result) {
+        result = await this.cardProductRepositorySecond.findOne({
+          where: criteria,
+        });
+      }
+      return result;
+    }
+  }
+
+  async searchByWithBrandName(brand: string) {
+    const criteria = {
+      brand,
+    };
+    const criteriaFindOne = {
+      brand,
+    };
+    if (this.checkWhichRepositoryBigger()) {
+      let result: any = await this.cardProductRepository.find({
+        where: criteriaFindOne,
+      });
+      if (!result) {
+        result = await this.cardProductRepository.findOne({
+          where: criteria,
+        });
+      }
+      return result;
+    } else {
+      let result: any = await this.cardProductRepositorySecond.find({
+        where: criteriaFindOne,
+      });
+      if (!result) {
+        result = await this.cardProductRepositorySecond.findOne({
+          where: criteria,
+        });
+      }
+      return result;
+    }
+  }
 }

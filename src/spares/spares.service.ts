@@ -79,4 +79,19 @@ export class SparesService {
     );
     return this.sortAndReturnElementForCriteriaFunctions(response);
   }
+
+  public async searchFileWithDetailName({ brand, model, year, detail_name }) {
+    const response = await this.dbCreate.searchByWithDetailName(
+      brand,
+      model,
+      year,
+      detail_name,
+    );
+    return this.sortAndReturnElementForCriteriaFunctions(response);
+  }
+
+  public async searchFileWithBrandName({ brand }) {
+    const response = await this.dbCreate.searchByWithBrandName(brand);
+    return this.sortAndReturnElementForCriteriaFunctions(response);
+  }
 }

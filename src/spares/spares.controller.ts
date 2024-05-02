@@ -1,6 +1,7 @@
 import { Body, Controller, HttpCode, Post } from '@nestjs/common';
 import { searchByCriteriaDto } from './dto/searchbycriteria.dto';
 import { searchByCriteriaEngineVolumeDto } from './dto/searchenginevolume.dto';
+import { searchByCriteriaDetailNameDto } from './dto/searchfilewithdetailname.dto';
 import { SparesService } from './spares.service';
 
 @Controller('spares')
@@ -31,5 +32,17 @@ export class SparesController {
     @Body() data: searchByCriteriaEngineVolumeDto,
   ) {
     return this.sparesService.searchByEngineVolumeCriteria(data);
+  }
+
+  @Post('find-detail-name')
+  @HttpCode(200)
+  async searchFileWithDetailName(@Body() data: searchByCriteriaDetailNameDto) {
+    return this.sparesService.searchFileWithDetailName(data);
+  }
+
+  @Post('find-brand')
+  @HttpCode(200)
+  async searchFileWithBrandName(@Body() data: { brand: string }) {
+    return this.sparesService.searchFileWithBrandName(data);
   }
 }
