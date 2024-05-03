@@ -1,4 +1,5 @@
-import { Body, Controller, HttpCode, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Query } from '@nestjs/common';
+import { FindIdDto } from './dto/findid.dto';
 import { searchByCriteriaDto } from './dto/searchbycriteria.dto';
 import { searchByCriteriaEngineVolumeDto } from './dto/searchenginevolume.dto';
 import { searchByCriteriaDetailNameDto } from './dto/searchfilewithdetailname.dto';
@@ -46,22 +47,8 @@ export class SparesController {
     return this.sparesService.searchFileWithBrandName(data);
   }
 
-  @Post('find-id')
-  @HttpCode(200)
-  async searchFileWithId(@Body() data: { id: number }) {
-    return this.sparesService.searchFileWithId(data);
-  }
-
-  @Post('find-original-number')
-  @HttpCode(200)
-  async searchFileWithOriginalNumber(
-    @Body() data: { original_number: string },
-  ) {
-    return this.sparesService.searchFileWithOriginalNumber(data);
-  }
-
-  @Post('find-article')
-  async searchFileWithArticle(@Body() data: { article: string }) {
-    return this.sparesService.searchFileWithArticle(data);
+  @Get('find-id')
+  async getProduct(@Query() query: FindIdDto) {
+    return this.sparesService.searchFileIdAndOther(query);
   }
 }

@@ -9,6 +9,7 @@ export class SparesService {
   constructor(
     public sparesService: SparesCsvService,
     private dbCreate: CardProductService,
+    private readonly cardProductService: CardProductService,
   ) {}
   @Cron(CronExpression.EVERY_DAY_AT_3AM)
   handleCron() {
@@ -97,7 +98,7 @@ export class SparesService {
   }
 
   public async searchFileWithId({ id }) {
-    const response = await this.dbCreate.searchByWithId(id);
+    const response = await this.dbCreate.searchById(id);
     return this.sortAndReturnElementForCriteriaFunctions(response);
   }
 
@@ -110,5 +111,18 @@ export class SparesService {
   public async searchFileWithArticle({ article }) {
     const response = await this.dbCreate.searchByArticle(article);
     return this.sortAndReturnElementForCriteriaFunctions(response);
+  }
+
+  public async searchFileIdAndOther(query) {
+    const { article, original_number, id } = query;
+
+    if (article || original_number || id) {
+      const response = this.cardProductService.searchBy3Parametres(
+        article,
+        original_number,
+        id,
+      );
+      return this.sortAndReturnElementForCriteriaFunctions(response);
+    }
   }
 }

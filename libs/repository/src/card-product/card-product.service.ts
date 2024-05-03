@@ -322,7 +322,7 @@ export class CardProductService {
     }
   }
 
-  async searchByWithId(id: number) {
+  async searchById(id: number) {
     if (this.checkWhichRepositoryBigger()) {
       return await this.cardProductRepository.findOne({
         where: { id },
@@ -364,13 +364,14 @@ export class CardProductService {
     }
   }
 
-  async searchByArticle(article: string) {
+  async searchByArticle(article: string, original_number: string, id: number) {
     const criteria = {
       article: ILike(`%${article}%`),
     };
     const criteriaFindOne = {
       article: ILike(`%${article}%`),
     };
+    let result;
     if (this.checkWhichRepositoryBigger()) {
       let result: any = await this.cardProductRepository.find({
         where: criteriaFindOne,
