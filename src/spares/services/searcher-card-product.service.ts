@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CardProductService } from '@repository/repository';
-import { FindCardProduct } from '../classes/test.class';
+import { FindCardProduct } from '../classes/find-card-product.class';
 import { FindProductQueryDto } from '../dto/find-product-query.dto';
 
 @Injectable()
@@ -10,6 +10,9 @@ export class SearcherCardProductService {
   public async search(query: FindProductQueryDto) {
     const findCardProduct = new FindCardProduct(this.cardProductService);
 
+    if (query.article) {
+      findCardProduct.andWhereArticle(query.article);
+    }
     if (query.brand) {
       findCardProduct.andWhereBrand(query.brand);
     }

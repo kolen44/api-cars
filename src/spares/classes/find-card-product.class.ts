@@ -16,11 +16,16 @@ export class FindCardProduct {
       .getMany();
   }
 
+  public andWhereArticle(article: string) {
+    return this.andWhere(`(product.article = :article)`, {
+      article,
+    });
+  }
+
   public andWhereBrand(brand: string) {
     return this.andWhere(this.toLowerCaseWithLike('brand', 'brand'), {
       brand: `%${brand}%`,
     });
-    return this;
   }
 
   public andWhereModel(model: string) {

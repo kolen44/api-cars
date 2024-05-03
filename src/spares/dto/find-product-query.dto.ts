@@ -10,6 +10,10 @@ import {
 export class FindProductQueryDto {
   @IsOptional()
   @IsString()
+  article: string;
+
+  @IsOptional()
+  @IsString()
   brand: string;
 
   @IsOptional()
