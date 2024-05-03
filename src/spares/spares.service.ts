@@ -102,12 +102,13 @@ export class SparesService {
   }
 
   public async searchFileWithOriginalNumber({ original_number }) {
-    const response = await this.dbCreate.searchByWithId(original_number);
+    const response =
+      await this.dbCreate.searchByOriginalNumber(original_number);
     return this.sortAndReturnElementForCriteriaFunctions(response);
   }
 
   public async searchFileWithArticle({ article }) {
-    const response = await this.dbCreate.searchByWithId(article);
+    const response = await this.dbCreate.searchByArticle(article);
     return this.sortAndReturnElementForCriteriaFunctions(response);
   }
 }

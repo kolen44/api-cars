@@ -323,32 +323,14 @@ export class CardProductService {
   }
 
   async searchByWithId(id: number) {
-    const criteria = {
-      id,
-    };
-    const criteriaFindOne = {
-      id,
-    };
     if (this.checkWhichRepositoryBigger()) {
-      let result: any = await this.cardProductRepository.find({
-        where: criteriaFindOne,
+      return await this.cardProductRepository.findOne({
+        where: { id },
       });
-      if (!result) {
-        result = await this.cardProductRepository.findOne({
-          where: criteria,
-        });
-      }
-      return result;
     } else {
-      let result: any = await this.cardProductRepositorySecond.find({
-        where: criteriaFindOne,
+      return await this.cardProductRepositorySecond.findOne({
+        where: { id },
       });
-      if (!result) {
-        result = await this.cardProductRepositorySecond.findOne({
-          where: criteria,
-        });
-      }
-      return result;
     }
   }
 
