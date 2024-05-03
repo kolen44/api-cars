@@ -37,6 +37,12 @@ export class CardProductService {
     }
   }
 
+  async createMany(createCardProductDto: CreateCardProductDto[]) {
+    const createData = createCardProductDto.map((dto) => dto.getCreateData());
+    const cardProduct = this.cardProductRepository.create(createData);
+    return await this.cardProductRepository.save(cardProduct);
+  }
+
   async findAll(): Promise<CardProduct[]> {
     if (this.checkWhichRepositoryBigger()) {
       return await this.cardProductRepository.find();
