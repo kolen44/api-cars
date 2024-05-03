@@ -52,6 +52,7 @@ export class SparesService {
     }
     try {
       response.sort((a, b) => a.price - b.price);
+      response.sort((a, b) => a.id - b.id);
     } catch (error) {
       return response;
     }

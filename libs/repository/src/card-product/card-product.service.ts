@@ -327,4 +327,76 @@ export class CardProductService {
       return result;
     }
   }
+
+  async searchByWithId(id: number) {
+    if (this.checkWhichRepositoryBigger()) {
+      return await this.cardProductRepository.findOne({
+        where: { id },
+      });
+    } else {
+      return await this.cardProductRepositorySecond.findOne({
+        where: { id },
+      });
+    }
+  }
+
+  async searchByOriginalNumber(original_number: string) {
+    const criteria = {
+      original_number: ILike(`%${original_number}%`),
+    };
+    const criteriaFindOne = {
+      original_number: ILike(`%${original_number}%`),
+    };
+    if (this.checkWhichRepositoryBigger()) {
+      let result: any = await this.cardProductRepository.find({
+        where: criteriaFindOne,
+      });
+      if (!result) {
+        result = await this.cardProductRepository.findOne({
+          where: criteria,
+        });
+      }
+      return result;
+    } else {
+      let result: any = await this.cardProductRepositorySecond.find({
+        where: criteriaFindOne,
+      });
+      if (!result) {
+        result = await this.cardProductRepositorySecond.findOne({
+          where: criteria,
+        });
+      }
+      return result;
+    }
+  }
+
+  async searchByArticle(article: string) {
+    const criteria = {
+      article: ILike(`%${article}%`),
+    };
+    const criteriaFindOne = {
+      article: ILike(`%${article}%`),
+    };
+    if (this.checkWhichRepositoryBigger()) {
+      let result: any = await this.cardProductRepository.find({
+        where: criteriaFindOne,
+      });
+      if (!result) {
+        result = await this.cardProductRepository.findOne({
+          where: criteria,
+        });
+      }
+      return result;
+    } else {
+      let result: any = await this.cardProductRepositorySecond.find({
+        where: criteriaFindOne,
+      });
+      if (!result) {
+        result = await this.cardProductRepositorySecond.findOne({
+          where: criteria,
+        });
+      }
+      return result;
+    }
+  }
 }
