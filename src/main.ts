@@ -5,10 +5,10 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   config();
-  const PORT = process.env.PORT || 3000;
   const app = await NestFactory.create(AppModule);
+  app.enableCors();
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
-  await app.listen(PORT);
+  await app.listen(3000);
   console.log(`Listening on url ${await app.getUrl()}`);
 }
 bootstrap();
