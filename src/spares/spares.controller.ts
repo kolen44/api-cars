@@ -45,4 +45,23 @@ export class SparesController {
   async searchFileWithBrandName(@Body() data: { brand: string }) {
     return this.sparesService.searchFileWithBrandName(data);
   }
+
+  @Post('find-id')
+  @HttpCode(200)
+  async searchFileWithId(@Body() data: { id: number }) {
+    return this.sparesService.searchFileWithId(data);
+  }
+
+  @Post('find-original-number')
+  @HttpCode(200)
+  async searchFileWithOriginalNumber(
+    @Body() data: { original_number: string },
+  ) {
+    return this.sparesService.searchFileWithOriginalNumber(data);
+  }
+
+  @Post('find-article')
+  async searchFileWithArticle(@Body() data: { article: string }) {
+    return this.sparesService.searchFileWithArticle(data);
+  }
 }

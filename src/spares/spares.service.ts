@@ -49,6 +49,7 @@ export class SparesService {
     }
     try {
       response.sort((a, b) => a.price - b.price);
+      response.sort((a, b) => a.id - b.id);
     } catch (error) {
       return response;
     }
@@ -92,6 +93,21 @@ export class SparesService {
 
   public async searchFileWithBrandName({ brand }) {
     const response = await this.dbCreate.searchByWithBrandName(brand);
+    return this.sortAndReturnElementForCriteriaFunctions(response);
+  }
+
+  public async searchFileWithId({ id }) {
+    const response = await this.dbCreate.searchByWithId(id);
+    return this.sortAndReturnElementForCriteriaFunctions(response);
+  }
+
+  public async searchFileWithOriginalNumber({ original_number }) {
+    const response = await this.dbCreate.searchByWithId(original_number);
+    return this.sortAndReturnElementForCriteriaFunctions(response);
+  }
+
+  public async searchFileWithArticle({ article }) {
+    const response = await this.dbCreate.searchByWithId(article);
     return this.sortAndReturnElementForCriteriaFunctions(response);
   }
 }

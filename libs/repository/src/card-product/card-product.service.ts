@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
-import { CardProduct } from 'src/database/entities/product.entity'
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CardProduct } from 'src/database/entities/product.entity';
 import {
   FindManyOptions,
   FindOneOptions,
@@ -8,9 +8,9 @@ import {
   LessThanOrEqual,
   MoreThanOrEqual,
   Repository,
-} from 'typeorm'
-import { CreateCardProductDto } from './dto/create-card-product.dto'
-import { UpdateCardProductDto } from './dto/update-card-product.dto'
+} from 'typeorm';
+import { CreateCardProductDto } from './dto/create-card-product.dto';
+import { UpdateCardProductDto } from './dto/update-card-product.dto';
 
 @Injectable()
 export class CardProductService {
@@ -298,6 +298,96 @@ export class CardProductService {
     };
     const criteriaFindOne = {
       brand,
+    };
+    if (this.checkWhichRepositoryBigger()) {
+      let result: any = await this.cardProductRepository.find({
+        where: criteriaFindOne,
+      });
+      if (!result) {
+        result = await this.cardProductRepository.findOne({
+          where: criteria,
+        });
+      }
+      return result;
+    } else {
+      let result: any = await this.cardProductRepositorySecond.find({
+        where: criteriaFindOne,
+      });
+      if (!result) {
+        result = await this.cardProductRepositorySecond.findOne({
+          where: criteria,
+        });
+      }
+      return result;
+    }
+  }
+
+  async searchByWithId(id: number) {
+    const criteria = {
+      id,
+    };
+    const criteriaFindOne = {
+      id,
+    };
+    if (this.checkWhichRepositoryBigger()) {
+      let result: any = await this.cardProductRepository.find({
+        where: criteriaFindOne,
+      });
+      if (!result) {
+        result = await this.cardProductRepository.findOne({
+          where: criteria,
+        });
+      }
+      return result;
+    } else {
+      let result: any = await this.cardProductRepositorySecond.find({
+        where: criteriaFindOne,
+      });
+      if (!result) {
+        result = await this.cardProductRepositorySecond.findOne({
+          where: criteria,
+        });
+      }
+      return result;
+    }
+  }
+
+  async searchByOriginalNumber(original_number: string) {
+    const criteria = {
+      original_number: ILike(`%${original_number}%`),
+    };
+    const criteriaFindOne = {
+      original_number: ILike(`%${original_number}%`),
+    };
+    if (this.checkWhichRepositoryBigger()) {
+      let result: any = await this.cardProductRepository.find({
+        where: criteriaFindOne,
+      });
+      if (!result) {
+        result = await this.cardProductRepository.findOne({
+          where: criteria,
+        });
+      }
+      return result;
+    } else {
+      let result: any = await this.cardProductRepositorySecond.find({
+        where: criteriaFindOne,
+      });
+      if (!result) {
+        result = await this.cardProductRepositorySecond.findOne({
+          where: criteria,
+        });
+      }
+      return result;
+    }
+  }
+
+  async searchByArticle(article: string) {
+    const criteria = {
+      article: ILike(`%${article}%`),
+    };
+    const criteriaFindOne = {
+      article: ILike(`%${article}%`),
     };
     if (this.checkWhichRepositoryBigger()) {
       let result: any = await this.cardProductRepository.find({
