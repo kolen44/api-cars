@@ -8,27 +8,28 @@ export class SearcherCardProductService {
   constructor(private readonly cardProductService: CardProductService) {}
 
   public async search(query: FindProductQueryDto) {
-    const { brand, model, engine, volume, year, year_start, year_end } = query;
-
     const findCardProduct = new FindCardProduct(this.cardProductService);
 
-    if (brand) {
-      findCardProduct.andWhereBrand(brand);
+    if (query.brand) {
+      findCardProduct.andWhereBrand(query.brand);
     }
-    if (model) {
-      findCardProduct.andWhereModel(model);
+    if (query.model) {
+      findCardProduct.andWhereModel(query.model);
     }
-    if (engine) {
-      findCardProduct.andWhereEngine(engine);
+    if (query.engine) {
+      findCardProduct.andWhereEngine(query.engine);
     }
-    if (volume) {
-      findCardProduct.andWhereVolume(volume);
+    if (query.volume) {
+      findCardProduct.andWhereVolume(query.volume);
+    }
+    if (query.detail_names) {
+      findCardProduct.andWhereDetailNames(query.detail_names);
     }
 
-    if (year_start && year_end) {
-      findCardProduct.andWhereIntervalYear(year_start, year_end);
-    } else if (year) {
-      findCardProduct.andWhereOneYear(year);
+    if (query.year_start && query.year_end) {
+      findCardProduct.andWhereIntervalYear(query.year_start, query.year_end);
+    } else if (query.year) {
+      findCardProduct.andWhereOneYear(query.year);
     }
 
     // Нужно очистить поля от null

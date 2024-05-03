@@ -1,5 +1,11 @@
-import { Type } from 'class-transformer';
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class FindProductQueryDto {
   @IsOptional()
@@ -18,6 +24,13 @@ export class FindProductQueryDto {
   @IsNumber()
   @Type(() => Number)
   volume: number;
+
+  @IsOptional()
+  @Transform(({ value }) => value.split(','))
+  @IsArray()
+  @IsString({ each: true })
+  @IsNotEmpty({ each: true })
+  detail_names: string[];
 
   @IsOptional()
   @IsNumber()
