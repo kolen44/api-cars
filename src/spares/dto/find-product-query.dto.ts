@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 
-export class FindTestttDto {
+export class FindProductQueryDto {
   @IsOptional()
   @IsString()
   brand: string;
@@ -9,6 +9,15 @@ export class FindTestttDto {
   @IsOptional()
   @IsString()
   model: string;
+
+  @IsOptional()
+  @IsString()
+  engine: string;
+
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  volume: number;
 
   @IsOptional()
   @IsNumber()

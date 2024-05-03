@@ -3,13 +3,15 @@ import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { CardProductService } from '@repository/repository';
 import { UpdateCardProductDto } from '@repository/repository/card-product/dto/update-card-product.dto';
+import { FindProductQueryDto } from './dto/find-product-query.dto';
+import { SearcherCardProductService } from './services/searcher-card-product.service';
 
 @Injectable()
 export class SparesService {
   constructor(
     public sparesService: SparesCsvService,
     private dbCreate: CardProductService,
-    private readonly cardProductService: CardProductService,
+    private readonly searcherCardProduct: SearcherCardProductService,
   ) {}
   @Cron(CronExpression.EVERY_DAY_AT_3AM)
   handleCron() {
@@ -97,20 +99,15 @@ export class SparesService {
     return this.sortAndReturnElementForCriteriaFunctions(response);
   }
 
-  public async searchFileWithId({ id }) {
-    const response = await this.dbCreate.searchById(id);
-    return this.sortAndReturnElementForCriteriaFunctions(response);
-  }
+  public async getProduct(query: FindProductQueryDto) {
+    const { page, limit } = query;
 
-  public async searchFileWithOriginalNumber({ original_number }) {
-    const response =
-      await this.dbCreate.searchByOriginalNumber(original_number);
-    return this.sortAndReturnElementForCriteriaFunctions(response);
-  }
+    const findCardProduct = await this.searcherCardProduct.search(query);
 
-  public async searchFileWithArticle({ article }) {
-    const response = await this.dbCreate.searchByArticle(article);
-    return this.sortAndReturnElementForCriteriaFunctions(response);
+    const skip = (page - 1) * limit;
+    const result = await findCardProduct.getMany({ skip, limit });
+
+    return { page, limit, search_count: result.length, data: result };
   }
 
   public async searchFileIdAndOther(query) {

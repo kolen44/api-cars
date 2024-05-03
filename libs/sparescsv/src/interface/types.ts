@@ -11,7 +11,7 @@ export interface CardProduct {
   body_type?: string;
   year?: number;
   engine: string;
-  volume: string;
+  volume: number;
   engine_type?: string;
   gearbox: string;
   original_number?: string;

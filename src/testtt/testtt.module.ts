@@ -1,12 +1,12 @@
-import { SparesCsvModule } from '@app/sparescsv';
 import { Module } from '@nestjs/common';
 import { CardProductModule } from '@repository/repository/card-product/card-product.module';
+import { SearcherCardProductService } from '../spares/services/searcher-card-product.service';
 import { TestttController } from './testtt.controller';
 import { TestttService } from './testtt.service';
 
 @Module({
-  imports: [CardProductModule, SparesCsvModule],
+  imports: [CardProductModule],
   controllers: [TestttController],
-  providers: [TestttService],
+  providers: [TestttService, SearcherCardProductService],
 })
 export class TestttModule {}
