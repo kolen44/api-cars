@@ -356,4 +356,46 @@ export class CardProductService {
       return result;
     }
   }
+
+  async findSparePartsByParameters(
+    brand: string,
+    model: string,
+    year: number,
+    engine: string,
+    volume: string,
+    detail_name: string,
+  ) {
+    const criteria: any = {};
+
+    if (brand) {
+      criteria.brand = ILike(`%${brand}%`);
+    }
+    if (model) {
+      criteria.model = ILike(`%${model}%`);
+    }
+    if (engine) {
+      criteria.engine = ILike(`%${engine}%`);
+    }
+    if (volume) {
+      criteria.volume = ILike(`%${volume}%`);
+    }
+    if (detail_name) {
+      criteria.detail_name = ILike(`%${detail_name}%`);
+      console.log(detail_name);
+    }
+    if (year) {
+      criteria.year = year;
+    }
+    if (this.checkWhichRepositoryBigger()) {
+      const result = await this.cardProductRepository.find({
+        where: criteria,
+      });
+      return result;
+    } else {
+      const result = await this.cardProductRepositorySecond.find({
+        where: criteria,
+      });
+      return result;
+    }
+  }
 }

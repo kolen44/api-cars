@@ -126,4 +126,27 @@ export class SparesService {
       return { message: 'Нет параметров для поиска' };
     }
   }
+
+  public async findSparePartsByParameters({
+    brand = undefined,
+    model = undefined,
+    year = undefined,
+    engine = undefined,
+    volume = undefined,
+    detail_name = undefined,
+  }) {
+    if (brand || model || year || engine || volume || detail_name) {
+      const response = await this.dbCreate.findSparePartsByParameters(
+        brand,
+        model,
+        year,
+        engine,
+        volume,
+        detail_name,
+      );
+      return this.sortAndReturnElementForCriteriaFunctions(response);
+    } else {
+      return { message: 'Нет параметров для поиска' };
+    }
+  }
 }

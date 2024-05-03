@@ -28,14 +28,6 @@ export class SparesController {
     return this.sparesService.searchByCriteria(data);
   }
 
-  @Post('find-engine-volume')
-  @HttpCode(200)
-  async searchFileWithEngineVolumeOptions(
-    @Body() data: searchByCriteriaEngineVolumeDto,
-  ) {
-    return this.sparesService.searchByEngineVolumeCriteria(data);
-  }
-
   @Post('find-detail-name')
   @HttpCode(200)
   async searchFileWithDetailName(@Body() data: searchByCriteriaDetailNameDto) {
@@ -56,5 +48,12 @@ export class SparesController {
   @Get('find-3-parameters')
   findBy3Parameters(@Query() query: Find3ParametersDto) {
     return this.sparesService.searchBy3Parameters(query);
+  }
+
+  @Get('/find-engine-volume')
+  async searchSparePartsByNames(
+    @Query() detailParameters: searchByCriteriaEngineVolumeDto,
+  ) {
+    return this.sparesService.findSparePartsByParameters(detailParameters);
   }
 }
