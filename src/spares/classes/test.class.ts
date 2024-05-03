@@ -1,7 +1,9 @@
 import { CardProductService } from '@repository/repository';
+import { CardProduct } from 'src/database/entities/product.entity';
+import { SelectQueryBuilder } from 'typeorm';
 
 export class FindCardProduct {
-  private queryBuilder: any;
+  private queryBuilder: SelectQueryBuilder<CardProduct>;
 
   constructor(cardProductService: CardProductService) {
     this.queryBuilder = cardProductService.getQueryBuilder();
@@ -15,17 +17,16 @@ export class FindCardProduct {
   }
 
   public andWhereBrand(brand: string) {
-    this.queryBuilder.andWhere('(LOWER(product.brand) LIKE LOWER(:brand))', {
+    return this.andWhere(this.toLowerCaseWithLike('brand', 'brand'), {
       brand: `%${brand}%`,
     });
     return this;
   }
 
   public andWhereModel(model: string) {
-    this.queryBuilder.andWhere('(LOWER(product.model) LIKE LOWER(:model))', {
+    return this.andWhere(this.toLowerCaseWithLike('model', 'model'), {
       model: `%${model}%`,
     });
-    return this;
   }
 
   public andWhereIntervalYear(year_start: number, year_end: number) {
@@ -44,34 +45,57 @@ export class FindCardProduct {
         )
       `;
     };
-    this.queryBuilder.andWhere(getQueryForYearInterval(), {
-      year_start,
-      year_end,
-    });
-    return this;
+    return this.andWhere(getQueryForYearInterval(), { year_start, year_end });
   }
 
   public andWhereOneYear(year: number) {
-    const getQueryForOneYear = () => {
-      return '(product.year_start_production <= :year AND product.year_end_production >= :year)';
-    };
-    this.queryBuilder.andWhere(getQueryForOneYear(), {
-      year,
-    });
-    return this;
+    const query =
+      '(product.year_start_production <= :year AND product.year_end_production >= :year)';
+
+    return this.andWhere(query, { year });
   }
 
   public andWhereEngine(engine: string) {
-    this.queryBuilder.andWhere('(LOWER(product.engine) LIKE LOWER(:engine))', {
+    return this.andWhere(this.toLowerCaseWithLike('engine', 'engine'), {
       engine: `%${engine}%`,
     });
-    return this;
   }
 
   public andWhereVolume(volume: number) {
-    this.queryBuilder.andWhere('product.volume = :volume', {
+    return this.andWhere('product.volume = :volume', {
       volume,
     });
+  }
+
+  public andWhereDetailNames(detail_names: string[]) {
+    const generateDetailNameKey = (index: number) => {
+      return `detail_names_${index}`;
+    };
+
+    const conditions = detail_names.map((detail_name, index) =>
+      this.toLowerCaseWithLike('detail_name', generateDetailNameKey(index)),
+    );
+
+    const query = conditions.join(' OR ');
+
+    const values_of_detail_names: Record<string, string> = {};
+
+    detail_names.forEach(
+      (detail_name, index) =>
+        (values_of_detail_names[generateDetailNameKey(index)] =
+          `%${detail_name}%`),
+      {},
+    );
+
+    return this.andWhere(`(${query})`, values_of_detail_names);
+  }
+
+  private toLowerCaseWithLike(attribute: string, query: string) {
+    return `(LOWER(product.${attribute}) LIKE LOWER(:${query || attribute}))`;
+  }
+
+  private andWhere(where: string, values: Record<string, unknown>) {
+    this.queryBuilder.andWhere(where, values);
     return this;
   }
 }

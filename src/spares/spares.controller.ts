@@ -41,7 +41,7 @@ export class SparesController {
   }
 
   @Get()
-  getProduct(@Body() query: FindProductQueryDto) {
+  getProduct(@Query() query: FindProductQueryDto) {
     return this.sparesService.getProduct(query);
   }
 
