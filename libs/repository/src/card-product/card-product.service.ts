@@ -328,75 +328,31 @@ export class CardProductService {
     }
   }
 
-  async searchById(id: number) {
-    if (this.checkWhichRepositoryBigger()) {
-      return await this.cardProductRepository.findOne({
-        where: { id },
-      });
-    } else {
-      return await this.cardProductRepositorySecond.findOne({
-        where: { id },
-      });
-    }
-  }
+  async searchBy3Parameters(
+    article: string,
+    original_number: string,
+    id: number,
+  ) {
+    const criteria: any = {};
 
-  async searchByOriginalNumber(original_number: string) {
-    const criteria = {
-      original_number: ILike(`%${original_number}%`),
-    };
-    const criteriaFindOne = {
-      original_number: ILike(`%${original_number}%`),
-    };
-    if (this.checkWhichRepositoryBigger()) {
-      let result: any = await this.cardProductRepository.find({
-        where: criteriaFindOne,
-      });
-      if (!result) {
-        result = await this.cardProductRepository.findOne({
-          where: criteria,
-        });
-      }
-      return result;
-    } else {
-      let result: any = await this.cardProductRepositorySecond.find({
-        where: criteriaFindOne,
-      });
-      if (!result) {
-        result = await this.cardProductRepositorySecond.findOne({
-          where: criteria,
-        });
-      }
-      return result;
+    if (article !== undefined) {
+      criteria.article = ILike(`%${article}%`);
     }
-  }
-
-  async searchByArticle(article: string, original_number: string, id: number) {
-    const criteria = {
-      article: ILike(`%${article}%`),
-    };
-    const criteriaFindOne = {
-      article: ILike(`%${article}%`),
-    };
-    let result;
+    if (original_number !== undefined) {
+      criteria.original_number = ILike(`%${original_number}%`);
+    }
+    if (id !== undefined) {
+      criteria.id = id;
+    }
     if (this.checkWhichRepositoryBigger()) {
-      let result: any = await this.cardProductRepository.find({
-        where: criteriaFindOne,
+      const result = await this.cardProductRepository.find({
+        where: criteria,
       });
-      if (!result) {
-        result = await this.cardProductRepository.findOne({
-          where: criteria,
-        });
-      }
       return result;
     } else {
-      let result: any = await this.cardProductRepositorySecond.find({
-        where: criteriaFindOne,
+      const result = await this.cardProductRepositorySecond.find({
+        where: criteria,
       });
-      if (!result) {
-        result = await this.cardProductRepositorySecond.findOne({
-          where: criteria,
-        });
-      }
       return result;
     }
   }

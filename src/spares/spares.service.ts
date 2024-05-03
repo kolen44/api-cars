@@ -110,16 +110,20 @@ export class SparesService {
     return { page, limit, search_count: result.length, data: result };
   }
 
-  public async searchFileIdAndOther(query) {
-    const { article, original_number, id } = query;
-
+  public async searchBy3Parameters({
+    article = undefined,
+    original_number = undefined,
+    id = undefined,
+  }) {
     if (article || original_number || id) {
-      const response = this.cardProductService.searchBy3Parametres(
+      const response = await this.dbCreate.searchBy3Parameters(
         article,
         original_number,
         id,
       );
       return this.sortAndReturnElementForCriteriaFunctions(response);
+    } else {
+      return { message: 'Нет параметров для поиска' };
     }
   }
 }

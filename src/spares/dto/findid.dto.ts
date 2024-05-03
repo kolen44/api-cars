@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 
-export class FindIdDto {
+export class Find3ParametersDto {
   @IsOptional()
   @IsString()
   @Type(() => String)

@@ -1,5 +1,6 @@
-import { Body, Controller, Get, HttpCode, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Query } from '@nestjs/common';
 import { FindProductQueryDto } from './dto/find-product-query.dto';
+import { Find3ParametersDto } from './dto/findid.dto';
 import { searchByCriteriaDto } from './dto/searchbycriteria.dto';
 import { searchByCriteriaEngineVolumeDto } from './dto/searchenginevolume.dto';
 import { searchByCriteriaDetailNameDto } from './dto/searchfilewithdetailname.dto';
@@ -50,5 +51,10 @@ export class SparesController {
   @Get()
   getProduct(@Body() query: FindProductQueryDto) {
     return this.sparesService.getProduct(query);
+  }
+
+  @Get('find-3-parameters')
+  findBy3Parameters(@Query() query: Find3ParametersDto) {
+    return this.sparesService.searchBy3Parameters(query);
   }
 }
