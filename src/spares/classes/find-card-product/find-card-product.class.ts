@@ -1,6 +1,7 @@
 import { CardProductService } from '@repository/repository';
 import { CardProduct } from 'src/database/entities/product.entity';
 import { SelectQueryBuilder } from 'typeorm';
+import { SortDirection } from './sort.enum';
 
 export class FindCardProduct {
   private queryBuilder: SelectQueryBuilder<CardProduct>;
@@ -9,10 +10,23 @@ export class FindCardProduct {
     this.queryBuilder = cardProductService.getQueryBuilder();
   }
 
-  public async getMany({ skip, limit }: { skip: number; limit: number }) {
+  public async getMany({
+    skip,
+    limit,
+    sort,
+  }: {
+    skip: number;
+    limit: number;
+    sort: { key: keyof CardProduct; order: SortDirection };
+  }) {
+    const sortOrder: 'ASC' | 'DESC' =
+      sort?.order === SortDirection.DESC ? 'DESC' : 'ASC';
+
     return await this.queryBuilder
       .skip(skip || 0)
       .take(limit || 20)
+      .addOrderBy(sort.key, sortOrder)
+      .addOrderBy('id', 'ASC')
       .getMany();
   }
 

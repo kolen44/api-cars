@@ -1,13 +1,23 @@
 import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
+  IsIn,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
 } from 'class-validator';
+import { SortDirection, SortKey } from '../classes/find-card-product/sort.enum';
 
 export class FindProductQueryDto {
+  @IsOptional()
+  @IsIn([SortKey.YEAR, SortKey.PRICE])
+  sort: SortKey = SortKey.YEAR;
+
+  @IsOptional()
+  @IsIn([SortDirection.ASC, SortDirection.DESC])
+  order: SortDirection = SortDirection.ASC;
+
   @IsOptional()
   @IsString()
   article: string;
