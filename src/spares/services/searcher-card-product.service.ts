@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CardProductService } from '@repository/repository';
-import { FindCardProduct } from '../classes/find-card-product.class';
+import { FindCardProduct } from '../classes/find-card-product/find-card-product.class';
 import { FindProductQueryDto } from '../dto/find-product-query.dto';
 
 @Injectable()
@@ -37,8 +37,6 @@ export class SearcherCardProductService {
     } else if (query.year) {
       findCardProduct.andWhereOneYear(query.year);
     }
-
-    // Нужно очистить поля от null
 
     return findCardProduct;
   }

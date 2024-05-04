@@ -100,12 +100,16 @@ export class SparesService {
   }
 
   public async getProduct(query: FindProductQueryDto) {
-    const { page, limit } = query;
+    const { page, limit, sort, order } = query;
 
     const findCardProduct = await this.searcherCardProduct.search(query);
 
     const skip = (page - 1) * limit;
-    const result = await findCardProduct.getMany({ skip, limit });
+    const result = await findCardProduct.getMany({
+      skip,
+      limit,
+      sort: { key: sort, order },
+    });
 
     return { page, limit, search_count: result.length, data: result };
   }
