@@ -95,6 +95,12 @@ export class FindCardProduct {
     return this.andWhere(`(${query})`, values_of_detail_names);
   }
 
+  public andWhereBodyType(body_type: string) {
+    return this.andWhere(this.toLowerCaseWithLike('body_type', 'body_type'), {
+      body_type: `%${body_type}%`,
+    });
+  }
+
   private toLowerCaseWithLike(attribute: string, query: string) {
     return `(LOWER(product.${attribute}) LIKE LOWER(:${query || attribute}))`;
   }

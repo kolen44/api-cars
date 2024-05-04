@@ -37,6 +37,10 @@ export class FindProductQueryDto {
   detail_names: string[];
 
   @IsOptional()
+  @IsString()
+  body_type: string;
+
+  @IsOptional()
   @IsNumber()
   @Type(() => Number)
   year: number;

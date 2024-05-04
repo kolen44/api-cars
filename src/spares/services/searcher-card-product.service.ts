@@ -28,6 +28,9 @@ export class SearcherCardProductService {
     if (query.detail_names) {
       findCardProduct.andWhereDetailNames(query.detail_names);
     }
+    if (query.body_type) {
+      findCardProduct.andWhereBodyType(query.body_type);
+    }
 
     if (query.year_start && query.year_end) {
       findCardProduct.andWhereIntervalYear(query.year_start, query.year_end);
