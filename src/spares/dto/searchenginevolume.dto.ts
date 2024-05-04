@@ -23,9 +23,9 @@ export class searchByCriteriaEngineVolumeDto {
   engine: string;
 
   @IsOptional()
-  @IsString()
-  @Type(() => String)
-  volume: string;
+  @IsNumber()
+  @Type(() => Number)
+  volume: number;
 
   @IsOptional()
   @IsString()

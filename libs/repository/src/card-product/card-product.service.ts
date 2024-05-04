@@ -362,7 +362,7 @@ export class CardProductService {
     model: string,
     year: number,
     engine: string,
-    volume: string,
+    volume: number,
     detail_name: string,
   ) {
     const criteria: any = {};
@@ -377,11 +377,10 @@ export class CardProductService {
       criteria.engine = ILike(`%${engine}%`);
     }
     if (volume) {
-      criteria.volume = ILike(`%${volume}%`);
+      criteria.volume = volume;
     }
     if (detail_name) {
       criteria.detail_name = ILike(`%${detail_name}%`);
-      console.log(detail_name);
     }
     if (year) {
       criteria.year = year;
