@@ -52,6 +52,7 @@ export class FindProductQueryDto {
 
   @IsOptional()
   @IsNumber()
+  @IsInt()
   @Type(() => Number)
   year: number;
 

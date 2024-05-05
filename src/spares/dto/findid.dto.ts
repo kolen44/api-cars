@@ -13,6 +13,7 @@ export class Find3ParametersDto {
   original_number: string;
 
   @IsOptional()
+  @IsInt()
   @IsNumber()
   @Type(() => Number)
   id: number;

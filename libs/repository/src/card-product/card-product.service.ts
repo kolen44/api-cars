@@ -210,9 +210,9 @@ export class CardProductService {
     brand: string,
     model: string,
     year: number,
-    engine,
-    volume,
-    detail_name,
+    engine: string,
+    volume: number,
+    detail_name: string,
   ) {
     const criteria = {
       brand,
@@ -259,7 +259,7 @@ export class CardProductService {
     brand: string,
     model: string,
     year: number,
-    detail_name,
+    detail_name: string,
   ) {
     const criteria = {
       brand,
@@ -302,12 +302,9 @@ export class CardProductService {
     const criteria = {
       brand,
     };
-    const criteriaFindOne = {
-      brand,
-    };
     if (this.checkWhichRepositoryBigger()) {
       let result: any = await this.cardProductRepository.find({
-        where: criteriaFindOne,
+        where: criteria,
       });
       if (!result) {
         result = await this.cardProductRepository.findOne({
@@ -317,7 +314,7 @@ export class CardProductService {
       return result;
     } else {
       let result: any = await this.cardProductRepositorySecond.find({
-        where: criteriaFindOne,
+        where: criteria,
       });
       if (!result) {
         result = await this.cardProductRepositorySecond.findOne({

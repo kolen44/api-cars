@@ -14,6 +14,7 @@ export class searchByCriteriaEngineVolumeDto {
 
   @IsOptional()
   @IsNumber()
+  @IsInt()
   @Type(() => Number)
   year: number;
 
