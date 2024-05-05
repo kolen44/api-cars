@@ -3,7 +3,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class CardProduct implements CardProductDB {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ type: 'integer' })
   id: number;
 
   @Column({ nullable: true })
@@ -30,7 +30,7 @@ export class CardProduct implements CardProductDB {
   @Column({ nullable: true })
   body_type?: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'integer' })
   year?: number;
 
   @Column({ nullable: true })

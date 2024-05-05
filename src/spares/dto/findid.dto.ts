@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsInt, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class Find3ParametersDto {
   @IsOptional()
@@ -13,8 +13,8 @@ export class Find3ParametersDto {
   original_number: string;
 
   @IsOptional()
-  @IsInt()
   @IsNumber()
+  @IsInt()
   @Type(() => Number)
   id: number;
 }

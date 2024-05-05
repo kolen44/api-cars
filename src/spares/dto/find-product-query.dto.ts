@@ -2,6 +2,7 @@ import { Transform, Type } from 'class-transformer';
 import {
   IsArray,
   IsIn,
+  IsInt,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -58,11 +59,13 @@ export class FindProductQueryDto {
 
   @IsOptional()
   @IsNumber()
+  @IsInt()
   @Type(() => Number)
   year_start: number;
 
   @IsOptional()
   @IsNumber()
+  @IsInt()
   @Type(() => Number)
   year_end: number;
 
