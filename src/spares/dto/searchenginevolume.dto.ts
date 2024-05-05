@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsInt, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class searchByCriteriaEngineVolumeDto {
   @IsOptional()
@@ -13,9 +13,7 @@ export class searchByCriteriaEngineVolumeDto {
   model: string;
 
   @IsOptional()
-  @IsNumber()
   @IsInt()
-  @Type(() => Number)
   year: number;
 
   @IsOptional()

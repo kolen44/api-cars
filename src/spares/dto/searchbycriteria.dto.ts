@@ -13,5 +13,5 @@ export class searchByCriteriaDto {
   @IsNumber()
   @IsInt()
   @Type(() => Number)
-  year: string;
+  year: number;
 }
