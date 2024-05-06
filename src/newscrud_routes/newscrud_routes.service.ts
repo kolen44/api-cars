@@ -58,16 +58,16 @@ export class NewscrudRoutesService {
     } catch (error) {
       throw new BadGatewayException(error);
     }
-
+    const password = await argon2.hash(createNewscrudRouteDto.password);
     const userData = {
       telephone_number: createNewscrudRouteDto.telephone_number,
-      password: await argon2.hash(createNewscrudRouteDto.password),
+      password,
       fio: createNewscrudRouteDto.fio,
     };
 
     await this.cacheManager.set(`${token}`, userData);
 
-    return { ...userData };
+    return { ...userData, token };
   }
 
   async findOne(telephone_number: string) {
@@ -76,8 +76,11 @@ export class NewscrudRoutesService {
 
   async validateUser(telephone_number: string, password: string) {
     const user = await this.findOne(telephone_number);
-    const passwordIsMatch = await argon2.verify(user.password, password);
-    console.log(user, passwordIsMatch);
+    if (!user)
+      throw new UnauthorizedException('Данного пользователя не существует');
+    const userPassword = user.password;
+    const passwordIsMatch = await argon2.verify(userPassword, password);
+    console.log(passwordIsMatch, userPassword);
     if (user && passwordIsMatch) {
       return user;
     }
@@ -86,7 +89,7 @@ export class NewscrudRoutesService {
 
   async login(user: IUser) {
     return {
-      ...user,
+      user,
       token: this.jwtService.sign({
         telephone_number: user.telephone_number,
         id: user.id,
@@ -96,16 +99,15 @@ export class NewscrudRoutesService {
   }
 
   async phoneProve(token: string) {
-    const cachedData: NewsUserCreateDto = await this.cacheManager.get(
-      `${token}`,
-    );
+    const cachedData: any = await this.cacheManager.get(`${token}`);
+    console.log(cachedData);
     if (cachedData) {
       const user = await this.userRepository.save({
         telephone_number: cachedData.telephone_number,
-        password: await argon2.hash(cachedData.password),
+        password: cachedData.password,
         fio: cachedData.fio,
       });
-      return { ...user, token };
+      return { user, token };
     } else {
       throw new BadRequestException(
         'Время регистрации по номеру телефона истекло',
