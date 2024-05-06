@@ -1,3 +1,4 @@
+import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -12,6 +13,7 @@ import { SparesModule } from './spares/spares.module';
     DatabaseModule,
     ScheduleModule.forRoot(),
     NewscrudRoutesModule,
+    CacheModule.register({ isGlobal: true, ttl: 5 * 60000 }), //Данные хранятся в кеше 5 минут
     // TestttModule, // Если нужно будет использовать мою загрузку в бд
   ],
 })
