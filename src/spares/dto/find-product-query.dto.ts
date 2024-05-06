@@ -71,11 +71,13 @@ export class FindProductQueryDto {
 
   @IsOptional()
   @IsNumber()
+  @IsInt()
   @Type(() => Number)
   page: number = 1;
 
   @IsOptional()
   @IsNumber()
+  @IsInt()
   @Type(() => Number)
   limit: number = 20;
 }
