@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { NewsUserCreateEntity } from 'src/database/entities/newscrud_route.entity';
+import { BlogEntity } from './entities/blog.entity';
 import { CardProduct } from './entities/product.entity';
-import { TokenEntity } from './entities/token.entity';
 
 @Module({
   imports: [
@@ -17,7 +17,7 @@ import { TokenEntity } from './entities/token.entity';
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_DATABASE'),
         synchronize: true,
-        entities: [CardProduct, NewsUserCreateEntity, TokenEntity],
+        entities: [CardProduct, NewsUserCreateEntity, BlogEntity],
       }),
       inject: [ConfigService],
     }),

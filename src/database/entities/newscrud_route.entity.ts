@@ -1,4 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { BlogEntity } from './blog.entity';
 
 @Entity()
 export class NewsUserCreateEntity {
@@ -34,4 +42,13 @@ export class NewsUserCreateEntity {
 
   @Column({ nullable: true })
   activity?: number;
+
+  @OneToMany(() => BlogEntity, (post) => post.user)
+  posts: BlogEntity[];
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

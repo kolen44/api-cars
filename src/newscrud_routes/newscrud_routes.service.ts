@@ -11,19 +11,17 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as argon2 from 'argon2';
 import axios from 'axios';
 import { Cache } from 'cache-manager';
-import { TokenEntity } from 'src/database/entities/token.entity';
 import { IUser } from 'src/types/newsuser';
 import { Repository } from 'typeorm';
 import { NewsUserCreateEntity } from '../database/entities/newscrud_route.entity';
 import { NewsUserCreateDto } from './dto/create-newscrud_route.dto';
+import { UpdateNewscrudRouteDto } from './dto/update-newscrud_route.dto';
 
 @Injectable()
 export class NewscrudRoutesService {
   constructor(
     @InjectRepository(NewsUserCreateEntity)
     private readonly userRepository: Repository<NewsUserCreateEntity>,
-    @InjectRepository(TokenEntity)
-    private readonly tokenRepository: Repository<TokenEntity>,
     private jwtService: JwtService,
     @Inject('CACHE_MANAGER') private cacheManager: Cache,
     private readonly configService: ConfigService,
@@ -106,6 +104,7 @@ export class NewscrudRoutesService {
         telephone_number: cachedData.telephone_number,
         password: cachedData.password,
         fio: cachedData.fio,
+        activity: 1,
       });
       return { user, token };
     } else {
@@ -113,5 +112,25 @@ export class NewscrudRoutesService {
         'Время регистрации по номеру телефона истекло',
       );
     }
+  }
+
+  async update(phone_number: string, updateDto: UpdateNewscrudRouteDto) {
+    const user = await this.findOne(phone_number);
+    if (!user)
+      throw new UnauthorizedException(
+        'Проверьте данные пользователя, так как сервер не может их найти',
+      );
+
+    return this.userRepository.update(user.id, updateDto);
+  }
+
+  async delete(phone_number: string) {
+    const user = await this.findOne(phone_number);
+    if (!user)
+      throw new UnauthorizedException(
+        'Проверьте данные пользователя, так как сервер не может их найти',
+      );
+
+    return this.userRepository.delete(user.id);
   }
 }
