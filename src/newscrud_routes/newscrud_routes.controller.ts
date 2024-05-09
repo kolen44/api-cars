@@ -7,7 +7,6 @@ import {
   Param,
   Patch,
   Post,
-  Redirect,
   Request,
   UseGuards,
   UsePipes,
@@ -42,7 +41,7 @@ export class NewscrudRoutesController {
   }
 
   @Get('confirm/:token')
-  @Redirect('https://yourapp.com/success', 302)
+  //@Redirect('webston.ru/auth/login', 302)
   async confirmEmail(@Param('token') token: string) {
     const confirmationResult =
       await this.newscrudRoutesService.phoneProve(token);
@@ -62,9 +61,24 @@ export class NewscrudRoutesController {
     return this.newscrudRoutesService.update(phone_number, updateUserDto);
   }
 
+  @Patch('user_avatar/:phone_number')
+  @UseGuards(JwtAuthGuard)
+  async updateAvatarUser(
+    @Param('phone_number') phone_number: string,
+    @Body() updateUserDto: UpdateNewscrudRouteDto,
+  ) {
+    return this.newscrudRoutesService.update(phone_number, updateUserDto);
+  }
+
   @Delete(':phone_number')
   @UseGuards(JwtAuthGuard)
   async deleteUser(@Param('phone_number') phone_number: string) {
     return this.newscrudRoutesService.delete(phone_number);
+  }
+
+  @Get('/prove')
+  @UseGuards(JwtAuthGuard)
+  async proveUser() {
+    return true;
   }
 }

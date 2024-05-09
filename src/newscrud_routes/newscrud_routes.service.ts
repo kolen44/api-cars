@@ -12,7 +12,7 @@ import * as argon2 from 'argon2';
 import axios from 'axios';
 import { Cache } from 'cache-manager';
 import { IUser } from 'src/types/newsuser';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { NewsUserCreateEntity } from '../database/entities/newscrud_route.entity';
 import { NewsUserCreateDto } from './dto/create-newscrud_route.dto';
 import { UpdateNewscrudRouteDto } from './dto/update-newscrud_route.dto';
@@ -61,7 +61,11 @@ export class NewscrudRoutesService {
       telephone_number: createNewscrudRouteDto.telephone_number,
       password,
       fio: createNewscrudRouteDto.fio,
+      country: 'Belarus',
     };
+    if (createNewscrudRouteDto.country) {
+      userData.country = createNewscrudRouteDto.country;
+    }
 
     await this.cacheManager.set(`${token}`, userData);
 
@@ -69,7 +73,10 @@ export class NewscrudRoutesService {
   }
 
   async findOne(telephone_number: string) {
-    return await this.userRepository.findOne({ where: { telephone_number } });
+    const phone_number = telephone_number.toString();
+    return await this.userRepository.findOne({
+      where: { telephone_number: ILike(`%${phone_number}%`) },
+    });
   }
 
   async validateUser(telephone_number: string, password: string) {
@@ -116,11 +123,12 @@ export class NewscrudRoutesService {
 
   async update(phone_number: string, updateDto: UpdateNewscrudRouteDto) {
     const user = await this.findOne(phone_number);
+    console.log(user);
+    console.log(updateDto);
     if (!user)
       throw new UnauthorizedException(
         'Проверьте данные пользователя, так как сервер не может их найти',
       );
-
     return this.userRepository.update(user.id, updateDto);
   }
 
@@ -130,7 +138,16 @@ export class NewscrudRoutesService {
       throw new UnauthorizedException(
         'Проверьте данные пользователя, так как сервер не может их найти',
       );
+    try {
+      await axios.delete(
+        `https://89.191.229.234/database/avatars/${phone_number}`,
+      );
 
-    return this.userRepository.delete(user.id);
+      return this.userRepository.delete(user.id);
+    } catch (error) {
+      throw new BadGatewayException(
+        'Ошибка в блоке удаления и отправки запроса на базу данных',
+      );
+    }
   }
 }

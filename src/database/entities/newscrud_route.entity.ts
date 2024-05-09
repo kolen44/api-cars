@@ -38,6 +38,9 @@ export class NewsUserCreateEntity {
   payments?: string;
 
   @Column({ nullable: true })
+  country?: string;
+
+  @Column({ nullable: true })
   avatar_url?: string;
 
   @Column({ nullable: true })
