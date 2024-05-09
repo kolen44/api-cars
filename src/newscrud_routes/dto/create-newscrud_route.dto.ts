@@ -14,6 +14,10 @@ export class NewsUserCreateDto {
   fio: string;
 
   @IsString()
+  @MinLength(5, { message: 'Неверно указан номер телефона' })
+  avatar_url: string;
+
+  @IsString()
   @MinLength(3, { message: 'Пожалуйста , проверьте country' })
   country?: string;
 
