@@ -1,11 +1,14 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
   UsePipes,
@@ -28,13 +31,19 @@ export class BlogController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   findAll(@Req() req) {
     return this.blogService.findAll(+req.user.id);
   }
 
+  @Get('/pagination')
+  async findAllWithPagination(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+  ) {
+    return this.blogService.findAllWithPagination(page, limit);
+  }
+
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
   findOne(@Param('id') id: string) {
     return this.blogService.findOne(+id);
   }

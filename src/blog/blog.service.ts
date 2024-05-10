@@ -57,6 +57,17 @@ export class BlogService {
     return isExist;
   }
 
+  async findAllWithPagination(page?: number, limit?: number) {
+    const skip = (page - 1) * limit;
+    if (this.blogRepository.count()) {
+      return this.blogRepository.find({
+        skip,
+        take: limit,
+      });
+    }
+    return new NotFoundException('База данных временно пустая .');
+  }
+
   async update(id: number, updateBlogDto: UpdateBlogDto) {
     const isExist = await this.blogRepository.findOne({
       where: { id },

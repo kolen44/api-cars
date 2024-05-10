@@ -7,7 +7,7 @@ export class NewsUserCreateDto {
 
   @IsString()
   @MinLength(5, { message: 'Неверно указан номер телефона' })
-  password: string;
+  password?: string; //При регистрации пароль указывать не нужно , он генерируется автоматически . Это поле для обновления к примеру
 
   @IsString()
   @MinLength(3, { message: 'Пожалуйста , проверьте инициалы' })

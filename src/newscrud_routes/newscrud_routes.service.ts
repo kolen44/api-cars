@@ -56,10 +56,8 @@ export class NewscrudRoutesService {
     } catch (error) {
       throw new BadGatewayException(error);
     }
-    const password = await argon2.hash(createNewscrudRouteDto.password);
     const userData = {
       telephone_number: createNewscrudRouteDto.telephone_number,
-      password,
       fio: createNewscrudRouteDto.fio,
       country: 'Belarus',
     };
@@ -106,13 +104,25 @@ export class NewscrudRoutesService {
   async phoneProve(token: string) {
     const cachedData: any = await this.cacheManager.get(`${token}`);
     console.log(cachedData);
+
     if (cachedData) {
+      const password = await argon2.hash(this.generatePassword());
       const user = await this.userRepository.save({
         telephone_number: cachedData.telephone_number,
-        password: cachedData.password,
+        password,
         fio: cachedData.fio,
         activity: 1,
       });
+      const message = encodeURIComponent(`Ваш пароль: ${password}`);
+      const tokenSMS = this.configService.get('APP_SMS_BY');
+
+      const url = `https://app.sms.by/api/v1/sendQuickSMS?token=${tokenSMS}&message=${message}&phone=${cachedData.telephone_number}&alphaname_id=5059`;
+      try {
+        await axios.get(url);
+      } catch (error) {
+        throw new UnauthorizedException('Ошибка при отправки пароля клиенту');
+      }
+
       return { user, token };
     } else {
       throw new BadRequestException(
@@ -140,7 +150,7 @@ export class NewscrudRoutesService {
       );
     try {
       await axios.delete(
-        `https://89.191.229.234/database/avatars/${phone_number}`,
+        `http://89.23.116.4:3000/database/avatars/${phone_number}`,
       );
 
       return this.userRepository.delete(user.id);
@@ -149,5 +159,17 @@ export class NewscrudRoutesService {
         'Ошибка в блоке удаления и отправки запроса на базу данных',
       );
     }
+  }
+
+  generatePassword(): string {
+    const length = 8;
+    const charset =
+      'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let password = '';
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * charset.length);
+      password += charset[randomIndex];
+    }
+    return password;
   }
 }
