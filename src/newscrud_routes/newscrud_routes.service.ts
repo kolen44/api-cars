@@ -60,6 +60,7 @@ export class NewscrudRoutesService {
       telephone_number: createNewscrudRouteDto.telephone_number,
       fio: createNewscrudRouteDto.fio,
       country: 'Belarus',
+      rating: createNewscrudRouteDto.rating,
     };
     if (createNewscrudRouteDto.country) {
       userData.country = createNewscrudRouteDto.country;
@@ -116,6 +117,8 @@ export class NewscrudRoutesService {
         telephone_number: cachedData.telephone_number,
         password: await argon2.hash(password),
         fio: cachedData.fio,
+        rating: cachedData.rating,
+        role: cachedData.role,
         activity: 1,
       });
       const message = encodeURIComponent(`Ваш пароль: ${password}`);

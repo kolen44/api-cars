@@ -49,6 +49,12 @@ export class NewsUserCreateEntity {
   @Column({ nullable: true })
   role?: string;
 
+  @Column({ nullable: true })
+  url_video?: string;
+
+  @Column({ nullable: true })
+  rating?: number;
+
   @OneToMany(() => BlogEntity, (post) => post.user)
   posts: BlogEntity[];
 
