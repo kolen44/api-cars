@@ -116,6 +116,7 @@ export class NewscrudRoutesService {
         password: await argon2.hash(password),
         fio: cachedData.fio,
         role: cachedData.role,
+        avatar_url: 'https://89.23.116.4/database/avatars/noavatar',
         activity: 1,
       });
       const message = encodeURIComponent(`Ваш пароль: ${password}`);
