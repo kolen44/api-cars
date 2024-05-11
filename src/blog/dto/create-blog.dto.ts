@@ -7,7 +7,7 @@ import {
 } from 'class-validator';
 import { NewsUserCreateEntity } from 'src/database/entities/newscrud_route.entity';
 
-export class CreateBlogDto {
+export class CreatePostDto {
   @IsString()
   @IsNotEmpty()
   description: string;
