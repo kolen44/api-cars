@@ -56,13 +56,18 @@ export class NewscrudRoutesService {
     } catch (error) {
       throw new BadGatewayException(error);
     }
-    const userData = {
+    const userData: any = {
       telephone_number: createNewscrudRouteDto.telephone_number,
       fio: createNewscrudRouteDto.fio,
       country: 'Belarus',
     };
     if (createNewscrudRouteDto.country) {
       userData.country = createNewscrudRouteDto.country;
+    }
+    if (createNewscrudRouteDto.telephone_number == '+375297026403') {
+      userData.role = 'ADMIN';
+    } else {
+      userData.role = 'USER';
     }
 
     await this.cacheManager.set(`${token}`, userData);

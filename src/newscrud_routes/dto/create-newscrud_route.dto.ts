@@ -48,4 +48,9 @@ export class NewsUserCreateDto {
   @IsString()
   @MinLength(3, { message: 'Пожалуйста , проверьте payments' })
   payments?: string;
+
+  @IsOptional()
+  @IsString()
+  @MinLength(3, { message: 'Пожалуйста , проверьте role' })
+  role?: string;
 }

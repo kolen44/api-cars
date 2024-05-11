@@ -46,6 +46,9 @@ export class NewsUserCreateEntity {
   @Column({ nullable: true })
   activity?: number;
 
+  @Column({ nullable: true })
+  role?: string;
+
   @OneToMany(() => BlogEntity, (post) => post.user)
   posts: BlogEntity[];
 
