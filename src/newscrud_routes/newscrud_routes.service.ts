@@ -106,10 +106,10 @@ export class NewscrudRoutesService {
     console.log(cachedData);
 
     if (cachedData) {
-      const password = await argon2.hash(this.generatePassword());
+      const password = await this.generatePassword();
       const user = await this.userRepository.save({
         telephone_number: cachedData.telephone_number,
-        password,
+        password: await argon2.hash(password),
         fio: cachedData.fio,
         activity: 1,
       });
