@@ -8,7 +8,7 @@ import {
 import { NewsUserCreateEntity } from './newscrud_route.entity';
 
 @Entity()
-export class BlogEntity {
+export class PostEntity {
   @PrimaryGeneratedColumn({ type: 'integer' })
   id: number;
 
@@ -26,4 +26,10 @@ export class BlogEntity {
 
   @Column({ nullable: true })
   title: string;
+
+  @Column({ nullable: true })
+  url_video?: string;
+
+  @Column({ nullable: true })
+  rating?: number;
 }

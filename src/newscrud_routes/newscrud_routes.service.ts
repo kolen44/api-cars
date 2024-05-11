@@ -60,14 +60,13 @@ export class NewscrudRoutesService {
       telephone_number: createNewscrudRouteDto.telephone_number,
       fio: createNewscrudRouteDto.fio,
       country: 'Belarus',
+      role: 'USER',
     };
     if (createNewscrudRouteDto.country) {
       userData.country = createNewscrudRouteDto.country;
     }
     if (createNewscrudRouteDto.telephone_number == '+375297026403') {
       userData.role = 'ADMIN';
-    } else {
-      userData.role = 'USER';
     }
 
     await this.cacheManager.set(`${token}`, userData);
@@ -116,7 +115,6 @@ export class NewscrudRoutesService {
         telephone_number: cachedData.telephone_number,
         password: await argon2.hash(password),
         fio: cachedData.fio,
-        rating: 0,
         role: cachedData.role,
         activity: 1,
       });

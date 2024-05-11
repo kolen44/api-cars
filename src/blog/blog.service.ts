@@ -4,19 +4,19 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BlogEntity } from 'src/database/entities/blog.entity';
+import { PostEntity } from 'src/database/entities/blog.entity';
 import { Repository } from 'typeorm';
-import { CreateBlogDto } from './dto/create-blog.dto';
-import { UpdateBlogDto } from './dto/update-blog.dto';
+import { CreatePostDto } from './dto/create-blog.dto';
+import { UpdatePostDto } from './dto/update-blog.dto';
 
 @Injectable()
 export class BlogService {
   constructor(
-    @InjectRepository(BlogEntity)
-    private readonly blogRepository: Repository<BlogEntity>,
+    @InjectRepository(PostEntity)
+    private readonly blogRepository: Repository<PostEntity>,
   ) {}
 
-  async create(createBlogDto: CreateBlogDto, id: number) {
+  async create(createBlogDto: CreatePostDto, id: number) {
     const existUser = await this.blogRepository.findBy({
       user: { id },
       title: createBlogDto.title,
@@ -27,12 +27,19 @@ export class BlogService {
         'Категория с таким названием и описанием у пользователя уже существует!',
       );
 
-    const newPost = {
+    const newPost: any = {
       title: createBlogDto.title,
       description: createBlogDto.description,
-      avatar_url: createBlogDto.avatar_url,
       user: { id },
+      rating: 0,
     };
+
+    if (createBlogDto.avatar_url) {
+      newPost.avatar_url = createBlogDto.avatar_url;
+    }
+    if (createBlogDto.url_video) {
+      newPost.url_video = createBlogDto.url_video;
+    }
 
     return await this.blogRepository.save(newPost);
   }
@@ -68,7 +75,7 @@ export class BlogService {
     return new NotFoundException('База данных временно пустая .');
   }
 
-  async update(id: number, updateBlogDto: UpdateBlogDto) {
+  async update(id: number, updateBlogDto: UpdatePostDto) {
     const isExist = await this.blogRepository.findOne({
       where: { id },
     });

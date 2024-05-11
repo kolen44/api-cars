@@ -16,8 +16,8 @@ import {
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.giard';
 import { BlogService } from './blog.service';
-import { CreateBlogDto } from './dto/create-blog.dto';
-import { UpdateBlogDto } from './dto/update-blog.dto';
+import { CreatePostDto } from './dto/create-blog.dto';
+import { UpdatePostDto } from './dto/update-blog.dto';
 
 @Controller('blog')
 export class BlogController {
@@ -26,7 +26,7 @@ export class BlogController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe())
-  create(@Body() createBlogDto: CreateBlogDto, @Req() req) {
+  create(@Body() createBlogDto: CreatePostDto, @Req() req) {
     return this.blogService.create(createBlogDto, req.user.id);
   }
 
@@ -50,7 +50,7 @@ export class BlogController {
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  update(@Param('id') id: string, @Body() updateBlogDto: UpdateBlogDto) {
+  update(@Param('id') id: string, @Body() updateBlogDto: UpdatePostDto) {
     return this.blogService.update(+id, updateBlogDto);
   }
 

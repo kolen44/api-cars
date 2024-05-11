@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { BlogEntity } from './blog.entity';
+import { PostEntity } from './blog.entity';
 
 @Entity()
 export class NewsUserCreateEntity {
@@ -49,14 +49,8 @@ export class NewsUserCreateEntity {
   @Column({ nullable: true })
   role?: string;
 
-  @Column({ nullable: true })
-  url_video?: string;
-
-  @Column({ nullable: true })
-  rating?: number;
-
-  @OneToMany(() => BlogEntity, (post) => post.user)
-  posts: BlogEntity[];
+  @OneToMany(() => PostEntity, (post) => post.user)
+  posts: PostEntity[];
 
   @CreateDateColumn()
   createdAt: Date;

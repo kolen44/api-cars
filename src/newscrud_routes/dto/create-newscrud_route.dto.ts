@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional, IsString, MinLength } from 'class-validator';
+import { IsOptional, IsString, MinLength } from 'class-validator';
 
 export class NewsUserCreateDto {
   @IsString()
@@ -53,13 +53,4 @@ export class NewsUserCreateDto {
   @IsString()
   @MinLength(3, { message: 'Пожалуйста , проверьте role' })
   role?: string;
-
-  @IsOptional()
-  @IsString()
-  @MinLength(5, { message: 'Пожалуйста , проверьте ссылку на видео' })
-  url_video?: string;
-
-  @IsOptional()
-  @IsNumber()
-  rating?: number;
 }
