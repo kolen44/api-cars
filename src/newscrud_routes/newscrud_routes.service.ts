@@ -46,7 +46,7 @@ export class NewscrudRoutesService {
         createNewscrudRouteDto.telephone_number,
       );
       const message = encodeURIComponent(
-        `Перейдите по ссылке для подтверждения регистрации. Ссылка: https://147.45.147.53/confirm/${token}`,
+        `Перейдите по ссылке для подтверждения регистрации. Ссылка: https://147.45.147.53/news-auth/confirm/${token}`,
       );
       const tokenSMS = this.configService.get('APP_SMS_BY');
 
