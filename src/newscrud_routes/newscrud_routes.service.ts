@@ -75,14 +75,18 @@ export class NewscrudRoutesService {
   }
 
   async findOne(telephone_number: string) {
-    const phone_number = telephone_number.toString();
+    if (!telephone_number)
+      return new UnauthorizedException(
+        'Вы не передали номер телефона как параметр',
+      );
+    const phone_number = telephone_number;
     return await this.userRepository.findOne({
       where: { telephone_number: ILike(`%${phone_number}%`) },
     });
   }
 
   async validateUser(telephone_number: string, password: string) {
-    const user = await this.findOne(telephone_number);
+    const user: any = await this.findOne(telephone_number);
     if (!user)
       return new UnauthorizedException('Данного пользователя не существует');
     const userPassword = user.password;
@@ -139,7 +143,7 @@ export class NewscrudRoutesService {
   }
 
   async update(phone_number: string, updateDto: UpdateNewscrudRouteDto) {
-    const user = await this.findOne(phone_number);
+    const user: any = await this.findOne(phone_number);
     console.log(user);
     console.log(updateDto);
     if (!user)
@@ -150,7 +154,7 @@ export class NewscrudRoutesService {
   }
 
   async delete(phone_number: string) {
-    const user = await this.findOne(phone_number);
+    const user: any = await this.findOne(phone_number);
     if (!user)
       return new UnauthorizedException(
         'Проверьте данные пользователя, так как сервер не может их найти',
