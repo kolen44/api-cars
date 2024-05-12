@@ -34,7 +34,7 @@ export class NewscrudRoutesService {
       },
     });
     if (existUser)
-      throw new BadRequestException(
+      return new BadRequestException(
         'Данный пользователь с таким номером телефона уже существует!',
       );
 
@@ -54,7 +54,7 @@ export class NewscrudRoutesService {
 
       await axios.get(url);
     } catch (error) {
-      throw new BadGatewayException(error);
+      return new BadGatewayException(error);
     }
     const userData: any = {
       telephone_number: createNewscrudRouteDto.telephone_number,
@@ -84,14 +84,14 @@ export class NewscrudRoutesService {
   async validateUser(telephone_number: string, password: string) {
     const user = await this.findOne(telephone_number);
     if (!user)
-      throw new UnauthorizedException('Данного пользователя не существует');
+      return new UnauthorizedException('Данного пользователя не существует');
     const userPassword = user.password;
     const passwordIsMatch = await argon2.verify(userPassword, password);
     console.log(passwordIsMatch, userPassword);
     if (user && passwordIsMatch) {
       return user;
     }
-    throw new UnauthorizedException('Имя телефона или пароль неверны');
+    return new UnauthorizedException('Имя телефона или пароль неверны');
   }
 
   async login(user: IUser) {
@@ -127,12 +127,12 @@ export class NewscrudRoutesService {
       try {
         await axios.get(url);
       } catch (error) {
-        throw new UnauthorizedException('Ошибка при отправки пароля клиенту');
+        return new UnauthorizedException('Ошибка при отправки пароля клиенту');
       }
 
       return { user, token };
     } else {
-      throw new BadRequestException(
+      return new BadRequestException(
         'Время регистрации по номеру телефона истекло',
       );
     }
@@ -143,7 +143,7 @@ export class NewscrudRoutesService {
     console.log(user);
     console.log(updateDto);
     if (!user)
-      throw new UnauthorizedException(
+      return new UnauthorizedException(
         'Проверьте данные пользователя, так как сервер не может их найти',
       );
     return this.userRepository.update(user.id, updateDto);
@@ -152,7 +152,7 @@ export class NewscrudRoutesService {
   async delete(phone_number: string) {
     const user = await this.findOne(phone_number);
     if (!user)
-      throw new UnauthorizedException(
+      return new UnauthorizedException(
         'Проверьте данные пользователя, так как сервер не может их найти',
       );
     try {
@@ -162,7 +162,7 @@ export class NewscrudRoutesService {
 
       return this.userRepository.delete(user.id);
     } catch (error) {
-      throw new BadGatewayException(
+      return new BadGatewayException(
         'Ошибка в блоке удаления и отправки запроса на базу данных',
       );
     }
