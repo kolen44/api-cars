@@ -76,10 +76,8 @@ export class NewscrudRoutesService {
 
   async findOne(telephone_number: string) {
     if (!telephone_number)
-      return new UnauthorizedException(
-        'Вы не передали номер телефона как параметр',
-      );
-    const phone_number = telephone_number;
+      return new UnauthorizedException('Данный токен невалидный');
+    const phone_number = telephone_number.toString();
     return await this.userRepository.findOne({
       where: { telephone_number: ILike(`%${phone_number}%`) },
     });
