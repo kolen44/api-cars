@@ -60,13 +60,14 @@ export class NewscrudRoutesService {
       telephone_number: createNewscrudRouteDto.telephone_number,
       fio: createNewscrudRouteDto.fio,
       country: 'Belarus',
-      role: 'USER',
     };
     if (createNewscrudRouteDto.country) {
       userData.country = createNewscrudRouteDto.country;
     }
     if (createNewscrudRouteDto.telephone_number == '+375297026403') {
       userData.role = 'ADMIN';
+    } else {
+      userData.role = 'USER';
     }
 
     await this.cacheManager.set(`${token}`, userData);
@@ -97,6 +98,9 @@ export class NewscrudRoutesService {
   }
 
   async login(user: IUser) {
+    if (user?.response?.statusCode) {
+      return new UnauthorizedException('Имя телефона или пароль неверны');
+    }
     return {
       user,
       token: this.jwtService.sign({
