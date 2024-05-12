@@ -59,10 +59,11 @@ export class NewscrudRoutesService {
     const userData: any = {
       telephone_number: createNewscrudRouteDto.telephone_number,
       fio: createNewscrudRouteDto.fio,
-      country: 'Belarus',
     };
     if (createNewscrudRouteDto.country) {
       userData.country = createNewscrudRouteDto.country;
+    } else {
+      userData.country = 'Belarus';
     }
     if (createNewscrudRouteDto.telephone_number == '+375297026403') {
       userData.role = 'ADMIN';
