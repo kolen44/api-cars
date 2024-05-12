@@ -119,6 +119,7 @@ export class NewscrudRoutesService {
         avatar_url: 'https://89.23.116.4/database/avatars/noavatar',
         activity: 1,
       });
+      await this.cacheManager.del(`${token}`);
       const message = encodeURIComponent(`Ваш пароль: ${password}`);
       const tokenSMS = this.configService.get('APP_SMS_BY');
 
