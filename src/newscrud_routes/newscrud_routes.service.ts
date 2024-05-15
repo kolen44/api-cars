@@ -128,6 +128,7 @@ export class NewscrudRoutesService {
         site_url: '',
         company_name: '',
         payments: '',
+        description: '',
         activity: 1,
       });
       await this.cacheManager.del(`${token}`);
