@@ -23,31 +23,31 @@ export class NewsUserCreateEntity {
   fio: string;
 
   @Column({ nullable: true })
-  tg_id?: string;
+  tg_id?: string = '';
 
   @Column({ nullable: true })
-  site_url?: string;
+  site_url?: string = '';
 
   @Column({ nullable: true })
-  company_name?: string;
+  company_name?: string = '';
 
   @Column({ nullable: true })
-  description?: string;
+  description?: string = '';
 
   @Column({ nullable: true })
-  payments?: string;
+  payments?: string = '';
 
   @Column({ nullable: true })
   country?: string;
 
   @Column({ nullable: true })
-  avatar_url?: string;
+  avatar_url?: string = '';
 
   @Column({ nullable: true })
   activity?: number;
 
   @Column({ nullable: true })
-  role?: string;
+  role?: string = '';
 
   @OneToMany(() => PostEntity, (post) => post.user)
   posts: PostEntity[];

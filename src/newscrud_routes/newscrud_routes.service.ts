@@ -91,7 +91,6 @@ export class NewscrudRoutesService {
       return new UnauthorizedException('Данного пользователя не существует');
     const userPassword = user.password;
     const passwordIsMatch = await argon2.verify(userPassword, password);
-    console.log(passwordIsMatch, userPassword);
     if (user && passwordIsMatch) {
       return user;
     }
@@ -123,7 +122,12 @@ export class NewscrudRoutesService {
         password: await argon2.hash(password),
         fio: cachedData.fio,
         role: cachedData.role,
+        country: cachedData.country,
         avatar_url: 'https://89.23.116.4/database/avatars/noavatar',
+        tg_id: '',
+        site_url: '',
+        company_name: '',
+        payments: '',
         activity: 1,
       });
       await this.cacheManager.del(`${token}`);
