@@ -7,12 +7,13 @@ import {
   Param,
   Patch,
   Post,
-  Redirect,
   Request,
+  Res,
   UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.giard';
 import { LocalAuthGuard } from 'src/guards/local-auth.guard';
 import { NewsUserCreateDto } from './dto/create-newscrud_route.dto';
@@ -42,12 +43,11 @@ export class NewscrudRoutesController {
   }
 
   @Get('confirm/:token')
-  @Redirect('https://webston.ru/auth/login', 302)
-  async confirmEmail(@Param('token') token: string) {
+  async confirmEmail(@Param('token') token: string, @Res() res: Response) {
     const confirmationResult =
       await this.newscrudRoutesService.phoneProve(token);
     if (confirmationResult) {
-      return confirmationResult;
+      return res.redirect('https://webston.ru/auth/login');
     } else {
       throw new BadRequestException('Время действия ссылки истекло 😔');
     }
@@ -60,6 +60,14 @@ export class NewscrudRoutesController {
     @Body() updateUserDto: UpdateNewscrudRouteDto,
   ) {
     return this.newscrudRoutesService.update(phone_number, updateUserDto);
+  }
+
+  @Post('/password')
+  @UseGuards(JwtAuthGuard)
+  async updateUserPassword(@Body() updateUserDto: UpdateNewscrudRouteDto) {
+    return this.newscrudRoutesService.updatePassword(
+      updateUserDto.telephone_number,
+    );
   }
 
   @Patch('user_avatar/:phone_number')

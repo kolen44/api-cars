@@ -57,4 +57,7 @@ export class NewsUserCreateEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  password_updated_at: Date;
 }

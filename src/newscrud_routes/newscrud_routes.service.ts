@@ -34,19 +34,22 @@ export class NewscrudRoutesService {
       },
     });
     if (existUser)
-      return new BadRequestException(
+      throw new BadRequestException(
         'Данный пользователь с таким номером телефона уже существует!',
       );
 
     const token = this.jwtService.sign({
       telephone_number: createNewscrudRouteDto.telephone_number,
     });
+    const cachedData: any = await this.cacheManager.get(`${token}`);
+    if (cachedData)
+      throw new BadRequestException('На данный номер уже пришла ссылка');
     try {
       const phoneNumber = encodeURIComponent(
         createNewscrudRouteDto.telephone_number,
       );
       const message = encodeURIComponent(
-        `Перейдите по ссылке для подтверждения регистрации. Ссылка: https://147.45.147.53/news-auth/confirm/${token}`,
+        `Перейдите по ссылке для подтверждения регистрации: https://147.45.147.53/news-auth/confirm/${token}`,
       );
       const tokenSMS = this.configService.get('APP_SMS_BY');
 
@@ -54,7 +57,7 @@ export class NewscrudRoutesService {
 
       await axios.get(url);
     } catch (error) {
-      return new BadGatewayException(error);
+      throw new BadGatewayException(error);
     }
     const userData: any = {
       telephone_number: createNewscrudRouteDto.telephone_number,
@@ -155,11 +158,51 @@ export class NewscrudRoutesService {
     const user: any = await this.findOne(phone_number);
     console.log(user);
     console.log(updateDto);
-    if (!user)
+    if (!user || updateDto.password)
       return new UnauthorizedException(
-        'Проверьте данные пользователя, так как сервер не может их найти',
+        'Проверьте данные пользователя, так как сервер не может их найти.Так же сюда нельзя передавать пароль',
       );
     return this.userRepository.update(user.id, updateDto);
+  }
+
+  async updatePassword(phone_number: string) {
+    const user: any = await this.findOne(phone_number);
+    if (!user)
+      throw new UnauthorizedException(
+        'Проверьте данные пользователя, так как сервер не может их найти',
+      );
+
+    // Check if 5 days have passed since the last password update
+    const lastPasswordUpdate = user.password_updated_at;
+    const currentDate = new Date();
+    const fiveDaysAgo = new Date(
+      currentDate.getTime() - 5 * 24 * 60 * 60 * 1000,
+    );
+
+    if (lastPasswordUpdate && lastPasswordUpdate > fiveDaysAgo) {
+      throw new BadRequestException(
+        'Вы не можете изменить пароль чаще, чем раз в 5 дней',
+      );
+    }
+
+    // Update the password and password_updated_at field
+    const newPassword = this.generatePassword();
+    const hashedPassword = await argon2.hash(newPassword);
+
+    user.password = hashedPassword;
+    user.password_updated_at = currentDate;
+
+    await this.userRepository.update(user.id, user);
+    const message = encodeURIComponent(`Ваш новый пароль: ${newPassword}`);
+    const tokenSMS = this.configService.get('APP_SMS_BY');
+
+    const url = `https://app.sms.by/api/v1/sendQuickSMS?token=${tokenSMS}&message=${message}&phone=${phone_number}&alphaname_id=5059`;
+    try {
+      await axios.get(url);
+    } catch (error) {
+      return new UnauthorizedException('Ошибка при отправки пароля клиенту');
+    }
+    return { message: 'Пароль успешно обновлен' };
   }
 
   async delete(phone_number: string) {
