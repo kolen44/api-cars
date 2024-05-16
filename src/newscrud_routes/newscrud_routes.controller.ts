@@ -42,7 +42,7 @@ export class NewscrudRoutesController {
   }
 
   @Get('confirm/:token')
-  @Redirect('webston.ru/auth/login', 302)
+  @Redirect('https://webston.ru/auth/login', 302)
   async confirmEmail(@Param('token') token: string) {
     const confirmationResult =
       await this.newscrudRoutesService.phoneProve(token);

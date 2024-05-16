@@ -123,7 +123,8 @@ export class NewscrudRoutesService {
         fio: cachedData.fio,
         role: cachedData.role,
         country: cachedData.country,
-        avatar_url: 'https://89.23.116.4/database/avatars/noavatar',
+        avatar_url:
+          'https://kolen44-database-new-car-898e.twc1.net/database/avatars/noavatar',
         tg_id: '',
         site_url: '',
         company_name: '',
