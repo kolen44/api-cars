@@ -14,6 +14,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { Response } from 'express';
+import { NewsUserCreateEntity } from 'src/database/entities/newscrud_route.entity';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.giard';
 import { LocalAuthGuard } from 'src/guards/local-auth.guard';
 import { NewsUserCreateDto } from './dto/create-newscrud_route.dto';
@@ -89,5 +90,11 @@ export class NewscrudRoutesController {
   @UseGuards(JwtAuthGuard)
   async proveUser() {
     return true;
+  }
+
+  @Get('/find-all')
+  @UseGuards(JwtAuthGuard)
+  async findAllUsers(@Request() req) {
+    return this.newscrudRoutesService.findAll(req.user as NewsUserCreateEntity);
   }
 }

@@ -68,7 +68,10 @@ export class NewscrudRoutesService {
     } else {
       userData.country = 'Belarus';
     }
-    if (createNewscrudRouteDto.telephone_number == '+375297026403') {
+    if (
+      createNewscrudRouteDto.telephone_number == '+375297026403' ||
+      createNewscrudRouteDto.telephone_number == '+375296146813'
+    ) {
       userData.role = 'ADMIN';
     } else {
       userData.role = 'USER';
@@ -86,6 +89,12 @@ export class NewscrudRoutesService {
     return await this.userRepository.findOne({
       where: { telephone_number: ILike(`%${phone_number}%`) },
     });
+  }
+
+  async findAll(user: NewsUserCreateEntity) {
+    if (user.role !== 'ADMIN')
+      return new UnauthorizedException('Недостаточно прав');
+    return await this.userRepository.find();
   }
 
   async validateUser(telephone_number: string, password: string) {
