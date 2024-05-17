@@ -213,7 +213,7 @@ export class NewscrudRoutesService {
       );
     try {
       await axios.delete(
-        `http://89.23.116.4:3000/database/avatars/${phone_number}`,
+        `https://kolen44-database-new-car-898e.twc1.net/database/avatars/${phone_number}`,
       );
 
       return this.userRepository.delete(user.id);
