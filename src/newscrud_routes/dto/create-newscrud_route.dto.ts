@@ -1,7 +1,13 @@
-import { IsOptional, IsString, MinLength } from 'class-validator';
+import {
+  IsOptional,
+  IsPhoneNumber,
+  IsString,
+  MinLength,
+} from 'class-validator';
 
 export class NewsUserCreateDto {
   @IsString()
+  @IsPhoneNumber()
   @MinLength(8, { message: 'Неверно указан номер телефона' })
   telephone_number: string;
 

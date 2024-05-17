@@ -19,6 +19,7 @@ import { JwtAuthGuard } from 'src/guards/jwt-auth.giard';
 import { LocalAuthGuard } from 'src/guards/local-auth.guard';
 import { NewsUserCreateDto } from './dto/create-newscrud_route.dto';
 import { UpdateNewscrudRouteDto } from './dto/update-newscrud_route.dto';
+import { VerifyPasswordDto } from './dto/verifypassword.dto';
 import { NewscrudRoutesService } from './newscrud_routes.service';
 
 @Controller('news-auth')
@@ -68,6 +69,24 @@ export class NewscrudRoutesController {
   async updateUserPassword(@Body() updateUserDto: UpdateNewscrudRouteDto) {
     return this.newscrudRoutesService.updatePassword(
       updateUserDto.telephone_number,
+    );
+  }
+
+  @Post('/change-password')
+  @UseGuards(JwtAuthGuard)
+  async changeUserPassword(@Body() updateUserDto: UpdateNewscrudRouteDto) {
+    return this.newscrudRoutesService.updatePassword(
+      updateUserDto.telephone_number,
+      updateUserDto.password, //'forget' значение для dto password
+    );
+  }
+
+  @Get('/change-password')
+  @UseGuards(JwtAuthGuard)
+  async verifyAndChangeUserPassword(@Body() verifyDto: VerifyPasswordDto) {
+    return this.newscrudRoutesService.verifyChangePassword(
+      verifyDto.telephone_number,
+      verifyDto.code,
     );
   }
 

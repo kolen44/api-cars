@@ -174,7 +174,7 @@ export class NewscrudRoutesService {
     return this.userRepository.update(user.id, updateDto);
   }
 
-  async updatePassword(phone_number: string) {
+  async updatePassword(phone_number: string, password = null) {
     const user: any = await this.findOne(phone_number);
     if (!user)
       throw new UnauthorizedException(
@@ -192,6 +192,17 @@ export class NewscrudRoutesService {
       throw new BadRequestException(
         'Вы не можете изменить пароль чаще, чем раз в 5 дней',
       );
+    }
+    if (password == 'forget') {
+      const secretCode = this.generatePassword().slice(4);
+      const message = encodeURIComponent(
+        `Код для получения нового пароля: https://147.45.147.53/news-auth/confirm/${secretCode}`,
+      );
+      await this.cacheManager.set(`${phone_number}`, secretCode);
+      const tokenSMS = this.configService.get('APP_SMS_BY');
+
+      const url = `https://app.sms.by/api/v1/sendQuickSMS?token=${tokenSMS}&message=${message}&phone=${phone_number}&alphaname_id=5059`;
+      return await axios.get(url);
     }
 
     // Update the password and password_updated_at field
@@ -212,6 +223,46 @@ export class NewscrudRoutesService {
       return new UnauthorizedException('Ошибка при отправки пароля клиенту');
     }
     return { message: 'Пароль успешно обновлен' };
+  }
+
+  async verifyChangePassword(phone_number: string, code: string) {
+    const secretCode = await this.cacheManager.get(phone_number);
+    if (!secretCode) throw new UnauthorizedException('Неверный код');
+    if (code == secretCode) {
+      const user: any = await this.findOne(phone_number);
+      if (!user)
+        throw new UnauthorizedException(
+          'Проверьте данные пользователя, так как сервер не может их найти',
+        );
+      const newPassword = this.generatePassword();
+      const hashedPassword = await argon2.hash(newPassword);
+      user.password = hashedPassword;
+      const lastPasswordUpdate = user.password_updated_at;
+      const currentDate = new Date();
+      const fiveDaysAgo = new Date(
+        currentDate.getTime() - 5 * 24 * 60 * 60 * 1000,
+      );
+
+      if (lastPasswordUpdate && lastPasswordUpdate > fiveDaysAgo) {
+        throw new BadRequestException(
+          'Вы не можете изменить пароль чаще, чем раз в 5 дней',
+        );
+      }
+      user.password_updated_at = currentDate;
+
+      await this.userRepository.update(user.id, user);
+      const message = encodeURIComponent(`Ваш новый пароль: ${newPassword}`);
+      const tokenSMS = this.configService.get('APP_SMS_BY');
+
+      const url = `https://app.sms.by/api/v1/sendQuickSMS?token=${tokenSMS}&message=${message}&phone=${phone_number}&alphaname_id=5059`;
+      try {
+        await axios.get(url);
+      } catch (error) {
+        return new UnauthorizedException('Ошибка при отправки пароля клиенту');
+      }
+      return { message: 'Пароль успешно обновлен' };
+    }
+    throw new UnauthorizedException('Неверно введен код');
   }
 
   async delete(phone_number: string) {
