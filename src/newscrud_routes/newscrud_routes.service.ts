@@ -257,6 +257,7 @@ export class NewscrudRoutesService {
       const url = `https://app.sms.by/api/v1/sendQuickSMS?token=${tokenSMS}&message=${message}&phone=${phone_number}&alphaname_id=5059`;
       try {
         await axios.get(url);
+        this.cacheManager.del(phone_number);
       } catch (error) {
         return new UnauthorizedException('Ошибка при отправки пароля клиенту');
       }
