@@ -73,7 +73,6 @@ export class NewscrudRoutesController {
   }
 
   @Post('/change-password')
-  @UseGuards(JwtAuthGuard)
   async changeUserPassword(@Body() updateUserDto: UpdateNewscrudRouteDto) {
     return this.newscrudRoutesService.updatePassword(
       updateUserDto.telephone_number,
@@ -82,7 +81,6 @@ export class NewscrudRoutesController {
   }
 
   @Get('/change-password')
-  @UseGuards(JwtAuthGuard)
   async verifyAndChangeUserPassword(@Body() verifyDto: VerifyPasswordDto) {
     return this.newscrudRoutesService.verifyChangePassword(
       verifyDto.telephone_number,

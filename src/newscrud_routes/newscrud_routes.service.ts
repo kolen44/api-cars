@@ -198,11 +198,14 @@ export class NewscrudRoutesService {
       const message = encodeURIComponent(
         `Код для получения нового пароля: https://147.45.147.53/news-auth/confirm/${secretCode}`,
       );
+      if (await this.cacheManager.get(`${phone_number}`))
+        throw new BadRequestException('Попробуйте через 5 минут');
       await this.cacheManager.set(`${phone_number}`, secretCode);
       const tokenSMS = this.configService.get('APP_SMS_BY');
 
       const url = `https://app.sms.by/api/v1/sendQuickSMS?token=${tokenSMS}&message=${message}&phone=${phone_number}&alphaname_id=5059`;
-      return await axios.get(url);
+      await axios.get(url);
+      return;
     }
 
     // Update the password and password_updated_at field
