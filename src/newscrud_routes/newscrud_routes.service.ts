@@ -196,7 +196,7 @@ export class NewscrudRoutesService {
     if (password == 'forget') {
       const secretCode = this.generatePassword().slice(4);
       const message = encodeURIComponent(
-        `Код для получения нового пароля: https://147.45.147.53/news-auth/confirm/${secretCode}`,
+        `Код для получения нового пароля: ${secretCode}`,
       );
       if (await this.cacheManager.get(`${phone_number}`))
         throw new BadRequestException('Попробуйте через 5 минут');
