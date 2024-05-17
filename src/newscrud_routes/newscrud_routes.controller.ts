@@ -80,7 +80,7 @@ export class NewscrudRoutesController {
     );
   }
 
-  @Get('/change-password')
+  @Post('/verify-change-password')
   async verifyAndChangeUserPassword(@Body() verifyDto: VerifyPasswordDto) {
     return this.newscrudRoutesService.verifyChangePassword(
       verifyDto.telephone_number,
