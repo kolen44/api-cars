@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Req,
   Request,
   Res,
   UseGuards,
@@ -60,8 +61,13 @@ export class NewscrudRoutesController {
   async updateUser(
     @Param('phone_number') phone_number: string,
     @Body() updateUserDto: UpdateNewscrudRouteDto,
+    @Req() req,
   ) {
-    return this.newscrudRoutesService.update(phone_number, updateUserDto);
+    return this.newscrudRoutesService.update(
+      phone_number,
+      updateUserDto,
+      req.user,
+    );
   }
 
   @Post('/password')
@@ -86,15 +92,6 @@ export class NewscrudRoutesController {
       verifyDto.telephone_number,
       verifyDto.code,
     );
-  }
-
-  @Patch('user_avatar/:phone_number')
-  @UseGuards(JwtAuthGuard)
-  async updateAvatarUser(
-    @Param('phone_number') phone_number: string,
-    @Body() updateUserDto: UpdateNewscrudRouteDto,
-  ) {
-    return this.newscrudRoutesService.update(phone_number, updateUserDto);
   }
 
   @Delete(':phone_number')

@@ -63,11 +63,6 @@ export class NewscrudRoutesService {
       telephone_number: createNewscrudRouteDto.telephone_number,
       fio: createNewscrudRouteDto.fio,
     };
-    if (createNewscrudRouteDto.country) {
-      userData.country = createNewscrudRouteDto.country;
-    } else {
-      userData.country = 'Belarus';
-    }
     if (
       createNewscrudRouteDto.telephone_number == '+375297026403' ||
       createNewscrudRouteDto.telephone_number == '+375296146813'
@@ -134,7 +129,7 @@ export class NewscrudRoutesService {
         password: await argon2.hash(password),
         fio: cachedData.fio,
         role: cachedData.role,
-        country: cachedData.country,
+        country: '',
         avatar_url:
           'https://kolen44-database-new-car-898e.twc1.net/database/avatars/noavatar',
         tg_id: '',
@@ -163,15 +158,22 @@ export class NewscrudRoutesService {
     }
   }
 
-  async update(phone_number: string, updateDto: UpdateNewscrudRouteDto) {
+  async update(
+    phone_number: string,
+    updateDto: UpdateNewscrudRouteDto,
+    userAsAdmin,
+  ) {
     const user: any = await this.findOne(phone_number);
-    console.log(user);
-    console.log(updateDto);
     if (!user || updateDto.password)
       return new UnauthorizedException(
         'Проверьте данные пользователя, так как сервер не может их найти.Так же сюда нельзя передавать пароль',
-      );
-    return this.userRepository.update(user.id, updateDto);
+      ); //Проверяем админ ли пользователь
+    if (
+      userAsAdmin.role === 'ADMIN' ||
+      +userAsAdmin.telephone_number == +phone_number
+    ) {
+      return this.userRepository.update(user.id, updateDto);
+    }
   }
 
   async updatePassword(phone_number: string, password = null) {
