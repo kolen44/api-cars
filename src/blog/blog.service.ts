@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PostEntity } from 'src/database/entities/blog.entity';
+import { NewscrudRoutesService } from 'src/newscrud_routes/newscrud_routes.service';
 import { Repository } from 'typeorm';
 import { CreatePostDto } from './dto/create-blog.dto';
 import { UpdatePostDto } from './dto/update-blog.dto';
@@ -14,25 +15,28 @@ export class BlogService {
   constructor(
     @InjectRepository(PostEntity)
     private readonly blogRepository: Repository<PostEntity>,
+    private readonly userService: NewscrudRoutesService,
   ) {}
 
   async create(createBlogDto: CreatePostDto, id: number) {
-    const existUser = await this.blogRepository.findBy({
-      user: { id },
-      title: createBlogDto.title,
-      description: createBlogDto.description,
+    const existUser = await this.blogRepository.findOne({
+      where: {
+        user: { id },
+        title: createBlogDto.title,
+        description: createBlogDto.description,
+      },
+      relations: ['user'],
     });
-    if (existUser.length)
+    if (existUser)
       throw new BadRequestException(
         'Категория с таким названием и описанием у пользователя уже существует!',
       );
-
-    const newPost: any = {
-      title: createBlogDto.title,
-      description: createBlogDto.description,
-      user: { id },
-      rating: 0,
-    };
+    const newPost: PostEntity = new PostEntity();
+    const user = await this.userService.findById(id);
+    newPost.title = createBlogDto.title;
+    newPost.description = createBlogDto.description;
+    newPost.user = user;
+    newPost.rating = 0;
 
     if (createBlogDto.avatar_url) {
       newPost.avatar_url = createBlogDto.avatar_url;
@@ -47,6 +51,7 @@ export class BlogService {
   async findAll(id: number) {
     return await this.blogRepository.find({
       where: { user: { id } },
+      relations: ['user'],
     });
   }
 
@@ -54,9 +59,6 @@ export class BlogService {
     const isExist = await this.blogRepository.findOne({
       where: {
         id,
-      },
-      relations: {
-        user: true,
       },
     });
     if (!isExist)

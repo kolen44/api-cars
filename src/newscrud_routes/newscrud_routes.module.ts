@@ -31,5 +31,6 @@ import { NewscrudRoutesService } from './newscrud_routes.service';
     LocalStrategy,
     JwtStrategy,
   ],
+  exports: [NewscrudRoutesService],
 })
 export class NewscrudRoutesModule {}

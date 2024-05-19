@@ -30,9 +30,9 @@ export class BlogController {
     return this.blogService.create(createBlogDto, req.user.id);
   }
 
-  @Get()
-  findAll(@Req() req) {
-    return this.blogService.findAll(+req.user.id);
+  @Get(':id')
+  findAll(@Param('id') id: number) {
+    return this.blogService.findAll(id);
   }
 
   @Get('/pagination')

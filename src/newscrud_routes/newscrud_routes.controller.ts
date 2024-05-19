@@ -50,7 +50,7 @@ export class NewscrudRoutesController {
     const confirmationResult =
       await this.newscrudRoutesService.phoneProve(token);
     if (confirmationResult) {
-      return res.redirect('https://webston.ru/auth/login');
+      return res.redirect('webston.ru/auth/login?activated');
     } else {
       throw new BadRequestException('Время действия ссылки истекло 😔');
     }

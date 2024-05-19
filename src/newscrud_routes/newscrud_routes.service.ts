@@ -41,15 +41,22 @@ export class NewscrudRoutesService {
     const token = this.jwtService.sign({
       telephone_number: createNewscrudRouteDto.telephone_number,
     });
+    const unicalStringForProve: string =
+      token.slice(0, 3) +
+      '' +
+      createNewscrudRouteDto.telephone_number.slice(0, 3);
+    console.log(unicalStringForProve);
     const cachedData: any = await this.cacheManager.get(`${token}`);
     if (cachedData)
-      throw new BadRequestException('На данный номер уже пришла ссылка');
+      throw new BadRequestException(
+        'На данный номер уже пришла ссылка . Попробуйте через 5 минут',
+      );
     try {
       const phoneNumber = encodeURIComponent(
         createNewscrudRouteDto.telephone_number,
       );
       const message = encodeURIComponent(
-        `Перейдите по ссылке для подтверждения регистрации: https://147.45.147.53/news-auth/confirm/${token}`,
+        `Перейдите по ссылке для подтверждения регистрации: https://147.45.147.53/news-auth/confirm/${unicalStringForProve}`,
       );
       const tokenSMS = this.configService.get('APP_SMS_BY');
 
@@ -62,6 +69,7 @@ export class NewscrudRoutesService {
     const userData: any = {
       telephone_number: createNewscrudRouteDto.telephone_number,
       fio: createNewscrudRouteDto.fio,
+      token: token,
     };
     if (
       createNewscrudRouteDto.telephone_number == '+375297026403' ||
@@ -72,7 +80,7 @@ export class NewscrudRoutesService {
       userData.role = 'USER';
     }
 
-    await this.cacheManager.set(`${token}`, userData);
+    await this.cacheManager.set(`${unicalStringForProve}`, userData);
 
     return { ...userData, token };
   }
@@ -83,6 +91,12 @@ export class NewscrudRoutesService {
     const phone_number = telephone_number.toString();
     return await this.userRepository.findOne({
       where: { telephone_number: ILike(`%${phone_number}%`) },
+    });
+  }
+
+  async findById(id: number) {
+    return await this.userRepository.findOne({
+      where: { id },
     });
   }
 
@@ -118,12 +132,14 @@ export class NewscrudRoutesService {
     };
   }
 
-  async phoneProve(token: string) {
-    const cachedData: any = await this.cacheManager.get(`${token}`);
+  async phoneProve(unicalStringForProve: string) {
+    const cachedData: any = await this.cacheManager.get(
+      `${unicalStringForProve}`,
+    );
     console.log(cachedData);
 
     if (cachedData) {
-      const password = await this.generatePassword();
+      const password = this.generatePassword();
       const user = await this.userRepository.save({
         telephone_number: cachedData.telephone_number,
         password: await argon2.hash(password),
@@ -139,7 +155,7 @@ export class NewscrudRoutesService {
         description: '',
         activity: 1,
       });
-      await this.cacheManager.del(`${token}`);
+      await this.cacheManager.del(`${unicalStringForProve}`);
       const message = encodeURIComponent(`Ваш пароль: ${password}`);
       const tokenSMS = this.configService.get('APP_SMS_BY');
 
@@ -150,7 +166,7 @@ export class NewscrudRoutesService {
         return new UnauthorizedException('Ошибка при отправки пароля клиенту');
       }
 
-      return { user, token };
+      return { user };
     } else {
       return new BadRequestException(
         'Время регистрации по номеру телефона истекло',
