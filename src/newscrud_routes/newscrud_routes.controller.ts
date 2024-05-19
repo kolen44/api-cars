@@ -23,7 +23,7 @@ import { UpdateNewscrudRouteDto } from './dto/update-newscrud_route.dto';
 import { VerifyPasswordDto } from './dto/verifypassword.dto';
 import { NewscrudRoutesService } from './newscrud_routes.service';
 
-@Controller('news-auth')
+@Controller('auth')
 export class NewscrudRoutesController {
   constructor(private readonly newscrudRoutesService: NewscrudRoutesService) {}
 
@@ -50,7 +50,7 @@ export class NewscrudRoutesController {
     const confirmationResult =
       await this.newscrudRoutesService.phoneProve(token);
     if (confirmationResult) {
-      return res.redirect('webston.ru/auth/login?activated');
+      return res.redirect('https://webston.ru/auth/login?activated');
     } else {
       throw new BadRequestException('Время действия ссылки истекло 😔');
     }

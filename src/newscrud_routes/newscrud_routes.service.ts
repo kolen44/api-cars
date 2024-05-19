@@ -56,7 +56,7 @@ export class NewscrudRoutesService {
         createNewscrudRouteDto.telephone_number,
       );
       const message = encodeURIComponent(
-        `Перейдите по ссылке для подтверждения регистрации: https://147.45.147.53/news-auth/confirm/${unicalStringForProve}`,
+        `Перейдите по ссылке для подтверждения регистрации: https://147.45.147.53/auth/confirm/${unicalStringForProve}`,
       );
       const tokenSMS = this.configService.get('APP_SMS_BY');
 
@@ -87,7 +87,7 @@ export class NewscrudRoutesService {
 
   async findOne(telephone_number: string) {
     if (!telephone_number)
-      return new UnauthorizedException('Данный токен невалидный');
+      throw new UnauthorizedException('Данный токен невалидный');
     const phone_number = telephone_number.toString();
     return await this.userRepository.findOne({
       where: { telephone_number: ILike(`%${phone_number}%`) },
@@ -102,14 +102,14 @@ export class NewscrudRoutesService {
 
   async findAll(user: NewsUserCreateEntity) {
     if (user.role !== 'ADMIN')
-      return new UnauthorizedException('Недостаточно прав');
+      throw new UnauthorizedException('Недостаточно прав');
     return await this.userRepository.find();
   }
 
   async validateUser(telephone_number: string, password: string) {
     const user: any = await this.findOne(telephone_number);
     if (!user)
-      return new UnauthorizedException('Данного пользователя не существует');
+      throw new UnauthorizedException('Данного пользователя не существует');
     const userPassword = user.password;
     const passwordIsMatch = await argon2.verify(userPassword, password);
     if (user && passwordIsMatch) {
@@ -120,7 +120,7 @@ export class NewscrudRoutesService {
 
   async login(user: IUser) {
     if (user?.response?.statusCode) {
-      return new UnauthorizedException('Имя телефона или пароль неверны');
+      throw new UnauthorizedException('Имя телефона или пароль неверны');
     }
     return {
       user,
@@ -163,12 +163,12 @@ export class NewscrudRoutesService {
       try {
         await axios.get(url);
       } catch (error) {
-        return new UnauthorizedException('Ошибка при отправки пароля клиенту');
+        throw new UnauthorizedException('Ошибка при отправки пароля клиенту');
       }
 
       return { user };
     } else {
-      return new BadRequestException(
+      throw new BadRequestException(
         'Время регистрации по номеру телефона истекло',
       );
     }
@@ -181,7 +181,7 @@ export class NewscrudRoutesService {
   ) {
     const user: any = await this.findOne(phone_number);
     if (!user || updateDto.password)
-      return new UnauthorizedException(
+      throw new UnauthorizedException(
         'Проверьте данные пользователя, так как сервер не может их найти.Так же сюда нельзя передавать пароль',
       ); //Проверяем админ ли пользователь
     if (
@@ -241,7 +241,7 @@ export class NewscrudRoutesService {
     try {
       await axios.get(url);
     } catch (error) {
-      return new UnauthorizedException('Ошибка при отправки пароля клиенту');
+      throw new UnauthorizedException('Ошибка при отправки пароля клиенту');
     }
     return { message: 'Пароль успешно обновлен' };
   }
@@ -280,7 +280,7 @@ export class NewscrudRoutesService {
         await axios.get(url);
         this.cacheManager.del(phone_number);
       } catch (error) {
-        return new UnauthorizedException('Ошибка при отправки пароля клиенту');
+        throw new UnauthorizedException('Ошибка при отправки пароля клиенту');
       }
       return { message: 'Пароль успешно обновлен' };
     }
@@ -300,7 +300,7 @@ export class NewscrudRoutesService {
 
       return this.userRepository.delete(user.id);
     } catch (error) {
-      return new BadGatewayException(
+      throw new BadGatewayException(
         'Ошибка в блоке удаления и отправки запроса на базу данных',
       );
     }
