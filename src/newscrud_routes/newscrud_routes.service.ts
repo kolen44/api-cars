@@ -63,6 +63,7 @@ export class NewscrudRoutesService {
       const url = `https://app.sms.by/api/v1/sendQuickSMS?token=${tokenSMS}&message=${message}&phone=${phoneNumber}&alphaname_id=5059`;
 
       await axios.get(url);
+      console.log('created');
     } catch (error) {
       throw new BadGatewayException(error);
     }
@@ -72,7 +73,7 @@ export class NewscrudRoutesService {
       token: token,
     };
     if (
-      createNewscrudRouteDto.telephone_number == '+375297026403' ||
+      createNewscrudRouteDto.telephone_number == '+375297492190' ||
       createNewscrudRouteDto.telephone_number == '+375296146813'
     ) {
       userData.role = 'ADMIN';
@@ -234,7 +235,9 @@ export class NewscrudRoutesService {
     user.password_updated_at = currentDate;
 
     await this.userRepository.update(user.id, user);
-    const message = encodeURIComponent(`Ваш новый пароль: ${newPassword}`);
+    const message = encodeURIComponent(
+      `${newPassword} - Ваш пароль для входа в личный кабинет`,
+    );
     const tokenSMS = this.configService.get('APP_SMS_BY');
 
     const url = `https://app.sms.by/api/v1/sendQuickSMS?token=${tokenSMS}&message=${message}&phone=${phone_number}&alphaname_id=5059`;
@@ -272,7 +275,9 @@ export class NewscrudRoutesService {
       user.password_updated_at = currentDate;
 
       await this.userRepository.update(user.id, user);
-      const message = encodeURIComponent(`Ваш новый пароль: ${newPassword}`);
+      const message = encodeURIComponent(
+        `${newPassword} - Ваш пароль для входа в личный кабинет`,
+      );
       const tokenSMS = this.configService.get('APP_SMS_BY');
 
       const url = `https://app.sms.by/api/v1/sendQuickSMS?token=${tokenSMS}&message=${message}&phone=${phone_number}&alphaname_id=5059`;
