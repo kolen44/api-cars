@@ -29,10 +29,8 @@ export class NewsUserCreateDto {
   fio: string;
 
   @IsOptional()
-  @IsString()
-  @MinLength(5, {
-    message:
-      'Неверно указан номер телефона. Минимально 5 символов + должно быть строкой',
+  @IsString({
+    message: 'Пожалуйста , проверьте avatar url. Это поле должно быть строкой',
   })
   avatar_url?: string;
 
@@ -45,42 +43,33 @@ export class NewsUserCreateDto {
   country?: string;
 
   @IsOptional()
-  @IsString()
-  @MinLength(3, {
-    message:
-      'Пожалуйста , проверьте tg id. Минимально 3 символа + должно быть строкой',
+  @IsString({
+    message: 'Пожалуйста , проверьте tg id. Это поле должно быть строкой',
   })
   tg_id?: string;
 
   @IsOptional()
-  @IsString()
-  @MinLength(3, {
-    message:
-      'Пожалуйста , проверьте site url. Минимально 3 символа + должно быть строкой',
+  @IsString({
+    message: 'Пожалуйста , проверьте site url. Это поле должно быть строкой',
   })
   site_url?: string;
 
   @IsOptional()
-  @IsString()
-  @MinLength(3, {
+  @IsString({
     message:
-      'Пожалуйста , проверьте company name. Минимально 3 символа + должно быть строкой',
+      'Пожалуйста , проверьте company name. Это поле должно быть строкой',
   })
   company_name?: string;
 
   @IsOptional()
-  @IsString()
-  @MinLength(3, {
-    message:
-      'Пожалуйста , проверьте description. Минимально 3 символа + должно быть строкой',
+  @IsString({
+    message: 'Пожалуйста , проверьте description. Это поле должно быть строкой',
   })
   description?: string;
 
   @IsOptional()
-  @IsString()
-  @MinLength(3, {
-    message:
-      'Пожалуйста , проверьте payments. Минимально 3 символа + должно быть строкой',
+  @IsString({
+    message: 'Пожалуйста , проверьте payments. Это поле должно быть строкой',
   })
   payments?: string;
 
