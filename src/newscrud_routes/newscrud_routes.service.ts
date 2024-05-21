@@ -158,7 +158,6 @@ export class NewscrudRoutesService {
         description: '',
         activity: true,
       });
-      await this.cacheManager.del(`${unicalStringForProve}`);
       const message = encodeURIComponent(
         `${password} - Ваш пароль для входа в личный кабинет`,
       );
