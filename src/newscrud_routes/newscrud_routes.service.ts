@@ -33,19 +33,17 @@ export class NewscrudRoutesService {
         telephone_number: createNewscrudRouteDto.telephone_number,
       },
     });
-    if (existUser)
+    if (existUser) {
       throw new BadRequestException(
         'Данный пользователь с таким номером телефона уже существует!',
       );
+    }
 
     const token = this.jwtService.sign({
       telephone_number: createNewscrudRouteDto.telephone_number,
     });
     const unicalStringForProve: string =
-      token.slice(0, 3) +
-      '' +
-      createNewscrudRouteDto.telephone_number.slice(0, 3);
-    console.log(unicalStringForProve);
+      createNewscrudRouteDto.telephone_number.slice(6);
     const cachedData: any = await this.cacheManager.get(`${token}`);
     if (cachedData)
       throw new BadRequestException(
@@ -137,9 +135,13 @@ export class NewscrudRoutesService {
     const cachedData: any = await this.cacheManager.get(
       `${unicalStringForProve}`,
     );
-    console.log(cachedData);
 
     if (cachedData) {
+      const existUser = await this.userRepository.findOne({
+        where: { telephone_number: cachedData.telephone_number },
+      });
+      if (existUser)
+        throw new BadRequestException('Данный номер уже используется');
       const password = this.generatePassword();
       const user = await this.userRepository.save({
         telephone_number: cachedData.telephone_number,
@@ -157,7 +159,9 @@ export class NewscrudRoutesService {
         activity: 1,
       });
       await this.cacheManager.del(`${unicalStringForProve}`);
-      const message = encodeURIComponent(`Ваш пароль: ${password}`);
+      const message = encodeURIComponent(
+        `${password} - Ваш пароль для входа в личный кабинет`,
+      );
       const tokenSMS = this.configService.get('APP_SMS_BY');
 
       const url = `https://app.sms.by/api/v1/sendQuickSMS?token=${tokenSMS}&message=${message}&phone=${cachedData.telephone_number}&alphaname_id=5059`;
