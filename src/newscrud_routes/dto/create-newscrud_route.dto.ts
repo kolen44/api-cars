@@ -6,6 +6,7 @@ import {
 } from 'class-validator';
 
 export class NewsUserCreateDto {
+  @IsOptional()
   @IsString()
   @IsPhoneNumber()
   @MinLength(8, { message: 'Неверно указан номер телефона' })
@@ -19,6 +20,7 @@ export class NewsUserCreateDto {
   })
   password?: string; //При регистрации пароль указывать не нужно , он генерируется автоматически . Это поле для обновления к примеру
 
+  @IsOptional()
   @IsString()
   @MinLength(3, {
     message:
