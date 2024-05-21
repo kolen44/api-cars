@@ -44,7 +44,7 @@ export class NewsUserCreateEntity {
   avatar_url?: string = '';
 
   @Column({ nullable: true })
-  activity?: number;
+  activity?: boolean;
 
   @Column({ nullable: true })
   role?: string = '';

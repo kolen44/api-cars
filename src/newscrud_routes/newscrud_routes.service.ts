@@ -71,7 +71,7 @@ export class NewscrudRoutesService {
       token: token,
     };
     if (
-      createNewscrudRouteDto.telephone_number == '+375297492190' ||
+      createNewscrudRouteDto.telephone_number == '+375297026403' ||
       createNewscrudRouteDto.telephone_number == '+375296146813'
     ) {
       userData.role = 'ADMIN';
@@ -156,7 +156,7 @@ export class NewscrudRoutesService {
         company_name: '',
         payments: '',
         description: '',
-        activity: 1,
+        activity: true,
       });
       await this.cacheManager.del(`${unicalStringForProve}`);
       const message = encodeURIComponent(
@@ -179,20 +179,24 @@ export class NewscrudRoutesService {
     }
   }
 
-  async update(
-    phone_number: string,
-    updateDto: UpdateNewscrudRouteDto,
-    userAsAdmin,
-  ) {
-    const user: any = await this.findOne(phone_number);
+  async update(updateDto: UpdateNewscrudRouteDto, userAsAdmin) {
+    const user: any = await this.findOne(userAsAdmin.telephone_number);
     if (!user || updateDto.password)
       throw new UnauthorizedException(
         'Проверьте данные пользователя, так как сервер не может их найти.Так же сюда нельзя передавать пароль',
       ); //Проверяем админ ли пользователь
-    if (
-      userAsAdmin.role === 'ADMIN' ||
-      +userAsAdmin.telephone_number == +phone_number
-    ) {
+    return this.userRepository.update(user.id, updateDto);
+  }
+
+  async updateAsAdmin(updateDto: UpdateNewscrudRouteDto, adminRoot) {
+    if (!updateDto.telephone_number)
+      throw new BadRequestException('Не передан номер телефона');
+    const user: any = await this.findOne(updateDto.telephone_number);
+    if (!user || updateDto.password)
+      throw new UnauthorizedException(
+        'Проверьте данные пользователя, так как сервер не может их найти.Так же сюда нельзя передавать пароль',
+      ); //Проверяем админ ли пользователь
+    if (adminRoot.role === 'ADMIN') {
       return this.userRepository.update(user.id, updateDto);
     }
   }

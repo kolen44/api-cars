@@ -56,18 +56,19 @@ export class NewscrudRoutesController {
     }
   }
 
-  @Patch(':phone_number')
+  @Patch()
   @UseGuards(JwtAuthGuard)
-  async updateUser(
-    @Param('phone_number') phone_number: string,
+  async updateUser(@Body() updateUserDto: UpdateNewscrudRouteDto, @Req() req) {
+    return this.newscrudRoutesService.update(updateUserDto, req.user);
+  }
+
+  @Patch('admin')
+  @UseGuards(JwtAuthGuard)
+  async updateUserByAdmin(
     @Body() updateUserDto: UpdateNewscrudRouteDto,
     @Req() req,
   ) {
-    return this.newscrudRoutesService.update(
-      phone_number,
-      updateUserDto,
-      req.user,
-    );
+    return this.newscrudRoutesService.updateAsAdmin(updateUserDto, req.user);
   }
 
   @Post('/password')
