@@ -40,8 +40,8 @@ export class NewsUserCreateEntity {
   @Column({ nullable: true })
   country?: string;
 
-  @Column({ nullable: true })
-  avatar_url?: string = '';
+  @Column({ nullable: true, type: 'bytea' })
+  avatar_url?: string;
 
   @Column({ nullable: true })
   activity?: boolean;
