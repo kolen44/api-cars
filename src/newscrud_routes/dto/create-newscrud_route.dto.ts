@@ -35,10 +35,8 @@ export class NewsUserCreateDto {
   avatar_url?: string;
 
   @IsOptional()
-  @IsString()
-  @MinLength(3, {
-    message:
-      'Пожалуйста , проверьте country. Минимально 3 символа + должно быть строкой',
+  @IsString({
+    message: 'Пожалуйста , проверьте country. Это поле должно быть строкой',
   })
   country?: string;
 
