@@ -9,12 +9,10 @@ import {
   Post,
   Req,
   Request,
-  Res,
   UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { Response } from 'express';
 import { NewsUserCreateEntity } from 'src/database/entities/newscrud_route.entity';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.giard';
 import { LocalAuthGuard } from 'src/guards/local-auth.guard';
@@ -46,7 +44,7 @@ export class NewscrudRoutesController {
   }
 
   @Get('confirm/:token')
-  async confirmEmail(@Param('token') token: string, @Res() res: Response) {
+  async confirmEmail(@Param('token') token: string) {
     const confirmationResult =
       await this.newscrudRoutesService.phoneProve(token);
     if (confirmationResult) {

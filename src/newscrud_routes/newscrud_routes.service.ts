@@ -184,6 +184,17 @@ export class NewscrudRoutesService {
       throw new UnauthorizedException(
         'Проверьте данные пользователя, так как сервер не может их найти.Так же сюда нельзя передавать пароль',
       ); //Проверяем админ ли пользователь
+    const avatar = updateDto.avatar_url;
+    if (avatar) {
+      const base64Str = avatar.replace(/^data:image\/\w+;base64,/, '');
+
+      // Ограничение на размер файла (300 KB)
+      const MAX_SIZE = 300 * 1024; // 300 KB
+      const bufferSize = Buffer.byteLength(base64Str, 'base64');
+      if (bufferSize > MAX_SIZE) {
+        throw new BadRequestException('Вес аватара превышает 300 килобайт');
+      }
+    }
     return this.userRepository.update(user.id, updateDto);
   }
 
