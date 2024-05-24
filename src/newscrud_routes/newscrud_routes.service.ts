@@ -188,8 +188,8 @@ export class NewscrudRoutesService {
     if (avatar) {
       const base64Str = avatar.replace(/^data:image\/\w+;base64,/, '');
 
-      // Ограничение на размер файла (300 KB)
-      const MAX_SIZE = 300 * 1024; // 300 KB
+      // Ограничение на размер файла (1000 KB)
+      const MAX_SIZE = 1000 * 1024; // 1000 KB
       const bufferSize = Buffer.byteLength(base64Str, 'base64');
       if (bufferSize > MAX_SIZE) {
         throw new BadRequestException('Вес аватара превышает 300 килобайт');
