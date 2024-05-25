@@ -45,7 +45,8 @@ export class BlogService {
       newPost.url_video = createBlogDto.url_video;
     }
 
-    return await this.blogRepository.save(newPost);
+    await this.blogRepository.save(newPost);
+    return newPost.id;
   }
 
   async findAll(id: number) {
