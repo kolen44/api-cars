@@ -4,16 +4,19 @@ import {
   DefaultValuePipe,
   Delete,
   Get,
+  Headers,
   Param,
   ParseIntPipe,
   Patch,
   Post,
   Query,
   Req,
+  Request,
   UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+import { NewsUserCreateEntity } from 'src/database/entities/newscrud_route.entity';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.giard';
 import { BlogService } from './blog.service';
 import { CreatePostDto } from './dto/create-blog.dto';
@@ -56,7 +59,14 @@ export class BlogController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  remove(@Param('id') id: string) {
-    return this.blogService.remove(+id);
+  remove(
+    @Param('id') id: string,
+    @Headers('Authorization') authHeader: string,
+    @Request() req,
+  ) {
+    const user: NewsUserCreateEntity = { ...req.user };
+    const userId: number = user.id;
+    const token: string = authHeader.replace('Bearer ', '');
+    return this.blogService.remove(+id, token, userId);
   }
 }

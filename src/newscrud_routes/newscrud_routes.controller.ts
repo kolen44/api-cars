@@ -4,6 +4,7 @@ import {
   Controller,
   Delete,
   Get,
+  Headers,
   Param,
   Patch,
   Post,
@@ -95,8 +96,13 @@ export class NewscrudRoutesController {
 
   @Delete(':phone_number')
   @UseGuards(JwtAuthGuard)
-  async deleteUser(@Param('phone_number') phone_number: string) {
-    return this.newscrudRoutesService.delete(phone_number);
+  async deleteUser(
+    @Param('phone_number') phone_number: string,
+    @Headers('Authorization') authHeader: string,
+  ) {
+    const token = authHeader.replace('Bearer ', '');
+    console.log(token);
+    return this.newscrudRoutesService.delete(phone_number, token);
   }
 
   @Get('/prove')

@@ -143,6 +143,7 @@ export class NewscrudRoutesService {
       if (existUser)
         throw new BadRequestException('Данный номер уже используется');
       const password = this.generatePassword();
+      console.log(password);
       const user = await this.userRepository.save({
         telephone_number: cachedData.telephone_number,
         password: await argon2.hash(password),
@@ -310,15 +311,17 @@ export class NewscrudRoutesService {
     throw new UnauthorizedException('Неверно введен код');
   }
 
-  async delete(phone_number: string) {
-    const user: any = await this.findOne(phone_number);
+  async delete(phone_number: string, token: string) {
+    const user: NewsUserCreateEntity = await this.findOne(phone_number);
     if (!user)
       return new UnauthorizedException(
         'Проверьте данные пользователя, так как сервер не может их найти',
       );
+
+    console.log(user);
     try {
       await axios.delete(
-        `https://kolen44-database-new-car-898e.twc1.net/database/avatars/${phone_number}`,
+        `https://kolen44-database-new-car-898e.twc1.net/database/post?userId=${user.id}&token=${token}`,
       );
 
       return this.userRepository.delete(user.id);
