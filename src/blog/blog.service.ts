@@ -1,6 +1,5 @@
 import {
   BadGatewayException,
-  BadRequestException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -21,18 +20,6 @@ export class BlogService {
   ) {}
 
   async create(createBlogDto: CreatePostDto, id: number) {
-    const existUser = await this.blogRepository.findOne({
-      where: {
-        user: { id },
-        title: createBlogDto.title,
-        description: createBlogDto.description,
-      },
-      relations: ['user'],
-    });
-    if (existUser)
-      throw new BadRequestException(
-        'Категория с таким названием и описанием у пользователя уже существует!',
-      );
     const newPost: PostEntity = new PostEntity();
     const user = await this.userService.findById(id);
     newPost.title = createBlogDto.title;
