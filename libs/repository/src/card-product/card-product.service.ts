@@ -100,13 +100,15 @@ export class CardProductService {
 
   async updateDatabase(updateCardProductDto: UpdateCardProductDto) {
     try {
-      if (this.checkWhichRepositoryBigger()) {
-        return await this.cardProductRepositorySecond.save(
-          updateCardProductDto,
-        );
-      } else {
-        return await this.cardProductRepository.save(updateCardProductDto);
-      }
+      const existCard = await this.cardProductRepository.findOne({
+        where: {
+          detail_name: updateCardProductDto.detail_name,
+          article: updateCardProductDto.article,
+          original_number: updateCardProductDto.original_number,
+        },
+      });
+      if (existCard) await this.cardProductRepository.delete(existCard.id);
+      return await this.cardProductRepositorySecond.save(updateCardProductDto);
     } catch (error) {
       return;
     }
