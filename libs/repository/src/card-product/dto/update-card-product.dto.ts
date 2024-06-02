@@ -32,9 +32,31 @@ export class UpdateCardProductDto implements Partial<CardProductDB> {
   constructor(params: Partial<CardProductDB>) {
     (cardProductKeys as (keyof CardProductDB)[]).forEach((key) => {
       if (key in params) {
-        this[key as string] = params[key] as keyof CardProductDB;
+        if (key === 'description' && params.description) {
+          this[key] = this.transformDescription(
+            params.description,
+            params.volume,
+          );
+        } else {
+          this[key as string] = params[key] as keyof CardProductDB;
+        }
       }
     });
+  }
+
+  private transformDescription(description: string, volume: number): string {
+    // Extract the components of the description
+    const countryMatch = description.match(/Страна происхождения: [^.]*/);
+    // const engineMatch = description.match(/\([^)]*\)/);
+    const gearboxMatch = description.match(/КПП[^.]*/);
+
+    // Extract the values
+    const country = countryMatch ? countryMatch[0] : '';
+    // const engine = engineMatch ? engineMatch[0].slice(1, -1) : '';
+    const gearbox = gearboxMatch ? gearboxMatch[0] : '';
+
+    // Combine the parts into the desired format
+    return `${country}. (${volume}, ${gearbox})`;
   }
 
   public getUpdateData() {
