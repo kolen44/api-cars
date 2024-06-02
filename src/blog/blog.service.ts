@@ -1,10 +1,5 @@
-import {
-  BadGatewayException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import axios from 'axios';
 import { PostEntity } from 'src/database/entities/blog.entity';
 import { NewscrudRoutesService } from 'src/newscrud_routes/newscrud_routes.service';
 import { Repository } from 'typeorm';
@@ -75,20 +70,21 @@ export class BlogService {
     return await this.blogRepository.update(id, updateBlogDto);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async remove(id: number, token: string, userId: number) {
     const isExist = await this.blogRepository.findOne({
       where: { id },
     });
     if (!isExist) throw new NotFoundException('Пост не найден');
-    try {
-      await axios.delete(
-        `https://kolen44-database-new-car-898e.twc1.net/database/post?userId=${userId}&token=${token}&blogId=${id}`,
-      );
-    } catch (error) {
-      throw new BadGatewayException(
-        'Ошибка в блоке удаления и отправки запроса на базу данных',
-      );
-    }
+    // try {
+    //   await axios.delete(
+    //     `https://kolen44-database-new-car-898e.twc1.net/database/post?userId=${userId}&token=${token}&blogId=${id}`,
+    //   );
+    // } catch (error) {
+    //   throw new BadGatewayException(
+    //     'Ошибка в блоке удаления и отправки запроса на базу данных',
+    //   );
+    // }
     return await this.blogRepository.delete(id);
   }
 }

@@ -311,6 +311,7 @@ export class NewscrudRoutesService {
     throw new UnauthorizedException('Неверно введен код');
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async delete(phone_number: string, token: string) {
     const user: NewsUserCreateEntity = await this.findOne(phone_number);
     if (!user)
@@ -319,17 +320,17 @@ export class NewscrudRoutesService {
       );
 
     console.log(user);
-    try {
-      await axios.delete(
-        `https://kolen44-database-new-car-898e.twc1.net/database/post?userId=${user.id}&token=${token}`,
-      );
+    // try {
+    //   await axios.delete(
+    //     `https://kolen44-database-new-car-898e.twc1.net/database/post?userId=${user.id}&token=${token}`,
+    //   );
 
-      return this.userRepository.delete(user.id);
-    } catch (error) {
-      throw new BadGatewayException(
-        'Ошибка в блоке удаления и отправки запроса на базу данных',
-      );
-    }
+    //   return this.userRepository.delete(user.id);
+    // } catch (error) {
+    //   throw new BadGatewayException(
+    //     'Ошибка в блоке удаления и отправки запроса на базу данных',
+    //   );
+    // }
   }
 
   generatePassword(): string {
