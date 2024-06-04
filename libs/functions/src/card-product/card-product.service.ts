@@ -100,14 +100,16 @@ export class CardProductService {
     }
 
     const cardProducts = updateCardProductDtos.map((dto) => {
-      const cardProduct = new CardProduct();
-      cardProduct.id_writer = 101;
-      Object.assign(cardProduct, dto);
-      cardProduct.year_start_production = dto.year;
-      cardProduct.year_end_production = dto.year;
-      cardProduct.description = `${dto.description} (${dto.car} ${dto.vin})`;
+      if (dto.brand && dto.model && dto.phone && dto.detail_name) {
+        const cardProduct = new CardProduct();
+        cardProduct.id_writer = 101;
+        Object.assign(cardProduct, dto);
+        cardProduct.year_start_production = dto.year;
+        cardProduct.year_end_production = dto.year;
+        cardProduct.description = `${dto.description} (${dto.car} ${dto.vin})`;
 
-      return cardProduct;
+        return cardProduct;
+      }
     });
 
     return await this.cardProductRepository.save(cardProducts);

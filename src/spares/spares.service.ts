@@ -98,6 +98,7 @@ export class SparesService {
         .slice(i, i + BATCH_SIZE)
         .map((element) => new UpdateCardProductSecondFIleDto(element));
       batches.push(batch);
+      console.log(`Batch ${i / BATCH_SIZE} created`);
     }
 
     for (let i = 0; i < batches.length; i += MAX_CONCURRENT_BATCHES) {
@@ -106,6 +107,7 @@ export class SparesService {
         .map(async (batch, index) => {
           try {
             await this.dbCreate.updateDatabaseForSecondFileBatch(batch);
+            console.log(`Batch ${i + index} processed`);
           } catch (error) {
             console.error(`Error processing batch ${i + index}`, error);
           }
