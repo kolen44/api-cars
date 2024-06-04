@@ -57,61 +57,61 @@ export class CardProductService {
       .getMany();
   }
 
-  async updateDatabase(updateCardProductDto: UpdateCardProductDto) {
-    try {
-      const existCard = await this.cardProductRepository.findOne({
-        where: {
-          detail_name: updateCardProductDto.detail_name,
-          article: updateCardProductDto.article,
-          original_number: updateCardProductDto.original_number,
-        },
-      });
-      if (existCard) await this.cardProductRepository.delete(existCard.id);
+  async updateDatabaseBatch(updateCardProductDtos: UpdateCardProductDto[]) {
+    const existingCards = await this.cardProductRepository.find({
+      where: updateCardProductDtos.map((dto) => ({
+        detail_name: dto.detail_name,
+        article: dto.article,
+        original_number: dto.original_number,
+      })),
+    });
+
+    const existingCardIds = existingCards.map((card) => card.id);
+
+    if (existingCardIds.length) {
+      await this.cardProductRepository.delete(existingCardIds);
+    }
+
+    const cardProducts = updateCardProductDtos.map((dto) => {
       const cardProduct = new CardProduct();
       cardProduct.id_writer = 165;
+      Object.assign(cardProduct, dto);
+      return cardProduct;
+    });
 
-      // Копируем все свойства из updateCardProductDto в cardProduct
-      Object.assign(cardProduct, updateCardProductDto);
-      return await this.cardProductRepository.save(cardProduct);
-    } catch (error) {
-      return;
-    }
+    return await this.cardProductRepository.save(cardProducts);
   }
 
-  async updateDatabaseForSecondFile(
-    updateCardProductDto: UpdateCardProductSecondFIleDto,
+  async updateDatabaseForSecondFileBatch(
+    updateCardProductDtos: UpdateCardProductSecondFIleDto[],
   ) {
-    try {
-      // Выводим содержимое DTO для отладки
-      console.log('updateCardProductDto:', updateCardProductDto);
+    const existingCards = await this.cardProductRepository.find({
+      where: updateCardProductDtos.map((dto) => ({
+        detail_name: dto.detail_name,
+        article: dto.article,
+        original_number: dto.original_number,
+      })),
+    });
 
-      const existCard = await this.cardProductRepository.findOne({
-        where: {
-          article: updateCardProductDto.article,
-          url_photo_details: updateCardProductDto.url_photo_details,
-        },
-      });
-      if (existCard) await this.cardProductRepository.delete(existCard.id);
+    const existingCardIds = existingCards.map((card) => card.id);
 
-      const cardProduct = new CardProduct();
-      Object.assign(cardProduct, updateCardProductDto);
-      cardProduct.id_writer = 101;
-      cardProduct.year_start_production = updateCardProductDto.year;
-      cardProduct.year_end_production = updateCardProductDto.year;
-      cardProduct.description = `${updateCardProductDto.description} (${updateCardProductDto.car} ${updateCardProductDto.vin})`;
-
-      await this.cardProductRepository.save(cardProduct);
-
-      return 'сохранено';
-    } catch (error) {
-      console.error('Error:', error);
-      return 'ошибка';
+    if (existingCardIds.length) {
+      await this.cardProductRepository.delete(existingCardIds);
     }
-  }
 
-  // async update(id: number, updateCardProductDto: UpdateCardProductDto) {
-  //   return `This action updates a #${id} cardProduct`;
-  // }
+    const cardProducts = updateCardProductDtos.map((dto) => {
+      const cardProduct = new CardProduct();
+      cardProduct.id_writer = 101;
+      Object.assign(cardProduct, dto);
+      cardProduct.year_start_production = dto.year;
+      cardProduct.year_end_production = dto.year;
+      cardProduct.description = `${dto.description} (${dto.car} ${dto.vin})`;
+
+      return cardProduct;
+    });
+
+    return await this.cardProductRepository.save(cardProducts);
+  }
 
   async removeMany(ids: number[]) {
     return await this.cardProductRepository

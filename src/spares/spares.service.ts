@@ -47,10 +47,21 @@ export class SparesService {
     const response: any = await this.sparesService.parseCvsToJson(url);
     console.log('ended parsing. starting db creating');
 
-    for (const element of response) {
-      const data = new UpdateCardProductDto(element);
-      await this.dbCreate.updateDatabase(data);
+    const BATCH_SIZE = 100; // Выберите оптимальный размер батча
+    const batches = [];
+
+    for (let i = 0; i < response.length; i += BATCH_SIZE) {
+      const batch = response
+        .slice(i, i + BATCH_SIZE)
+        .map((element) => new UpdateCardProductDto(element));
+      batches.push(batch);
     }
+
+    const promises = batches.map(async (batch) => {
+      return this.dbCreate.updateDatabaseBatch(batch);
+    });
+
+    await Promise.all(promises);
 
     console.log('created');
     return response;
@@ -63,10 +74,21 @@ export class SparesService {
       await this.sparesService.parseCvsToJsonSecondFile(url);
     console.log('ended parsing. starting db creating');
 
-    for (const element of response) {
-      const data = new UpdateCardProductSecondFIleDto(element);
-      await this.dbCreate.updateDatabaseForSecondFile(data);
+    const BATCH_SIZE = 100; // Выберите оптимальный размер батча
+    const batches = [];
+
+    for (let i = 0; i < response.length; i += BATCH_SIZE) {
+      const batch = response
+        .slice(i, i + BATCH_SIZE)
+        .map((element) => new UpdateCardProductSecondFIleDto(element));
+      batches.push(batch);
     }
+
+    const promises = batches.map(async (batch) => {
+      return this.dbCreate.updateDatabaseForSecondFileBatch(batch);
+    });
+
+    await Promise.all(promises);
 
     console.log('created');
     return response;
