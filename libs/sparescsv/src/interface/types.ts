@@ -24,7 +24,7 @@ export interface CardProduct {
   year_end_production: number;
   url_photo_details: string;
   url_car_photo?: string;
-  video?: string;
+  url_car_video?: string;
   phone: string;
   vin?: string;
 }

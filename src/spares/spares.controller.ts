@@ -14,6 +14,18 @@ export class SparesController {
   @HttpCode(201)
   async uploadFile(@Body() data: { data: string }) {
     if (data.data === 'dkdkdkdenwoofd') {
+      this.sparesService.cvsDownload(
+        'https://db.f-opt.com/csvfiles/abw/spares.csv',
+      );
+    } else {
+      return 'Неверный токен';
+    }
+  }
+
+  @Post('/second-file')
+  @HttpCode(201)
+  async uploadSecondFileFile(@Body() data: { data: string }) {
+    if (data.data === 'dkdkdkdenwoofd') {
       this.sparesService.cvsDownloadSecondFile(
         'https://export.autostrong-m.ru/dataexports/2023/webston.ru_MinskMoskvaPiter.csv',
       );

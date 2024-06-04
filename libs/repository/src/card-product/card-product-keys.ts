@@ -24,7 +24,7 @@ export const cardProductKeys: (keyof CardProduct)[] = [
   'year_end_production',
   'url_photo_details',
   'url_car_photo',
-  'video',
+  'url_car_video',
   'phone',
   'vin',
 ] as const;

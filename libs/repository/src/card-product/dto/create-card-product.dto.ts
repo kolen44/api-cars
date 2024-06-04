@@ -24,7 +24,7 @@ export class CreateCardProductDto {
   public year_end_production: number;
   public url_photo_details: string;
   public url_car_photo: string;
-  public video?: string;
+  public url_car_video?: string;
   public phone: string;
   public vin: string;
 

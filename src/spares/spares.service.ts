@@ -65,7 +65,6 @@ export class SparesService {
 
     for (const element of response) {
       const data = new UpdateCardProductSecondFIleDto(element);
-      console.log(data);
       await this.dbCreate.updateDatabaseForSecondFile(data);
     }
 

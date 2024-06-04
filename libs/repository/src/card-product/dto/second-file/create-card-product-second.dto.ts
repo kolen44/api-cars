@@ -5,21 +5,21 @@ export const cardProductSecondFileKeys: (keyof CardProductSecondFile)[] = [
   'brand',
   'model',
   'year',
-  'part',
-  'fuel',
+  'detail_name',
+  'engine',
   'volume',
   'engine_type',
   'gearbox',
   'body_type',
-  'number',
+  'original_number',
   'description',
   'price',
   'currency',
   'discount',
-  'phones',
+  'phone',
   'email',
   'url_car_video',
-  'url_car_photo',
+  'url_photo_details',
   'car',
   'new_arrival',
   'vin',
@@ -27,4 +27,4 @@ export const cardProductSecondFileKeys: (keyof CardProductSecondFile)[] = [
 
 // Массив, где хранятся только числовые ключи
 export const cardProductSecondFileNumericKeys: (keyof CardProductSecondFile)[] =
-  ['year', 'price', 'discount', 'volume'] as const;
+  ['year', 'discount', 'volume'] as const;

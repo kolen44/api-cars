@@ -6,7 +6,7 @@ export class CardProduct {
   id: number;
 
   @Column({ nullable: true })
-  id_ext: string;
+  id_writer: number;
 
   @Column({ nullable: true })
   article: string;
@@ -60,9 +60,6 @@ export class CardProduct {
   currency: string;
 
   @Column({ nullable: true })
-  discount: number;
-
-  @Column({ nullable: true })
   description: string;
 
   @Column({ nullable: true })
@@ -82,26 +79,4 @@ export class CardProduct {
 
   @Column({ nullable: true })
   phone: string;
-
-  @Column({ nullable: true })
-  vin?: string;
-
-  // Дополнительные поля из первой сущности
-  @Column({ nullable: true })
-  email?: string;
-
-  @Column({ nullable: true })
-  car?: string;
-
-  @Column({ nullable: true })
-  new_arrival?: string;
-
-  @Column({ nullable: true })
-  part: string;
-
-  @Column({ nullable: true })
-  fuel: string;
-
-  @Column({ nullable: true })
-  number: string;
 }

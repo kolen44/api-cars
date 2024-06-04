@@ -67,7 +67,12 @@ export class CardProductService {
         },
       });
       if (existCard) await this.cardProductRepository.delete(existCard.id);
-      return await this.cardProductRepository.save(updateCardProductDto);
+      const cardProduct = new CardProduct();
+      cardProduct.id_writer = 165;
+
+      // Копируем все свойства из updateCardProductDto в cardProduct
+      Object.assign(cardProduct, updateCardProductDto);
+      return await this.cardProductRepository.save(cardProduct);
     } catch (error) {
       return;
     }
@@ -77,19 +82,30 @@ export class CardProductService {
     updateCardProductDto: UpdateCardProductSecondFIleDto,
   ) {
     try {
+      // Выводим содержимое DTO для отладки
+      console.log('updateCardProductDto:', updateCardProductDto);
+
       const existCard = await this.cardProductRepository.findOne({
         where: {
           article: updateCardProductDto.article,
-          url_car_photo: updateCardProductDto.url_car_photo,
-          vin: updateCardProductDto.vin,
+          url_photo_details: updateCardProductDto.url_photo_details,
         },
       });
       if (existCard) await this.cardProductRepository.delete(existCard.id);
-      await this.cardProductRepository.save(updateCardProductDto);
-      console.log(updateCardProductDto);
+
+      const cardProduct = new CardProduct();
+      Object.assign(cardProduct, updateCardProductDto);
+      cardProduct.id_writer = 101;
+      cardProduct.year_start_production = updateCardProductDto.year;
+      cardProduct.year_end_production = updateCardProductDto.year;
+      cardProduct.description = `${updateCardProductDto.description} (${updateCardProductDto.car} ${updateCardProductDto.vin})`;
+
+      await this.cardProductRepository.save(cardProduct);
+
       return 'сохранено';
     } catch (error) {
-      return;
+      console.error('Error:', error);
+      return 'ошибка';
     }
   }
 
