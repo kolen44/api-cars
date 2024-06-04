@@ -60,7 +60,6 @@ export class SparesService {
         .slice(i, i + BATCH_SIZE)
         .map((element) => new UpdateCardProductDto(element));
       batches.push(batch);
-      console.log(`Batch ${i / BATCH_SIZE} created`);
     }
 
     for (let i = 0; i < batches.length; i += MAX_CONCURRENT_BATCHES) {
@@ -69,7 +68,6 @@ export class SparesService {
         .map(async (batch, index) => {
           try {
             await this.dbCreate.updateDatabaseBatch(batch);
-            console.log(`Batch ${i + index} processed`);
           } catch (error) {
             console.error(`Error processing batch ${i + index}`, error);
           }
@@ -92,8 +90,9 @@ export class SparesService {
     console.log('ended parsing. starting db creating');
 
     const BATCH_SIZE = 100; // Выберите оптимальный размер батча
-    const batches = [];
+    const MAX_CONCURRENT_BATCHES = 5; // Ограничение на количество параллельных запросов
 
+    const batches = [];
     for (let i = 0; i < response.length; i += BATCH_SIZE) {
       const batch = response
         .slice(i, i + BATCH_SIZE)
@@ -101,13 +100,23 @@ export class SparesService {
       batches.push(batch);
     }
 
-    const promises = batches.map(async (batch) => {
-      return this.dbCreate.updateDatabaseForSecondFileBatch(batch);
-    });
+    for (let i = 0; i < batches.length; i += MAX_CONCURRENT_BATCHES) {
+      const batchPromises = batches
+        .slice(i, i + MAX_CONCURRENT_BATCHES)
+        .map(async (batch, index) => {
+          try {
+            await this.dbCreate.updateDatabaseForSecondFileBatch(batch);
+          } catch (error) {
+            console.error(`Error processing batch ${i + index}`, error);
+          }
+        });
 
-    await Promise.all(promises);
+      await Promise.all(batchPromises);
+      // Добавляем небольшую задержку, чтобы уменьшить нагрузку на базу данных
+      await this.delay(100);
+    }
 
-    console.log('created');
+    console.log('All batches processed');
     return response;
   }
 
