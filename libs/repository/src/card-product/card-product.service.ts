@@ -10,6 +10,7 @@ import {
   Repository,
 } from 'typeorm';
 import { CreateCardProductDto } from './dto/create-card-product.dto';
+import { UpdateCardProductSecondFIleDto } from './dto/second-file/update-card-product-second.dto';
 import { UpdateCardProductDto } from './dto/update-card-product.dto';
 
 @Injectable()
@@ -67,6 +68,26 @@ export class CardProductService {
       });
       if (existCard) await this.cardProductRepository.delete(existCard.id);
       return await this.cardProductRepository.save(updateCardProductDto);
+    } catch (error) {
+      return;
+    }
+  }
+
+  async updateDatabaseForSecondFile(
+    updateCardProductDto: UpdateCardProductSecondFIleDto,
+  ) {
+    try {
+      const existCard = await this.cardProductRepository.findOne({
+        where: {
+          article: updateCardProductDto.article,
+          url_car_photo: updateCardProductDto.url_car_photo,
+          vin: updateCardProductDto.vin,
+        },
+      });
+      if (existCard) await this.cardProductRepository.delete(existCard.id);
+      await this.cardProductRepository.save(updateCardProductDto);
+      console.log(updateCardProductDto);
+      return 'сохранено';
     } catch (error) {
       return;
     }

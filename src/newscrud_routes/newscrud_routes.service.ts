@@ -196,7 +196,8 @@ export class NewscrudRoutesService {
         throw new BadRequestException('Вес аватара превышает 300 килобайт');
       }
     }
-    return this.userRepository.update(user.id, updateDto);
+    await this.userRepository.update(user.id, updateDto);
+    return await this.userRepository.findOne({ where: { id: user.id } });
   }
 
   async updateAsAdmin(updateDto: UpdateNewscrudRouteDto, adminRoot) {
@@ -208,7 +209,8 @@ export class NewscrudRoutesService {
         'Проверьте данные пользователя, так как сервер не может их найти.Так же сюда нельзя передавать пароль',
       ); //Проверяем админ ли пользователь
     if (adminRoot.role === 'ADMIN') {
-      return this.userRepository.update(user.id, updateDto);
+      await this.userRepository.update(user.id, updateDto);
+      return await this.userRepository.findOne({ where: { id: user.id } });
     }
   }
 

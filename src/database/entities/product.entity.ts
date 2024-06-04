@@ -1,10 +1,12 @@
-import { CardProductDB } from '@repository/repository/card-product/types/card-product-db';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class CardProduct implements CardProductDB {
+export class CardProduct {
   @PrimaryGeneratedColumn({ type: 'integer' })
   id: number;
+
+  @Column({ nullable: true })
+  id_ext: string;
 
   @Column({ nullable: true })
   article: string;
@@ -83,4 +85,23 @@ export class CardProduct implements CardProductDB {
 
   @Column({ nullable: true })
   vin?: string;
+
+  // Дополнительные поля из первой сущности
+  @Column({ nullable: true })
+  email?: string;
+
+  @Column({ nullable: true })
+  car?: string;
+
+  @Column({ nullable: true })
+  new_arrival?: string;
+
+  @Column({ nullable: true })
+  part: string;
+
+  @Column({ nullable: true })
+  fuel: string;
+
+  @Column({ nullable: true })
+  number: string;
 }

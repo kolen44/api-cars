@@ -1,21 +1,21 @@
 import {
-  cardProductKeys,
-  cardProductNumericKeys,
-} from '@repository/repository/card-product/card-product-keys';
-import { CardProduct } from '../interface/types';
+  cardProductSecondFileKeys,
+  cardProductSecondFileNumericKeys,
+} from '@repository/repository/card-product/dto/second-file/create-card-product-second.dto';
+import { CardProductSecondFile } from '../interface/cvssecond(101)';
 
 export class CsvToJson {
-  public createObjectByArray(arr: string[]): CardProduct {
+  public createObjectByArray(arr: string[]): CardProductSecondFile {
     const object = {};
     let index = 0;
 
-    cardProductKeys.forEach((key) => {
+    cardProductSecondFileKeys.forEach((key) => {
       const item = arr[index++];
       if (!item) return;
 
       let value: string | number;
 
-      if (cardProductNumericKeys.includes(key)) {
+      if (cardProductSecondFileNumericKeys.includes(key)) {
         value = Number.isNaN(Number(item)) ? item : Number(item);
       } else {
         value = item;
@@ -23,10 +23,10 @@ export class CsvToJson {
       object[key] = value;
     });
 
-    return object as CardProduct;
+    return object as CardProductSecondFile;
   }
 
-  public convertLine(line: string): CardProduct {
+  public convertLine(line: string): CardProductSecondFile {
     const arr = line.replace(/"/g, '').split(';');
     return this.createObjectByArray(arr);
   }

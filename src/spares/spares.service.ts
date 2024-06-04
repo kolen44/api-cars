@@ -2,6 +2,7 @@ import { SparesCsvService } from '@app/sparescsv';
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { CardProductService } from '@repository/repository';
+import { UpdateCardProductSecondFIleDto } from '@repository/repository/card-product/dto/second-file/update-card-product-second.dto';
 import { UpdateCardProductDto } from '@repository/repository/card-product/dto/update-card-product.dto';
 import { FindProductQueryDto } from './dto/find-product-query.dto';
 import { SearcherCardProductService } from './services/searcher-card-product.service';
@@ -23,6 +24,18 @@ export class SparesService {
     }
   }
 
+  @Cron(CronExpression.EVERY_DAY_AT_5AM)
+  handleCronSecondFile() {
+    try {
+      this.cvsDownload(
+        'https://export.autostrong-m.ru/dataexports/2023/webston.ru_MinskMoskvaPiter.csv',
+      );
+    } catch (error) {
+      console.log(error);
+      return error;
+    }
+  }
+
   public async cvsUpdate(file) {
     const response = await this.sparesService.cvsUpdate(file);
     return response;
@@ -37,6 +50,23 @@ export class SparesService {
     for (const element of response) {
       const data = new UpdateCardProductDto(element);
       await this.dbCreate.updateDatabase(data);
+    }
+
+    console.log('created');
+    return response;
+  }
+
+  public async cvsDownloadSecondFile(url: string) {
+    console.log('started parsing');
+
+    const response: any =
+      await this.sparesService.parseCvsToJsonSecondFile(url);
+    console.log('ended parsing. starting db creating');
+
+    for (const element of response) {
+      const data = new UpdateCardProductSecondFIleDto(element);
+      console.log(data);
+      await this.dbCreate.updateDatabaseForSecondFile(data);
     }
 
     console.log('created');

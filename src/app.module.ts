@@ -6,6 +6,7 @@ import { DatabaseModule } from './database/database.module';
 import { NewscrudRoutesModule } from './newscrud_routes/newscrud_routes.module';
 import { SparesModule } from './spares/spares.module';
 import { BlogModule } from './blog/blog.module';
+import { NewsAvtoparusXmlModule } from './news_avtoparus_xml/news_avtoparus_xml.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { BlogModule } from './blog/blog.module';
     ScheduleModule.forRoot(),
     NewscrudRoutesModule,
     CacheModule.register({ isGlobal: true, ttl: 5 * 60000 }),
-    BlogModule, //Данные хранятся в кеше 5 минут
+    BlogModule,
+    NewsAvtoparusXmlModule, //Данные хранятся в кеше 5 минут
     // TestttModule, // Если нужно будет использовать мою загрузку в бд
   ],
 })

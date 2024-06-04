@@ -28,6 +28,9 @@ export class UpdateCardProductDto implements Partial<CardProductDB> {
   public video?: string;
   public phone?: string;
   public vin?: string;
+  public email?: string;
+  public car?: string;
+  public new_arrival?: string;
 
   constructor(params: Partial<CardProductDB>) {
     (cardProductKeys as (keyof CardProductDB)[]).forEach((key) => {
