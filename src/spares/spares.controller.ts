@@ -10,7 +10,7 @@ import { SparesService } from './spares.service';
 export class SparesController {
   constructor(private readonly sparesService: SparesService) {}
 
-  @Post()
+  @Post('first-file')
   @HttpCode(201)
   async uploadFile(@Body() data: { data: string }) {
     if (data.data === 'dkdkdkdenwoofd') {
@@ -25,7 +25,7 @@ export class SparesController {
   @Post('/second-file')
   @HttpCode(201)
   async uploadSecondFileFile(@Body() data: { data: string }) {
-    if (data.data === 'dkdkdkdenwoofd') {
+    if (data.data === 'dkdkdkd53enwoofd') {
       this.sparesService.cvsDownloadSecondFile(
         'https://export.autostrong-m.ru/dataexports/2023/webston.ru_MinskMoskvaPiter.csv',
       );

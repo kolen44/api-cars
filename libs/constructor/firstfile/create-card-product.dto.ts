@@ -1,5 +1,5 @@
-import { cardProductKeys } from '@repository/repository/card-product/card-product-keys';
-import { CardProductDB } from '../types/card-product-db';
+import { cardProductKeys } from 'libs/keysparsecsv/firstfile/card-product-keys';
+import { CardProductDB } from '../../keysparsecsv/firstfile/types/card-product-db';
 
 export class CreateCardProductDto {
   public article: string;

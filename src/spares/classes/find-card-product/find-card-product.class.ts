@@ -1,4 +1,4 @@
-import { CardProductService } from '@repository/repository';
+import { CardProductService } from 'libs/functions/src';
 import { CardProduct } from 'src/database/entities/product.entity';
 import { SelectQueryBuilder } from 'typeorm';
 import { SortDirection } from './sort.enum';

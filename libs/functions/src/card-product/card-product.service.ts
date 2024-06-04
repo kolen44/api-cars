@@ -9,9 +9,9 @@ import {
   MoreThanOrEqual,
   Repository,
 } from 'typeorm';
-import { CreateCardProductDto } from './dto/create-card-product.dto';
-import { UpdateCardProductSecondFIleDto } from './dto/second-file/update-card-product-second.dto';
-import { UpdateCardProductDto } from './dto/update-card-product.dto';
+import { CreateCardProductDto } from '../../../constructor/firstfile/create-card-product.dto';
+import { UpdateCardProductDto } from '../../../constructor/firstfile/update-card-product.dto';
+import { UpdateCardProductSecondFIleDto } from '../../../constructor/second-file/update-card-product-second.dto';
 
 @Injectable()
 export class CardProductService {

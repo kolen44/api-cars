@@ -1,4 +1,4 @@
-import { CardProduct } from '../../../sparescsv/src/interface/types';
+import { CardProduct } from '../../interface/firstfile/csvfirst(165)';
 
 export const cardProductKeys: (keyof CardProduct)[] = [
   'article',

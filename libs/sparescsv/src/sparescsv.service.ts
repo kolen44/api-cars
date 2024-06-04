@@ -2,11 +2,12 @@ import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import * as csv from 'csv-parser';
 import { createReadStream } from 'fs';
+import { CsvToJsonFirstFile } from 'libs/classescsvtojson/firstfile/csvtojson.class';
 import { CsvParser } from 'nest-csv-parser';
 import { Readable } from 'stream';
-import { CsvToJson } from './classes/csvtojson.class';
-import { CardProductSecondFile } from './interface/cvssecond(101)';
-import { CardProduct } from './interface/types';
+import { CsvToJsonSecondFile } from '../../classescsvtojson/secondfile/csvtojson.class';
+import { CardProduct } from '../../interface/firstfile/csvfirst(165)';
+import { CardProductSecondFile } from '../../interface/secondfile/cvssecond(101)';
 
 @Injectable()
 export class SparesCsvService {
@@ -36,7 +37,7 @@ export class SparesCsvService {
 
     // const writeStream = fs.createWriteStream('data/test.json')
 
-    const csvToJson = new CsvToJson();
+    const csvToJson = new CsvToJsonFirstFile();
 
     const foo = (obj: Record<string, string>) => {
       let result: Partial<CardProduct> = {};
@@ -76,7 +77,7 @@ export class SparesCsvService {
 
     // const writeStream = fs.createWriteStream('data/test.json')
 
-    const csvToJson = new CsvToJson();
+    const csvToJson = new CsvToJsonSecondFile();
 
     const foo = (obj: Record<string, string>) => {
       let result: Partial<CardProductSecondFile> = {};

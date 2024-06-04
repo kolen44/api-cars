@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CardProductService } from '@repository/repository';
+import { CardProductService } from 'libs/functions/src';
 import { FindCardProduct } from '../classes/find-card-product/find-card-product.class';
 import { FindProductQueryDto } from '../dto/find-product-query.dto';
 

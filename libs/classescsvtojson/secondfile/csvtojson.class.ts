@@ -1,10 +1,10 @@
 import {
   cardProductSecondFileKeys,
   cardProductSecondFileNumericKeys,
-} from '@repository/repository/card-product/dto/second-file/create-card-product-second.dto';
-import { CardProductSecondFile } from '../interface/cvssecond(101)';
+} from 'libs/keysparsecsv/secondfile/create-card-product-second.dto';
+import { CardProductSecondFile } from '../../interface/secondfile/cvssecond(101)';
 
-export class CsvToJson {
+export class CsvToJsonSecondFile {
   public createObjectByArray(arr: string[]): CardProductSecondFile {
     const object = {};
     let index = 0;

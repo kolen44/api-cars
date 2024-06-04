@@ -1,4 +1,4 @@
-import { CardProduct } from '@app/sparescsv/interface/types';
+import { CardProduct } from 'libs/interface/firstfile/csvfirst(165)';
 
 export type CardProductDBWithoutKeys = CardProduct;
 

@@ -20,8 +20,8 @@
     "paths": {
       "@app/sparescsv": ["libs/sparescsv/src"],
       "@app/sparescsv/*": ["libs/sparescsv/src/*"],
-      "@repository/repository": ["libs/repository/src"],
-      "@repository/repository/*": ["libs/repository/src/*"]
+      "@repository/repository": ["libs/functions/src"],
+      "@repository/repository/*": ["libs/functions/src/*"]
     }
   }
 }

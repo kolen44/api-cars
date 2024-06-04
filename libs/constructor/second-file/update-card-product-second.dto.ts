@@ -1,5 +1,5 @@
-import { CardProductSecondFileDB } from '../../types/card-product-db-second';
-import { cardProductSecondFileKeys } from './create-card-product-second.dto';
+import { cardProductSecondFileKeys } from '../../keysparsecsv/secondfile/create-card-product-second.dto';
+import { CardProductSecondFileDB } from '../../keysparsecsv/secondfile/types/card-product-db-second';
 
 export class UpdateCardProductSecondFIleDto
   implements Partial<CardProductSecondFileDB>

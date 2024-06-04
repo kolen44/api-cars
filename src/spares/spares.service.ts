@@ -1,9 +1,9 @@
 import { SparesCsvService } from '@app/sparescsv';
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { CardProductService } from '@repository/repository';
-import { UpdateCardProductSecondFIleDto } from '@repository/repository/card-product/dto/second-file/update-card-product-second.dto';
-import { UpdateCardProductDto } from '@repository/repository/card-product/dto/update-card-product.dto';
+import { UpdateCardProductDto } from 'libs/constructor/firstfile/update-card-product.dto';
+import { UpdateCardProductSecondFIleDto } from 'libs/constructor/second-file/update-card-product-second.dto';
+import { CardProductService } from 'libs/functions/src';
 import { FindProductQueryDto } from './dto/find-product-query.dto';
 import { SearcherCardProductService } from './services/searcher-card-product.service';
 
