@@ -137,7 +137,12 @@ export class SparesService {
       sort: { key: sort, order },
     });
 
-    return { page, limit, search_count: result.length, data: result };
+    return {
+      page,
+      limit,
+      search_count: result.length,
+      data: this.sortAndReturnElementForCriteriaFunctions(result),
+    };
   }
 
   public async searchBy3Parameters({
