@@ -106,7 +106,13 @@ export class CardProductService {
         Object.assign(cardProduct, dto);
         cardProduct.year_start_production = dto.year;
         cardProduct.year_end_production = dto.year;
-        cardProduct.description = `${dto.description} (${dto.car} ${dto.vin})`;
+        if (dto.car && dto.vin) {
+          cardProduct.description = `${dto.description} (${dto.car} ${dto.vin})`;
+        } else if (dto.car) {
+          cardProduct.description = `${dto.description} (${dto.car})`;
+        } else if (dto.vin) {
+          cardProduct.description = `${dto.description} (${dto.vin})`;
+        }
 
         return cardProduct;
       }
