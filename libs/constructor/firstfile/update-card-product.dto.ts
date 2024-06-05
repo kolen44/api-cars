@@ -48,9 +48,7 @@ export class UpdateCardProductDto implements Partial<CardProductDB> {
   }
 
   private transformDescription(description: string, volume: number): string {
-    // Extract the components of the description
     const countryMatch = description.match(/Страна происхождения: [^.]*/);
-    // const engineMatch = description.match(/\([^)]*\)/);
     const gearboxMatch = description.match(/КПП[^.]*/);
 
     // Extract the values
@@ -58,8 +56,17 @@ export class UpdateCardProductDto implements Partial<CardProductDB> {
     // const engine = engineMatch ? engineMatch[0].slice(1, -1) : '';
     const gearbox = gearboxMatch ? gearboxMatch[0] : '';
 
-    // Combine the parts into the desired format
-    return `${country}. (${volume}, ${gearbox})`;
+    if (volume && gearbox && country) {
+      return `${country}. (${volume}, ${gearbox})`;
+    } else if (gearbox && country) {
+      return `${country} (${gearbox})`;
+    } else if (country && volume) {
+      return `${country} (${volume})`;
+    } else if (country) {
+      return `${country}`;
+    } else {
+      return null;
+    }
   }
 
   public getUpdateData() {
