@@ -27,7 +27,7 @@ export class SparesService {
   @Cron(CronExpression.EVERY_DAY_AT_5AM)
   handleCronSecondFile() {
     try {
-      this.cvsDownload(
+      this.cvsDownloadSecondFile(
         'https://export.autostrong-m.ru/dataexports/2023/webston.ru_MinskMoskvaPiter.csv',
       );
     } catch (error) {
@@ -98,7 +98,6 @@ export class SparesService {
         .slice(i, i + BATCH_SIZE)
         .map((element) => new UpdateCardProductSecondFIleDto(element));
       batches.push(batch);
-      console.log(`Batch ${i / BATCH_SIZE} created`);
     }
 
     for (let i = 0; i < batches.length; i += MAX_CONCURRENT_BATCHES) {
@@ -107,7 +106,6 @@ export class SparesService {
         .map(async (batch, index) => {
           try {
             await this.dbCreate.updateDatabaseForSecondFileBatch(batch);
-            console.log(`Batch ${i + index} processed`);
           } catch (error) {
             console.error(`Error processing batch ${i + index}`, error);
           }
