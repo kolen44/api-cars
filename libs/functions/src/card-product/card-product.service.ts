@@ -113,17 +113,33 @@ export class CardProductService {
         } else if (dto.vin) {
           cardProduct.description = `${dto.description} (${dto.vin})`;
         }
-        if (
-          cardProduct.article.length < 15 &&
-          cardProduct.year !== 0 &&
-          cardProduct.description.length < 150
-        ) {
+        if (cardProduct.description.length > 100) {
+          const truncateText = this.truncateText(cardProduct.description);
+          cardProduct.description = truncateText;
+        }
+        if (cardProduct.article.length < 15 && cardProduct.year !== 0) {
           return cardProduct;
         }
       }
     });
 
     return await this.cardProductRepository.save(cardProducts);
+  }
+
+  truncateText(text: string, maxLength: number = 25): string {
+    if (text.length <= maxLength) {
+      return text;
+    }
+
+    let truncated = text.slice(0, maxLength);
+    const remainder = text.slice(maxLength);
+
+    const firstSpaceIndex = remainder.indexOf(' ');
+    if (firstSpaceIndex !== -1) {
+      truncated += remainder.slice(0, firstSpaceIndex + 1);
+    }
+
+    return truncated;
   }
 
   async removeMany(ids: number[]) {
