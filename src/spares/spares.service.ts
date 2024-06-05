@@ -36,6 +36,18 @@ export class SparesService {
     }
   }
 
+  @Cron(CronExpression.EVERY_DAY_AT_4AM)
+  handleCronThirdFile() {
+    try {
+      this.cvsDownloadSecondFile(
+        'https://export.autostrong-m.ru/dataexports/2023/webston.ru_Kross.csv',
+      );
+    } catch (error) {
+      console.log(error);
+      return error;
+    }
+  }
+
   public async cvsUpdate(file) {
     const response = await this.sparesService.cvsUpdate(file);
     return response;
