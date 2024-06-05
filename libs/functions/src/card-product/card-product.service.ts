@@ -113,7 +113,11 @@ export class CardProductService {
         } else if (dto.vin) {
           cardProduct.description = `${dto.description} (${dto.vin})`;
         }
-        if (cardProduct.article.length < 15 && cardProduct.year !== 0) {
+        if (
+          cardProduct.article.length < 15 &&
+          cardProduct.year !== 0 &&
+          cardProduct.description.length < 150
+        ) {
           return cardProduct;
         }
       }
