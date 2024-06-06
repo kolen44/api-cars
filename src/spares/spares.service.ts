@@ -63,7 +63,7 @@ export class SparesService {
     const response: any = await this.sparesService.parseCvsToJson(url);
     console.log('ended parsing. starting db creating');
 
-    const BATCH_SIZE = 100; // Выберите оптимальный размер батча
+    const BATCH_SIZE = 1000; // оптимальный размер батча
     const MAX_CONCURRENT_BATCHES = 5; // Ограничение на количество параллельных запросов
 
     const batches = [];
