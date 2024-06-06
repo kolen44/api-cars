@@ -6,7 +6,6 @@ import {
   FindOneOptions,
   ILike,
   LessThanOrEqual,
-  Like,
   MoreThanOrEqual,
   Repository,
 } from 'typeorm';
@@ -193,7 +192,7 @@ export class CardProductService {
       year,
       engine: ILike(`%${engine}%`),
       volume,
-      detail_name: Like(`%${detail_name}%`),
+      detail_name: ILike(`${detail_name}%`),
     };
     const criteriaFindOne = {
       brand,
@@ -201,7 +200,7 @@ export class CardProductService {
       year,
       engine: ILike(`%${engine}%`),
       volume,
-      detail_name: Like(`%${detail_name}%`),
+      detail_name: ILike(`${detail_name}%`),
       year_start_production: LessThanOrEqual(year),
       year_end_production: MoreThanOrEqual(year),
     };
@@ -226,13 +225,13 @@ export class CardProductService {
       brand,
       model: ILike(`%${model}%`),
       year,
-      detail_name: Like(`%${detail_name}%`),
+      detail_name: ILike(`${detail_name}%`),
     };
     const criteriaFindOne = {
       brand,
       model: ILike(`%${model}%`),
       year,
-      detail_name: Like(`%${detail_name}%`),
+      detail_name: ILike(`${detail_name}%`),
       year_start_production: LessThanOrEqual(year),
       year_end_production: MoreThanOrEqual(year),
     };
@@ -308,7 +307,7 @@ export class CardProductService {
       criteria.volume = volume;
     }
     if (detail_name) {
-      criteria.detail_name = Like(`%${detail_name}%`);
+      criteria.detail_name = ILike(`${detail_name}%`);
     }
     if (year) {
       criteria.year = year;

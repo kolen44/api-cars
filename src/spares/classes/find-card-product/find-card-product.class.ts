@@ -102,7 +102,7 @@ export class FindCardProduct {
     detail_names.forEach(
       (detail_name, index) =>
         (values_of_detail_names[generateDetailNameKey(index)] =
-          `%${detail_name}%`),
+          `${detail_name}%`),
       {},
     );
 
