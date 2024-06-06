@@ -9,9 +9,13 @@ export class SearcherCardProductService {
 
   public async search(query: FindProductQueryDto) {
     const findCardProduct = new FindCardProduct(this.cardProductService);
+    console.log(query);
 
     if (query.article) {
       findCardProduct.andWhereArticle(query.article);
+    }
+    if (query.original_number) {
+      findCardProduct.andWhereOriginalNumber(query.original_number);
     }
     if (query.brand) {
       findCardProduct.andWhereBrand(query.brand);
