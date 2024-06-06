@@ -36,6 +36,10 @@ export class FindProductQueryDto {
   engine: string;
 
   @IsOptional()
+  @IsString()
+  original_number: string;
+
+  @IsOptional()
   @IsNumber()
   @Type(() => Number)
   volume: number;

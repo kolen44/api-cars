@@ -36,6 +36,12 @@ export class FindCardProduct {
     });
   }
 
+  public andWhereOriginalNumber(original_number: string) {
+    return this.andWhere(`(product.original_number = :original_number)`, {
+      original_number: `${original_number}%`,
+    });
+  }
+
   public andWhereBrand(brand: string) {
     return this.andWhere(this.toLowerCaseWithLike('brand', 'brand'), {
       brand: `%${brand}%`,
