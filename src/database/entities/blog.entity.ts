@@ -16,6 +16,9 @@ export class PostEntity {
   title: string;
 
   @Column({ nullable: true })
+  id_writer: number;
+
+  @Column({ nullable: true })
   author: string;
 
   @Column({ nullable: true })

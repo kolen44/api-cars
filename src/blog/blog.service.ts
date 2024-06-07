@@ -223,6 +223,7 @@ export class BlogService {
         if (!existPost) {
           await this.blogRepository.save({
             author: item.author,
+            id_writer: 0,
             title: item.title,
             lead: item.lead,
             content: item.content.replace(/"/g, "'"),
@@ -278,6 +279,7 @@ export class BlogService {
         const image_url = await this.parsingAvtoparusImage(element.link);
         this.blogRepository.save({
           author: element.author,
+          id_writer: 0,
           title: element.title,
           content: element.content.replace('"', "'"),
           timestamp: element.timestamp,
