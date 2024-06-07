@@ -5,6 +5,7 @@ import {
   Delete,
   Get,
   Headers,
+  NotAcceptableException,
   Param,
   ParseIntPipe,
   Patch,
@@ -33,9 +34,13 @@ export class BlogController {
     return this.blogService.create(createBlogDto, req.user.id);
   }
 
-  @Get(':id')
-  findAll(@Param('id') id: number) {
-    return this.blogService.findAll(id);
+  @Get('/parsing')
+  async startParsing(@Body() data: { data: string }) {
+    if (data.data == 'dkkdlmkd2ojfj3fo3ijf33jw;rf3w') {
+      return await this.blogService.startAllParsers();
+    } else {
+      throw new NotAcceptableException('Вам такое действие недоступно');
+    }
   }
 
   @Get('/pagination')
@@ -43,7 +48,13 @@ export class BlogController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
   ) {
+    console.log(page + ' ' + limit);
     return this.blogService.findAllWithPagination(page, limit);
+  }
+
+  @Get(':id')
+  findAll(@Param('id') id: number) {
+    return this.blogService.findAll(id);
   }
 
   @Get(':id')

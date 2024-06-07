@@ -13,19 +13,25 @@ export class PostEntity {
   id: number;
 
   @Column({ nullable: true })
-  description: string;
+  title: string;
 
   @Column({ nullable: true })
-  avatar_url: string;
+  author: string;
+
+  @Column({ nullable: true })
+  timestamp: string;
+
+  @Column({ nullable: true })
+  content: string;
+
+  @Column({ nullable: true })
+  image_url: string;
 
   @ManyToOne(() => NewsUserCreateEntity, (user) => user.posts, {
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'telephone_number' })
   user: NewsUserCreateEntity;
-
-  @Column({ nullable: true })
-  title: string;
 
   @Column({ nullable: true })
   url_video?: string;
