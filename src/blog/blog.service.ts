@@ -2,7 +2,6 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import axios from 'axios';
-import * as cheerio from 'cheerio';
 import { format, parse } from 'date-fns';
 import puppeteerExtra from 'puppeteer-extra';
 import { PostEntity } from 'src/database/entities/blog.entity';
@@ -106,7 +105,10 @@ export class BlogService {
 
   //Дальше идет все что связано с парсингом
   async parsingAvtoparusHtml() {
-    const browser = await puppeteerExtra.launch();
+    const browser = await puppeteerExtra.launch({
+      headless: true, // Ensure it runs in headless mode
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    });
 
     const page = await browser.newPage();
 
@@ -120,23 +122,23 @@ export class BlogService {
     });
     await page.setGeolocation({ latitude: 49.5, longitude: 100.0 });
 
-    const navigateToPage = async (retryCount = 0): Promise<boolean> => {
+    const navigateToPage = async (retryCount = 0) => {
       try {
         await page.goto('https://www.autoparus.by/people/user-posts', {
           waitUntil: 'networkidle2',
-          timeout: this.timeout,
+          timeout: 30000,
         });
 
-        await page.waitForSelector('.content__main', { timeout: this.timeout });
+        await page.waitForSelector('.content__main', { timeout: 30000 });
 
         await page.waitForFunction(
           'document.querySelector(".content__main") && document.querySelectorAll(".content__main").length > 0',
-          { timeout: this.timeout },
+          { timeout: 30000 },
         );
         return true;
       } catch (error) {
         console.log(`Error occurred on attempt ${retryCount + 1}:`, error);
-        if (retryCount < this.maxRetries - 1) {
+        if (retryCount < 3) {
           return await navigateToPage(retryCount + 1);
         } else {
           console.log('Max retries reached. Could not load the page.');
@@ -148,8 +150,9 @@ export class BlogService {
     const pageLoaded = await navigateToPage();
     if (!pageLoaded) {
       await browser.close();
-      return;
+      return [];
     }
+
     try {
       const content = await page.evaluate(() => {
         const articles = document.querySelectorAll('article.content-item');
@@ -167,9 +170,7 @@ export class BlogService {
           const timestampDaysElement = article.querySelector(
             'span.date.ng-binding',
           );
-          const imgElement = document.querySelector(
-            '.img-photo',
-          ) as HTMLImageElement;
+          const imgElement = article.querySelector('.img-photo');
           const textBlocks = article.querySelectorAll('div.post__text p');
 
           const title = titleElement
@@ -185,7 +186,7 @@ export class BlogService {
           const lead = leadElement
             ? (leadElement as HTMLElement).innerText
             : '';
-          const imgSrc = imgElement ? imgElement.src : '';
+          const imgSrc = imgElement ? (imgElement as HTMLImageElement).src : '';
 
           let content = '';
           if (lead) {
@@ -193,13 +194,12 @@ export class BlogService {
           }
           textBlocks.forEach((block) => {
             const isBold = block.querySelector('strong') !== null;
-            //если потом нужно будет span добавить это заготовка
             if (isBold) {
               content += `<p>${(block as HTMLElement).innerHTML}</p>`;
             } else {
               content += `<p>${(block as HTMLElement).innerHTML}</p>`;
             }
-            content += ' '; // Adding space between paragraphs
+            content += ' ';
           });
 
           results.push({
@@ -215,7 +215,6 @@ export class BlogService {
         return results;
       });
 
-      // Теперь сохраняем собранные данные в базу данных
       for (const item of content) {
         const existPost = await this.blogRepository.findOne({
           where: { author: item.author, title: item.title },
@@ -235,6 +234,7 @@ export class BlogService {
 
       return content;
     } catch (error) {
+      console.error('Error occurred while extracting data:', error);
       throw new Error(error);
     } finally {
       await browser.close();
@@ -281,7 +281,7 @@ export class BlogService {
           author: element.author,
           id_writer: 0,
           title: element.title,
-          content: element.content.replace('"', "'"),
+          content: this.cleanHtmlString(element.content.replace('"', "'")),
           timestamp: element.timestamp,
           image_url,
         });
@@ -290,17 +290,26 @@ export class BlogService {
     return feed;
   }
 
-  private processContent(content: string): string {
-    const $ = cheerio.load(content);
-    $('figure').each((i, elem) => {
-      const img = $(elem).find('img').attr('src');
-      if (img) {
-        $(elem).replaceWith(`<img src="${img}">`);
-      }
-    });
+  private cleanHtmlString(input: string): string {
+    // Create a map for HTML entities and their corresponding characters
+    const htmlEntitiesMap: { [key: string]: string } = {
+      '&quot;': "'",
+      '&amp;': '&',
+      '&lt;': '<',
+      '&gt;': '>',
+      '&nbsp;': ' ',
+    };
 
-    const cleanContent = $.text().replace(/\s+/g, ' ').trim();
-    return cleanContent;
+    // Replace HTML entities in the input string
+    let cleanedString = input.replace(
+      /&quot;|&amp;|&lt;|&gt;|&nbsp;/g,
+      (match) => htmlEntitiesMap[match],
+    );
+
+    // Remove all occurrences of \n
+    cleanedString = cleanedString.replace(/\n/g, '');
+
+    return cleanedString;
   }
 
   private formatDate(pubDate: string): string {
