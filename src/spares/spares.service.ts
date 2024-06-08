@@ -134,20 +134,17 @@ export class SparesService {
 
   private sortAndReturnElementForCriteriaFunctions(response) {
     if (!response) {
-      return 'Убедитесь что вы правильно передали параметры или что элемент существует в базе данных';
+      return 'Убедитесь, что вы правильно передали параметры или что элемент существует в базе данных';
     }
-    try {
-      // Сортировка с учетом null значений, которые будут перемещены в конец
-      response.sort((a, b) => {
-        if (a === null && b === null) return 0;
-        if (a === null) return 1;
-        if (b === null) return -1;
-        return 0; // сохраняем порядок для ненулевых элементов
-      });
-    } catch (error) {
-      return response;
-    }
-    return response;
+
+    // Фильтруем null значения и не-null значения отдельно
+    const nonNullValues = response.filter((item) => item !== null);
+    const nullValues = response.filter((item) => item === null);
+
+    // Объединяем не-null значения с null значениями, чтобы null значения были в конце
+    const sortedResponse = [...nonNullValues, ...nullValues];
+
+    return sortedResponse;
   }
 
   public async searchByCriteria({ brand, model, year }): Promise<any> {
