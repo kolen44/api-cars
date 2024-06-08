@@ -2,8 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import axios from 'axios';
+import cheerio from 'cheerio';
 import { format, parse } from 'date-fns';
-import puppeteerExtra from 'puppeteer-extra';
 import { PostEntity } from 'src/database/entities/blog.entity';
 import { NewscrudRoutesService } from 'src/newscrud_routes/newscrud_routes.service';
 import { Repository } from 'typeorm';
@@ -105,139 +105,62 @@ export class BlogService {
 
   //Дальше идет все что связано с парсингом
   async parsingAvtoparusHtml() {
-    const browser = await puppeteerExtra.launch({
-      headless: true, // Ensure it runs in headless mode
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
-    });
-
-    const page = await browser.newPage();
-
-    await page.setViewport({
-      width: 1600,
-      height: 1000,
-      isMobile: false,
-      isLandscape: true,
-      hasTouch: false,
-      deviceScaleFactor: 1,
-    });
-    await page.setGeolocation({ latitude: 49.5, longitude: 100.0 });
-
-    const navigateToPage = async (retryCount = 0) => {
-      try {
-        await page.goto('https://www.autoparus.by/people/user-posts', {
-          waitUntil: 'networkidle2',
-          timeout: 30000,
-        });
-
-        await page.waitForSelector('.content__main', { timeout: 30000 });
-
-        await page.waitForFunction(
-          'document.querySelector(".content__main") && document.querySelectorAll(".content__main").length > 0',
-          { timeout: 30000 },
-        );
-        return true;
-      } catch (error) {
-        console.log(`Error occurred on attempt ${retryCount + 1}:`, error);
-        if (retryCount < 3) {
-          return await navigateToPage(retryCount + 1);
-        } else {
-          console.log('Max retries reached. Could not load the page.');
-          return false;
-        }
-      }
-    };
-
-    const pageLoaded = await navigateToPage();
-    if (!pageLoaded) {
-      await browser.close();
-      return [];
-    }
-
     try {
-      const content = await page.evaluate(() => {
-        const articles = document.querySelectorAll('article.content-item');
-        const results = [];
+      const response = await axios.get(
+        'https://www.autoparus.by/people/user-posts',
+      );
+      const $ = cheerio.load(response.data); // Загрузка HTML с помощью Cheerio
+      const articles = $('article.content-item');
 
-        articles.forEach((article) => {
-          const titleElement = article.querySelector(
-            'h4.user__post_title_default',
-          );
-          const leadElement = article.querySelector('div.post__lead');
-          const autorElement = article.querySelector('p.name');
-          const timestampHoursElement = article.querySelector(
-            'span.time.ng-binding',
-          );
-          const timestampDaysElement = article.querySelector(
-            'span.date.ng-binding',
-          );
-          const imgElement = article.querySelector('.img-photo');
-          const textBlocks = article.querySelectorAll('div.post__text p');
+      const results = articles
+        .map((index, element) => {
+          const title = $(element).find('h4.user__post_title_default').text();
+          const lead = $(element).find('div.post__lead').text();
+          const author = $(element).find('p.name').text();
+          const timestampHours = $(element).find('span.time.ng-binding').text();
+          const timestampDays = $(element).find('span.date.ng-binding').text();
+          const timestamp = timestampHours + ' ' + timestampDays;
+          const imgSrc = $(element).find('.img-photo').attr('src');
+          const contentBlocks = $(element).find('div.post__text p');
+          const content = contentBlocks
+            .map((index, block) => $(block).text())
+            .get()
+            .join(' ');
 
-          const title = titleElement
-            ? (titleElement as HTMLElement).innerText
-            : '';
-          const timestamp =
-            (timestampHoursElement as HTMLElement).innerText +
-            ' ' +
-            (timestampDaysElement as HTMLElement).innerText;
-          const author = autorElement
-            ? (autorElement as HTMLElement).innerText
-            : '';
-          const lead = leadElement
-            ? (leadElement as HTMLElement).innerText
-            : '';
-          const imgSrc = imgElement ? (imgElement as HTMLImageElement).src : '';
-
-          let content = '';
-          if (lead) {
-            content += `<p>${lead}</p>`;
-          }
-          textBlocks.forEach((block) => {
-            const isBold = block.querySelector('strong') !== null;
-            if (isBold) {
-              content += `<p>${(block as HTMLElement).innerHTML}</p>`;
-            } else {
-              content += `<p>${(block as HTMLElement).innerHTML}</p>`;
-            }
-            content += ' ';
-          });
-
-          results.push({
+          return {
             author,
             title,
             lead,
             content,
             timestamp,
             imgSrc,
-          });
-        });
+          };
+        })
+        .get();
 
-        return results;
-      });
-
-      for (const item of content) {
+      for (const item of results) {
         const existPost = await this.blogRepository.findOne({
           where: { author: item.author, title: item.title },
         });
         if (!existPost) {
+          const content = item.lead
+            ? `<p>${this.cleanHtmlString(item.content.replace(/"/g, "'"))}</p>`
+            : `<p>${item.lead}</p><p>${this.cleanHtmlString(item.content.replace(/"/g, "'"))}</p>`;
           await this.blogRepository.save({
             author: item.author,
             id_writer: 0,
             title: item.title,
-            lead: item.lead,
-            content: item.content.replace(/"/g, "'"),
+            content: content ? content : null,
             timestamp: item.timestamp,
             image_url: item.imgSrc,
           });
         }
       }
 
-      return content;
+      return results;
     } catch (error) {
       console.error('Error occurred while extracting data:', error);
       throw new Error(error);
-    } finally {
-      await browser.close();
     }
   }
 
@@ -281,13 +204,31 @@ export class BlogService {
           author: element.author,
           id_writer: 0,
           title: element.title,
-          content: this.cleanHtmlString(element.content.replace('"', "'")),
+          content: this.processHtmlContent(element.content.replace(/"/g, "'")),
           timestamp: element.timestamp,
           image_url,
         });
       }
     });
     return feed;
+  }
+
+  private processHtmlContent(content: string): string {
+    // Удаление символов '\r'
+    content = content.replace(/\r/g, '');
+
+    // Удаление больших пробелов
+    content = content.replace(/\s+/g, ' ');
+
+    // Оставление только адекватных тегов
+    const allowedTags = ['figure', 'img', 'p'];
+    const regex = new RegExp(`<(${allowedTags.join('|')})[^>]*>`, 'gi');
+    content = content.replace(regex, (match) => match.toLowerCase());
+
+    // Очистка HTML сущностей и символов перевода строки
+    content = this.cleanHtmlString(content);
+
+    return content;
   }
 
   private cleanHtmlString(input: string): string {
@@ -318,63 +259,16 @@ export class BlogService {
   }
 
   private async parsingAvtoparusImage(link: string) {
-    const browser = await puppeteerExtra.launch();
-
-    const page = await browser.newPage();
-
-    await page.setViewport({
-      width: 1600,
-      height: 1000,
-      isMobile: false,
-      isLandscape: true,
-      hasTouch: false,
-      deviceScaleFactor: 1,
-    });
-
-    const navigateToPage = async (retryCount = 0): Promise<boolean> => {
-      try {
-        await page.goto(link, {
-          waitUntil: 'networkidle2',
-          timeout: this.timeout,
-        });
-
-        await page.waitForSelector('div.image__container', {
-          timeout: this.timeout,
-        });
-
-        await page.waitForFunction(
-          'document.querySelector("div.image__container") && document.querySelectorAll("div.image__container").length > 0',
-          { timeout: this.timeout },
-        );
-        return true;
-      } catch (error) {
-        console.log(`Error occurred on attempt ${retryCount + 1}:`, error);
-        if (retryCount < this.maxRetries - 1) {
-          return await navigateToPage(retryCount + 1);
-        } else {
-          console.log('Max retries reached. Could not load the page.');
-          return false;
-        }
-      }
-    };
-
-    const pageLoaded = await navigateToPage();
-    if (!pageLoaded) {
-      await browser.close();
-      return;
-    }
     try {
-      const content = await page.evaluate(() => {
-        const imgElement = document.querySelector(
-          'img.lazy',
-        ) as HTMLImageElement;
-        return imgElement ? imgElement.src : '';
-      });
-      return content;
+      const response = await axios.get(link);
+      const $ = cheerio.load(response.data);
+
+      const imgSrc = $('img.lazy').attr('src');
+
+      return imgSrc || '';
     } catch (error) {
-      console.log('Error occurred while extracting data:', error);
-    } finally {
-      await browser.close();
+      console.log('Error occurred while extracting image data:', error);
+      return '';
     }
   }
 
