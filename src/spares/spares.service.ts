@@ -87,7 +87,7 @@ export class SparesService {
 
       await Promise.all(batchPromises);
       // Добавляем небольшую задержку, чтобы уменьшить нагрузку на базу данных
-      await this.delay(100);
+      await this.delay(1000);
     }
 
     console.log('All batches processed');
@@ -125,7 +125,7 @@ export class SparesService {
 
       await Promise.all(batchPromises);
       // Добавляем небольшую задержку, чтобы уменьшить нагрузку на базу данных
-      await this.delay(100);
+      await this.delay(1000);
     }
 
     console.log('All batches processed');
