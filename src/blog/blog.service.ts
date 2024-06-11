@@ -121,17 +121,13 @@ export class BlogService {
           const timestampDays = $(element).find('span.date.ng-binding').text();
           const timestamp = timestampHours + ' ' + timestampDays;
           const imgSrc = $(element).find('.img-photo').attr('src');
-          const contentBlocks = $(element).find('div.post__text p');
-          const content = contentBlocks
-            .map((index, block) => $(block).text())
-            .get()
-            .join(' ');
-
+          const contentBlocks = $(element).find('div.post__text').html();
+          console.log($(element).find('div.post__text').html());
           return {
             author,
             title,
             lead,
-            content,
+            contentBlocks,
             timestamp,
             imgSrc,
           };
@@ -143,14 +139,19 @@ export class BlogService {
           where: { author: item.author, title: item.title },
         });
         if (!existPost) {
-          const content = item.lead
-            ? `<p>${this.cleanHtmlString(item.content.replace(/"/g, "'"))}</p>`
-            : `<p>${item.lead}</p><p>${this.cleanHtmlString(item.content.replace(/"/g, "'"))}</p>`;
+          // const content = item.lead
+          //   ? `<p>${this.cleanHtmlString(item.content.replace(/"/g, "'"))}</p>`
+          //   : `<p>${item.lead}</p><p>${this.cleanHtmlString(item.contentBlocks.replace(/"/g, "'"))}</p>`;
           await this.blogRepository.save({
             author: item.author,
             id_writer: 0,
             title: item.title,
-            content: content ? content : null,
+            content:
+              item.lead && item.contentBlocks
+                ? `<p>${item.lead}</p>${this.cleanHtmlContent(item.contentBlocks)}`
+                : item.contentBlocks
+                  ? item.contentBlocks
+                  : `<p>${item.lead}</p>`,
             timestamp: item.timestamp,
             image_url: item.imgSrc,
           });
@@ -229,6 +230,16 @@ export class BlogService {
     content = this.cleanHtmlString(content);
 
     return content;
+  }
+
+  private cleanHtmlContent(htmlContent) {
+    if (!htmlContent) {
+      return ''; // Возвращаем пустую строку, если htmlContent null, undefined или пустая строка
+    }
+    return htmlContent
+      .replace(/\s*\n\s*/g, '') // Убираем переводы строк и лишние пробелы вокруг них
+      .replace(/\s\s+/g, ' ') // Убираем лишние пробелы
+      .trim(); // Убираем пробелы в начале и конце строки
   }
 
   private cleanHtmlString(input: string): string {
