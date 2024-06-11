@@ -122,7 +122,6 @@ export class BlogService {
           const timestamp = timestampHours + ' ' + timestampDays;
           const imgSrc = $(element).find('.img-photo').attr('src');
           const contentBlocks = $(element).find('div.post__text').html();
-          console.log($(element).find('div.post__text').html());
           return {
             author,
             title,
@@ -148,10 +147,10 @@ export class BlogService {
             title: item.title,
             content:
               item.lead && item.contentBlocks
-                ? `<p>${item.lead}</p>${this.cleanHtmlContent(item.contentBlocks)}`
+                ? `<p>${this.processHtmlContent(item.lead)}</p>${this.processHtmlContent(item.contentBlocks)}`
                 : item.contentBlocks
-                  ? item.contentBlocks
-                  : `<p>${item.lead}</p>`,
+                  ? `${this.processHtmlContent(item.contentBlocks)}`
+                  : `<p>${this.processHtmlContent(item.lead)}</p>`,
             timestamp: item.timestamp,
             image_url: item.imgSrc,
           });
