@@ -75,6 +75,10 @@ export class BlogService {
       throw new BadRequestException('Укажите натуральный count');
     }
     const size = await this.blogRepository.count();
+    if (count > size) {
+      count = size;
+    }
+
     const results = new Set();
     const existUser = await this.blogRepository.findOne({
       where: {
