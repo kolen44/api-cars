@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import axios from 'axios';
@@ -64,6 +68,57 @@ export class BlogService {
     if (!isExist)
       throw new NotFoundException('Пост с таким идентификатором не был найден');
     return isExist;
+  }
+
+  async findLent(id: number, count: number, order: string) {
+    if (count === 0) {
+      throw new BadRequestException('Укажите натуральный count');
+    }
+    const size = await this.blogRepository.count();
+    const results = new Set();
+    const existUser = await this.blogRepository.findOne({
+      where: {
+        id: id,
+      },
+    });
+    results.add(existUser);
+    for (let i = 0; i < count; i++) {
+      if (order === 'asc') {
+        const isExist = await this.blogRepository.findOne({
+          where: {
+            id: size - i,
+          },
+        });
+        if (isExist) {
+          results.add(isExist);
+        } else {
+          const isExist = await this.blogRepository.findOne({
+            where: {
+              id: i,
+            },
+          });
+          results.add(isExist);
+        }
+      } else {
+        const isExist = await this.blogRepository.findOne({
+          where: {
+            id: i,
+          },
+        });
+        if (isExist) {
+          results.add(isExist);
+        } else {
+          const isExist = await this.blogRepository.findOne({
+            where: {
+              id: size - i,
+            },
+          });
+          results.add(isExist);
+        }
+      }
+    }
+    results.delete(existUser);
+    return results;
   }
 
   async findAllWithPagination(page: number, limit: number) {

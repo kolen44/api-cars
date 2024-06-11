@@ -57,6 +57,15 @@ export class BlogController {
     return this.blogService.findAll(id);
   }
 
+  @Get('findlent/:id/:count/:order')
+  findLent(
+    @Param('id') id: number,
+    @Param('count') count: number,
+    @Param('order') order: string,
+  ) {
+    return this.blogService.findLent(id, count, order);
+  }
+
   @Get('findbyid/:id')
   findOne(@Param('id') id: string) {
     return this.blogService.findOne(+id);
