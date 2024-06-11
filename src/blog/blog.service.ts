@@ -128,13 +128,15 @@ export class BlogService {
 
   async findAllWithPagination(page: number, limit: number) {
     const skip = (page - 1) * limit;
-    if (this.blogRepository.count()) {
+    if (await this.blogRepository.count()) {
+      // Добавлено ожидание подсчета записей
       return this.blogRepository.find({
+        order: { id: 'DESC' }, // Сортировка по убыванию идентификатора
         skip,
         take: limit,
       });
     }
-    return new NotFoundException('База данных временно пустая .');
+    throw new NotFoundException('База данных временно пустая.');
   }
 
   async update(id: number, updateBlogDto: UpdatePostDto) {
@@ -250,7 +252,7 @@ export class BlogService {
         timestamp: this.formatDate(item.pubDate),
         title: item.title,
         category: item.category,
-        content: item['content:encoded'],
+        content: this.processHtmlContent(item['content:encoded']), // Обработка HTML-контента
         author: item.author,
       })),
     };
@@ -260,11 +262,21 @@ export class BlogService {
       });
       if (!existPost) {
         const image_url = await this.parsingAvtoparusImage(element.link);
+        // Удаляем тег <img> из контента, если его src соответствует image_url
+        const processedContent = this.processHtmlContent(
+          element.content.replace(
+            new RegExp(
+              `<figure> <img[^>]*?src=['"]${image_url}['"][^>]*?> </figure>`,
+              'g',
+            ),
+            '',
+          ),
+        );
         this.blogRepository.save({
           author: element.author,
           id_writer: 0,
           title: element.title,
-          content: this.processHtmlContent(element.content.replace(/"/g, "'")),
+          content: processedContent,
           timestamp: element.timestamp,
           image_url,
         });
