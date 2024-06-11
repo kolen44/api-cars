@@ -71,58 +71,59 @@ export class BlogService {
   }
 
   async findLent(id: number, count: number, order: string) {
-    if (count === 0) {
+    if (count <= 0) {
       throw new BadRequestException('Укажите натуральный count');
     }
+
     const size = await this.blogRepository.count();
     if (count > size) {
       count = size;
     }
 
     const results = new Set();
-    const existUser = await this.blogRepository.findOne({
-      where: {
-        id: id,
-      },
-    });
-    results.add(existUser);
-    for (let i = 0; i < count; i++) {
-      if (order === 'asc') {
-        const isExist = await this.blogRepository.findOne({
-          where: {
-            id: size - i,
-          },
+    const existUser = await this.blogRepository.findOne({ where: { id: id } });
+    if (existUser) {
+      results.add(existUser);
+    }
+
+    const randomPostCount = Math.ceil(count * 0.2); // 20% of posts will be random
+    const regularPostCount = count - randomPostCount;
+
+    const usedIds = new Set([id]);
+
+    // Helper function to add post to results
+    const addPostById = async (postId: number) => {
+      if (!usedIds.has(postId)) {
+        const post = await this.blogRepository.findOne({
+          where: { id: postId },
         });
-        if (isExist) {
-          results.add(isExist);
-        } else {
-          const isExist = await this.blogRepository.findOne({
-            where: {
-              id: i,
-            },
-          });
-          results.add(isExist);
-        }
-      } else {
-        const isExist = await this.blogRepository.findOne({
-          where: {
-            id: i,
-          },
-        });
-        if (isExist) {
-          results.add(isExist);
-        } else {
-          const isExist = await this.blogRepository.findOne({
-            where: {
-              id: size - i,
-            },
-          });
-          results.add(isExist);
+        if (post) {
+          results.add(post);
+          usedIds.add(postId);
         }
       }
+    };
+
+    // Collect regular posts (newer posts)
+    const fetchPosts = [];
+    for (let i = 0; i < regularPostCount; i++) {
+      const postId = order === 'asc' ? size - i : i + 1;
+      fetchPosts.push(addPostById(postId));
     }
+    await Promise.all(fetchPosts);
+
+    // Collect random posts (prefer older posts)
+    while (results.size < count) {
+      const randomId =
+        Math.random() < 0.8
+          ? Math.floor(Math.random() * size * 0.1) + 1 // 80% chance to pick from the first 10% posts
+          : Math.floor(Math.random() * size) + 1; // 20% chance to pick from the entire range
+      await addPostById(randomId);
+    }
+
     results.delete(existUser);
-    return results;
+    const array = Array.from(results);
+    return array;
   }
 
   async findAllWithPagination(page: number, limit: number) {

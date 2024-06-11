@@ -58,12 +58,12 @@ export class BlogController {
   }
 
   @Get('findlent/:id/:count/:order')
-  findLent(
+  async findLent(
     @Param('id') id: number,
     @Param('count') count: number,
     @Param('order') order: string,
   ) {
-    return this.blogService.findLent(id, count, order);
+    return await this.blogService.findLent(id, count, order);
   }
 
   @Get('findbyid/:id')
