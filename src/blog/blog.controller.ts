@@ -57,7 +57,7 @@ export class BlogController {
     return this.blogService.findAll(id);
   }
 
-  @Get(':id')
+  @Get('findbyid/:id')
   findOne(@Param('id') id: string) {
     return this.blogService.findOne(+id);
   }
