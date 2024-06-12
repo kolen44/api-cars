@@ -3,7 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import axios from 'axios';
 import cheerio from 'cheerio';
@@ -24,7 +24,7 @@ export class BlogService {
     private readonly blogRepository: Repository<PostEntity>,
     private readonly userService: NewscrudRoutesService,
   ) {}
-  @Cron(CronExpression.EVERY_DAY_AT_6AM)
+  @Cron('0,30 * * * *')
   handleCron() {
     try {
       this.startAllParsers();
