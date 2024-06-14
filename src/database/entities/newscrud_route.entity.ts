@@ -6,9 +6,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { PostEntity } from './blog.entity';
+import { PostEntity } from './post.entity';
 
-@Entity()
+@Entity('user_entity')
 export class NewsUserCreateEntity {
   @PrimaryGeneratedColumn({ type: 'integer' })
   id: number;

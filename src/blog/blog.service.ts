@@ -8,7 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import axios from 'axios';
 import cheerio from 'cheerio';
 import { format, parse } from 'date-fns';
-import { PostEntity } from 'src/database/entities/blog.entity';
+import { PostEntity } from 'src/database/entities/post.entity';
 import { NewscrudRoutesService } from 'src/newscrud_routes/newscrud_routes.service';
 import { Repository } from 'typeorm';
 import { parseStringPromise } from 'xml2js';

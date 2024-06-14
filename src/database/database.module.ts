@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { NewsUserCreateEntity } from 'src/database/entities/newscrud_route.entity';
-import { PostEntity } from './entities/blog.entity';
+import { PostEntity } from './entities/post.entity';
 import { CardProduct } from './entities/product.entity';
 
 @Module({

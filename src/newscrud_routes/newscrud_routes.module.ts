@@ -3,7 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PostEntity } from 'src/database/entities/blog.entity';
+import { PostEntity } from 'src/database/entities/post.entity';
 import { JwtStrategy } from 'src/strategies/jwt.strategies';
 import { LocalStrategy } from 'src/strategies/local.strategy';
 import { NewsUserCreateEntity } from '../database/entities/newscrud_route.entity';

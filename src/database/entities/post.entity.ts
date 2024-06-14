@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { NewsUserCreateEntity } from './newscrud_route.entity';
 
-@Entity()
+@Entity('post_entity')
 export class PostEntity {
   @PrimaryGeneratedColumn({ type: 'integer' })
   id: number;
