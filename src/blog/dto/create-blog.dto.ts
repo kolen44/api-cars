@@ -7,7 +7,12 @@ export class CreatePostDto {
   avatar_url?: string;
 
   @IsString()
+  @IsOptional()
   title: string;
+
+  @IsString()
+  @IsOptional()
+  content: string;
 
   @IsOptional()
   user?: NewsUserCreateEntity;

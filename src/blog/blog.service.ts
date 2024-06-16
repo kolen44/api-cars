@@ -37,10 +37,14 @@ export class BlogService {
   async create(createBlogDto: CreatePostDto, id: number) {
     const newPost: PostEntity = new PostEntity();
     const user = await this.userService.findById(id);
-    newPost.title = createBlogDto.title;
     newPost.user = user;
     newPost.rating = 0;
-
+    if (createBlogDto.content) {
+      newPost.content = createBlogDto.content;
+    }
+    if (createBlogDto.title) {
+      newPost.title = createBlogDto.title;
+    }
     if (createBlogDto.avatar_url) {
       newPost.image_url = createBlogDto.avatar_url;
     }
