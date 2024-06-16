@@ -63,8 +63,8 @@ export class SparesService {
     const response: any = await this.sparesService.parseCvsToJson(url);
     console.log('ended parsing. starting db creating');
 
-    const BATCH_SIZE = 1000; // оптимальный размер батча
-    const MAX_CONCURRENT_BATCHES = 5; // Ограничение на количество параллельных запросов
+    const BATCH_SIZE = 400; // оптимальный размер батча
+    const MAX_CONCURRENT_BATCHES = 8; // Ограничение на количество параллельных запросов
 
     const batches = [];
     for (let i = 0; i < response.length; i += BATCH_SIZE) {
@@ -101,8 +101,8 @@ export class SparesService {
       await this.sparesService.parseCvsToJsonSecondFile(url);
     console.log('ended parsing. starting db creating');
 
-    const BATCH_SIZE = 100; // Выберите оптимальный размер батча
-    const MAX_CONCURRENT_BATCHES = 5; // Ограничение на количество параллельных запросов
+    const BATCH_SIZE = 400; // Выберите оптимальный размер батча
+    const MAX_CONCURRENT_BATCHES = 8; // Ограничение на количество параллельных запросов
 
     const batches = [];
     for (let i = 0; i < response.length; i += BATCH_SIZE) {
