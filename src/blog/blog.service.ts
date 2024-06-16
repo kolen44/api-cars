@@ -34,11 +34,24 @@ export class BlogService {
     }
   }
 
+  getDateNow() {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const year = now.getFullYear();
+
+    return `${hours}:${minutes} ${day}-${month}-${year}`;
+  }
+
   async create(createBlogDto: CreatePostDto, id: number) {
     const newPost: PostEntity = new PostEntity();
     const user = await this.userService.findById(id);
     newPost.user = user;
+    newPost.author = user.fio;
     newPost.rating = 0;
+    newPost.timestamp = this.getDateNow();
     if (createBlogDto.content) {
       newPost.content = createBlogDto.content;
     }
