@@ -49,6 +49,7 @@ export class NewscrudRoutesController {
     const confirmationResult =
       await this.newscrudRoutesService.phoneProve(token);
     if (confirmationResult) {
+      // res.redirect('https://your-target-url.com');
       return true;
     } else {
       throw new BadRequestException('Время действия ссылки истекло 😔');

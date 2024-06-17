@@ -13,7 +13,7 @@ import { CardProduct } from './entities/product.entity';
         type: 'postgres',
         url: configService.get('DB_LINK'),
         entities: [CardProduct, NewsUserCreateEntity, PostEntity],
-        synchronize: true,
+        synchronize: false,
       }),
       inject: [ConfigService],
     }),

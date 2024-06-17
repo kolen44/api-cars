@@ -163,6 +163,15 @@ export class InitialMigration1718203905783 implements MigrationInterface {
             type: 'integer',
             isNullable: true,
           },
+          { name: 'user_id', type: 'integer', isNullable: true },
+        ],
+        foreignKeys: [
+          {
+            columnNames: ['user_id'],
+            referencedTableName: 'user_entity', //  имя таблицы, на которую ссылается внешний ключ
+            referencedColumnNames: ['id'],
+            onDelete: 'CASCADE',
+          },
         ],
       }),
       true,
@@ -170,7 +179,7 @@ export class InitialMigration1718203905783 implements MigrationInterface {
 
     await queryRunner.createTable(
       new Table({
-        name: 'card_product',
+        name: 'product_entity',
         columns: [
           {
             name: 'id',
@@ -308,6 +317,16 @@ export class InitialMigration1718203905783 implements MigrationInterface {
       }),
       true,
     );
+
+    // await queryRunner.createForeignKey(
+    //   'post_entity',
+    //   new TableForeignKey({
+    //     columnNames: ['user'],
+    //     referencedColumnNames: ['posts'],
+    //     referencedTableName: 'user_entity',
+    //     onDelete: 'CASCADE',
+    //   }),
+    // );
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

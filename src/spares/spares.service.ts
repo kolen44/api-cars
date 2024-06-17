@@ -64,7 +64,7 @@ export class SparesService {
     console.log('ended parsing. starting db creating');
 
     const BATCH_SIZE = 400; // оптимальный размер батча
-    const MAX_CONCURRENT_BATCHES = 8; // Ограничение на количество параллельных запросов
+    const MAX_CONCURRENT_BATCHES = 5; // Ограничение на количество параллельных запросов
 
     const batches = [];
     for (let i = 0; i < response.length; i += BATCH_SIZE) {
@@ -87,7 +87,7 @@ export class SparesService {
 
       await Promise.all(batchPromises);
       // Добавляем небольшую задержку, чтобы уменьшить нагрузку на базу данных
-      await this.delay(1000);
+      await this.delay(500);
     }
 
     console.log('All batches processed');
@@ -102,7 +102,7 @@ export class SparesService {
     console.log('ended parsing. starting db creating');
 
     const BATCH_SIZE = 400; // Выберите оптимальный размер батча
-    const MAX_CONCURRENT_BATCHES = 8; // Ограничение на количество параллельных запросов
+    const MAX_CONCURRENT_BATCHES = 5; // Ограничение на количество параллельных запросов
 
     const batches = [];
     for (let i = 0; i < response.length; i += BATCH_SIZE) {
@@ -125,7 +125,7 @@ export class SparesService {
 
       await Promise.all(batchPromises);
       // Добавляем небольшую задержку, чтобы уменьшить нагрузку на базу данных
-      await this.delay(1000);
+      await this.delay(500);
     }
 
     console.log('All batches processed');

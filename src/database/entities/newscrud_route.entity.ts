@@ -2,11 +2,9 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { PostEntity } from './post.entity';
 
 @Entity('user_entity')
 export class NewsUserCreateEntity {
@@ -49,8 +47,8 @@ export class NewsUserCreateEntity {
   @Column({ nullable: true })
   role?: string = '';
 
-  @OneToMany(() => PostEntity, (post) => post.user)
-  posts: PostEntity[];
+  // @OneToMany(() => PostEntity, (post) => post.user)
+  // posts: PostEntity[];
 
   @CreateDateColumn()
   createdAt: Date;

@@ -30,10 +30,10 @@ export class PostEntity {
   @Column({ nullable: true })
   image_url: string;
 
-  @ManyToOne(() => NewsUserCreateEntity, (user) => user.posts, {
+  @ManyToOne(() => NewsUserCreateEntity, (user) => user.id, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'telephone_number' })
+  @JoinColumn({ name: 'user_id' })
   user: NewsUserCreateEntity;
 
   @Column({ nullable: true })
