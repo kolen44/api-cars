@@ -5,7 +5,7 @@ import { CardProduct } from './src/database/entities/product.entity';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
-  url: 'postgresql://gen_user:pipDiReM%3C%2497)%5C@194.187.122.146:5432/default_db',
+  url: 'postgresql://gen_user:%5C%3A%40%5CE%7DEXMeC9Xj@92.53.119.194:5432/default_db',
   entities: [CardProduct, NewsUserCreateEntity, PostEntity],
   migrations: ['dist/src/migration/*.js'],
 });

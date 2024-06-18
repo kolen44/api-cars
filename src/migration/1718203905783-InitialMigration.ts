@@ -313,6 +313,12 @@ export class InitialMigration1718203905783 implements MigrationInterface {
             type: 'varchar',
             isNullable: true,
           },
+          {
+            name: 'createdAt',
+            type: 'timestamp',
+            default: 'CURRENT_TIMESTAMP',
+            isNullable: false,
+          },
         ],
       }),
       true,

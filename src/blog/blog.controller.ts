@@ -48,7 +48,6 @@ export class BlogController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
   ) {
-    console.log(page + ' ' + limit);
     return this.blogService.findAllWithPagination(page, limit);
   }
 

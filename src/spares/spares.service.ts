@@ -1,6 +1,8 @@
 import { SparesCsvService } from '@app/sparescsv';
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { EventEmitter } from 'events';
+
 import { UpdateCardProductDto } from 'libs/constructor/firstfile/update-card-product.dto';
 import { UpdateCardProductSecondFIleDto } from 'libs/constructor/second-file/update-card-product-second.dto';
 import { CardProductService } from 'libs/functions/src';
@@ -9,43 +11,40 @@ import { SearcherCardProductService } from './services/searcher-card-product.ser
 
 @Injectable()
 export class SparesService {
+  private eventEmitter = new EventEmitter();
+  private BATCH_SIZE = 450; // Выберите оптимальный размер батча
+  private MAX_CONCURRENT_BATCHES = 8; // Ограничение на количество параллельных запросов
+  private CSV_DATABASE_DELLAY = 200; // Время на передышку для бд
+
   constructor(
     public sparesService: SparesCsvService,
     private dbCreate: CardProductService,
     private readonly searcherCardProduct: SearcherCardProductService,
-  ) {}
+  ) {
+    this.setupEventListeners();
+  }
   @Cron(CronExpression.EVERY_DAY_AT_3AM)
-  handleCron() {
+  async handleCron() {
     try {
-      this.cvsDownload('https://db.f-opt.com/csvfiles/abw/spares.csv');
+      await this.cvsDownload('https://db.f-opt.com/csvfiles/abw/spares.csv');
     } catch (error) {
       console.log(error);
       return error;
     }
   }
 
-  @Cron(CronExpression.EVERY_DAY_AT_5AM)
-  handleCronSecondFile() {
-    try {
-      this.cvsDownloadSecondFile(
-        'https://export.autostrong-m.ru/dataexports/2023/webston.ru_MinskMoskvaPiter.csv',
-      );
-    } catch (error) {
-      console.log(error);
-      return error;
-    }
-  }
-
-  @Cron(CronExpression.EVERY_DAY_AT_4AM)
-  handleCronThirdFile() {
-    try {
+  private setupEventListeners() {
+    this.eventEmitter.on('firstFileDownloaded', () => {
       this.cvsDownloadSecondFile(
         'https://export.autostrong-m.ru/dataexports/2023/webston.ru_Kross.csv',
       );
-    } catch (error) {
-      console.log(error);
-      return error;
-    }
+    });
+
+    this.eventEmitter.on('secondFileDownloaded', () => {
+      this.cvsDownloadSecondFile(
+        'https://export.autostrong-m.ru/dataexports/2023/webston.ru_MinskMoskvaPiter.csv',
+      );
+    });
   }
 
   public async cvsUpdate(file) {
@@ -63,23 +62,21 @@ export class SparesService {
     const response: any = await this.sparesService.parseCvsToJson(url);
     console.log('ended parsing. starting db creating');
 
-    const BATCH_SIZE = 400; // оптимальный размер батча
-    const MAX_CONCURRENT_BATCHES = 5; // Ограничение на количество параллельных запросов
-
     const batches = [];
-    for (let i = 0; i < response.length; i += BATCH_SIZE) {
+    for (let i = 0; i < response.length; i += this.BATCH_SIZE) {
       const batch = response
-        .slice(i, i + BATCH_SIZE)
+        .slice(i, i + this.BATCH_SIZE)
         .map((element) => new UpdateCardProductDto(element));
       batches.push(batch);
     }
 
-    for (let i = 0; i < batches.length; i += MAX_CONCURRENT_BATCHES) {
+    for (let i = 0; i < batches.length; i += this.MAX_CONCURRENT_BATCHES) {
       const batchPromises = batches
-        .slice(i, i + MAX_CONCURRENT_BATCHES)
+        .slice(i, i + this.MAX_CONCURRENT_BATCHES)
         .map(async (batch, index) => {
           try {
             await this.dbCreate.updateDatabaseBatch(batch);
+            console.log(i);
           } catch (error) {
             console.error(`Error processing batch ${i + index}`, error);
           }
@@ -87,11 +84,12 @@ export class SparesService {
 
       await Promise.all(batchPromises);
       // Добавляем небольшую задержку, чтобы уменьшить нагрузку на базу данных
-      await this.delay(500);
+      await this.delay(this.CSV_DATABASE_DELLAY);
     }
 
     console.log('All batches processed');
-    return response;
+    this.eventEmitter.emit('firstFileDownloaded');
+    return;
   }
 
   public async cvsDownloadSecondFile(url: string) {
@@ -101,22 +99,20 @@ export class SparesService {
       await this.sparesService.parseCvsToJsonSecondFile(url);
     console.log('ended parsing. starting db creating');
 
-    const BATCH_SIZE = 400; // Выберите оптимальный размер батча
-    const MAX_CONCURRENT_BATCHES = 5; // Ограничение на количество параллельных запросов
-
     const batches = [];
-    for (let i = 0; i < response.length; i += BATCH_SIZE) {
+    for (let i = 0; i < response.length; i += this.BATCH_SIZE) {
       const batch = response
-        .slice(i, i + BATCH_SIZE)
+        .slice(i, i + this.BATCH_SIZE)
         .map((element) => new UpdateCardProductSecondFIleDto(element));
       batches.push(batch);
     }
 
-    for (let i = 0; i < batches.length; i += MAX_CONCURRENT_BATCHES) {
+    for (let i = 0; i < batches.length; i += this.MAX_CONCURRENT_BATCHES) {
       const batchPromises = batches
-        .slice(i, i + MAX_CONCURRENT_BATCHES)
+        .slice(i, i + this.MAX_CONCURRENT_BATCHES)
         .map(async (batch, index) => {
           try {
+            console.log('seconddb' + i);
             await this.dbCreate.updateDatabaseForSecondFileBatch(batch);
           } catch (error) {
             console.error(`Error processing batch ${i + index}`, error);
@@ -125,11 +121,18 @@ export class SparesService {
 
       await Promise.all(batchPromises);
       // Добавляем небольшую задержку, чтобы уменьшить нагрузку на базу данных
-      await this.delay(500);
+      await this.delay(this.CSV_DATABASE_DELLAY);
     }
 
     console.log('All batches processed');
-    return response;
+    if (
+      url ===
+      'https://export.autostrong-m.ru/dataexports/2023/webston.ru_Kross.csv'
+    ) {
+      this.eventEmitter.emit('secondFileDownloaded');
+    }
+
+    return;
   }
 
   private sortAndReturnElementForCriteriaFunctions(response) {
