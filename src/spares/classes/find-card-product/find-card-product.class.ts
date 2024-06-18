@@ -1,4 +1,4 @@
-import { CardProductService } from 'libs/functions/src';
+import { CardProductService } from 'libs/csv-files/functions/src';
 import { CardProduct } from 'src/database/entities/product.entity';
 import { SelectQueryBuilder } from 'typeorm';
 import { SortDirection } from './sort.enum';

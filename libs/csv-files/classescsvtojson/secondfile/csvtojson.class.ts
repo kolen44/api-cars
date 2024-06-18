@@ -1,7 +1,7 @@
 import {
   cardProductSecondFileKeys,
   cardProductSecondFileNumericKeys,
-} from 'libs/keysparsecsv/secondfile/create-card-product-second.dto';
+} from 'libs/csv-files/keysparsecsv/secondfile/create-card-product-second.dto';
 import { CardProductSecondFile } from '../../interface/secondfile/cvssecond(101)';
 
 export class CsvToJsonSecondFile {

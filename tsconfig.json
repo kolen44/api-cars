@@ -18,8 +18,8 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@app/sparescsv": ["libs/sparescsv/src"],
-      "@app/sparescsv/*": ["libs/sparescsv/src/*"],
+      "@app/sparescsv": ["libs/csv-files/sparescsv/src"],
+      "@app/sparescsv/*": ["libs/csv-files/sparescsv/src/*"],
       "@repository/repository": ["libs/functions/src"],
       "@repository/repository/*": ["libs/functions/src/*"]
     }

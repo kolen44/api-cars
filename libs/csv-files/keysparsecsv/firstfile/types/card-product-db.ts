@@ -1,4 +1,4 @@
-import { CardProduct } from 'libs/interface/firstfile/csvfirst(165)';
+import { CardProduct } from 'libs/csv-files/interface/firstfile/csvfirst(165)';
 
 export type CardProductDBWithoutKeys = CardProduct;
 

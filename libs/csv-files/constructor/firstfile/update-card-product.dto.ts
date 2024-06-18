@@ -1,4 +1,4 @@
-import { cardProductKeys } from 'libs/keysparsecsv/firstfile/card-product-keys';
+import { cardProductKeys } from 'libs/csv-files/keysparsecsv/firstfile/card-product-keys';
 import { CardProductDB } from '../../keysparsecsv/firstfile/types/card-product-db';
 
 export class UpdateCardProductDto implements Partial<CardProductDB> {

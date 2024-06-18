@@ -1,7 +1,7 @@
 import {
   cardProductKeys,
   cardProductNumericKeys,
-} from 'libs/keysparsecsv/firstfile/card-product-keys';
+} from 'libs/csv-files/keysparsecsv/firstfile/card-product-keys';
 import { CardProduct } from 'src/database/entities/product.entity';
 
 export class CsvToJsonFirstFile {

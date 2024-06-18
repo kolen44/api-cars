@@ -1,19 +1,19 @@
-import { SparesCsvService } from '@app/sparescsv';
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { EventEmitter } from 'events';
+import { SparesCsvService } from 'libs/csv-files/sparescsv/src';
 
-import { UpdateCardProductDto } from 'libs/constructor/firstfile/update-card-product.dto';
-import { UpdateCardProductSecondFIleDto } from 'libs/constructor/second-file/update-card-product-second.dto';
-import { CardProductService } from 'libs/functions/src';
+import { UpdateCardProductDto } from 'libs/csv-files/constructor/firstfile/update-card-product.dto';
+import { UpdateCardProductSecondFIleDto } from 'libs/csv-files/constructor/second-file/update-card-product-second.dto';
+import { CardProductService } from 'libs/csv-files/functions/src';
 import { FindProductQueryDto } from './dto/find-product-query.dto';
 import { SearcherCardProductService } from './services/searcher-card-product.service';
 
 @Injectable()
 export class SparesService {
   private eventEmitter = new EventEmitter();
-  private BATCH_SIZE = 450; // Выберите оптимальный размер батча
-  private MAX_CONCURRENT_BATCHES = 8; // Ограничение на количество параллельных запросов
+  private BATCH_SIZE = 350; // Выберите оптимальный размер батча
+  private MAX_CONCURRENT_BATCHES = 6; // Ограничение на количество параллельных запросов
   private CSV_DATABASE_DELLAY = 400; // Время на передышку для бд
   private CSV_DATABASE_SECOND_DELLAY = 400; // Время на передышку для бд
 
@@ -192,20 +192,26 @@ export class SparesService {
   public async getProduct(query: FindProductQueryDto) {
     const { page, limit, sort, order } = query;
 
-    const findCardProduct = await this.searcherCardProduct.search(query);
-
     const skip = (page - 1) * limit;
+
+    // Добавим профилирование запроса
+    console.time('searchProducts');
+    const findCardProduct = await this.searcherCardProduct.search(query);
     const result = await findCardProduct.getMany({
       skip,
       limit,
       sort: { key: sort, order },
     });
+    console.timeEnd('searchProducts');
+
+    // Оптимизация возвращаемых данных
+    const data = this.sortAndReturnElementForCriteriaFunctions(result);
 
     return {
       page,
       limit,
       search_count: result.length,
-      data: this.sortAndReturnElementForCriteriaFunctions(result),
+      data,
     };
   }
 

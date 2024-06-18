@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import * as csv from 'csv-parser';
 import { createReadStream } from 'fs';
-import { CsvToJsonFirstFile } from 'libs/classescsvtojson/firstfile/csvtojson.class';
+import { CsvToJsonFirstFile } from 'libs/csv-files/classescsvtojson/firstfile/csvtojson.class';
 import { CsvParser } from 'nest-csv-parser';
 import { Readable } from 'stream';
 import { CsvToJsonSecondFile } from '../../classescsvtojson/secondfile/csvtojson.class';

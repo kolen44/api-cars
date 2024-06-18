@@ -1,4 +1,4 @@
-import { CardProductSecondFile } from 'libs/interface/secondfile/cvssecond(101)';
+import { CardProductSecondFile } from 'libs/csv-files/interface/secondfile/cvssecond(101)';
 
 export const cardProductSecondFileKeys: (keyof CardProductSecondFile)[] = [
   'article',
