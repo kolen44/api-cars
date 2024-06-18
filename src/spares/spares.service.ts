@@ -14,7 +14,7 @@ export class SparesService {
   private eventEmitter = new EventEmitter();
   private BATCH_SIZE = 450; // Выберите оптимальный размер батча
   private MAX_CONCURRENT_BATCHES = 8; // Ограничение на количество параллельных запросов
-  private CSV_DATABASE_DELLAY = 200; // Время на передышку для бд
+  private CSV_DATABASE_DELLAY = 400; // Время на передышку для бд
   private CSV_DATABASE_SECOND_DELLAY = 400; // Время на передышку для бд
 
   constructor(
@@ -112,7 +112,6 @@ export class SparesService {
         .slice(i, i + this.MAX_CONCURRENT_BATCHES)
         .map(async (batch, index) => {
           try {
-            console.log('seconddb' + i);
             await this.dbCreate.updateDatabaseForSecondFileBatch(batch);
           } catch (error) {
             console.error(`Error processing batch ${i + index}`, error);
