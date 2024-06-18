@@ -15,6 +15,7 @@ export class SparesService {
   private BATCH_SIZE = 450; // Выберите оптимальный размер батча
   private MAX_CONCURRENT_BATCHES = 8; // Ограничение на количество параллельных запросов
   private CSV_DATABASE_DELLAY = 200; // Время на передышку для бд
+  private CSV_DATABASE_SECOND_DELLAY = 400; // Время на передышку для бд
 
   constructor(
     public sparesService: SparesCsvService,
@@ -76,7 +77,6 @@ export class SparesService {
         .map(async (batch, index) => {
           try {
             await this.dbCreate.updateDatabaseBatch(batch);
-            console.log(i);
           } catch (error) {
             console.error(`Error processing batch ${i + index}`, error);
           }
@@ -121,7 +121,7 @@ export class SparesService {
 
       await Promise.all(batchPromises);
       // Добавляем небольшую задержку, чтобы уменьшить нагрузку на базу данных
-      await this.delay(this.CSV_DATABASE_DELLAY);
+      await this.delay(this.CSV_DATABASE_SECOND_DELLAY);
     }
 
     console.log('All batches processed');

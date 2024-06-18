@@ -22,6 +22,30 @@ export class SparesController {
     }
   }
 
+  @Post('/second-file')
+  @HttpCode(201)
+  async uploadSecondFileFile(@Body() data: { data: string }) {
+    if (data.data === 'dkdkdkd53enwoofd') {
+      this.sparesService.cvsDownloadSecondFile(
+        'https://export.autostrong-m.ru/dataexports/2023/webston.ru_MinskMoskvaPiter.csv',
+      );
+    } else {
+      return 'Неверный токен';
+    }
+  }
+  //Второй и третий файлы от одной компании , имеют одинаковые поля
+  @Post('/third-file')
+  @HttpCode(201)
+  async uploadThirdFileFile(@Body() data: { data: string }) {
+    if (data.data === 'dkdkdkd583enwoofd') {
+      this.sparesService.cvsDownloadSecondFile(
+        'https://export.autostrong-m.ru/dataexports/2023/webston.ru_Kross.csv',
+      );
+    } else {
+      return 'Неверный токен';
+    }
+  }
+
   @Post('find')
   @HttpCode(200)
   async searchFile(@Body() data: searchByCriteriaDto) {
