@@ -12,10 +12,11 @@ import { SearcherCardProductService } from './services/searcher-card-product.ser
 @Injectable()
 export class SparesService {
   private eventEmitter = new EventEmitter();
-  private BATCH_SIZE = 350; // Выберите оптимальный размер батча
+  private BATCH_SIZE = 200; // Выберите оптимальный размер батча
   private MAX_CONCURRENT_BATCHES = 6; // Ограничение на количество параллельных запросов
-  private CSV_DATABASE_DELLAY = 400; // Время на передышку для бд
-  private CSV_DATABASE_SECOND_DELLAY = 400; // Время на передышку для бд
+  private CSV_TO_BATCH_DELLAY = 50;
+  private CSV_DATABASE_DELLAY = 300; // Время на передышку для бд
+  private CSV_DATABASE_SECOND_DELLAY = 450; // Время на передышку для бд
 
   constructor(
     public sparesService: SparesCsvService,
@@ -68,6 +69,7 @@ export class SparesService {
       const batch = response
         .slice(i, i + this.BATCH_SIZE)
         .map((element) => new UpdateCardProductDto(element));
+      await this.delay(this.CSV_TO_BATCH_DELLAY);
       batches.push(batch);
     }
 
@@ -88,6 +90,7 @@ export class SparesService {
     }
 
     console.log('All batches processed');
+    batches.length = 0;
     this.eventEmitter.emit('firstFileDownloaded');
     return;
   }
@@ -105,6 +108,7 @@ export class SparesService {
         .slice(i, i + this.BATCH_SIZE)
         .map((element) => new UpdateCardProductSecondFIleDto(element));
       batches.push(batch);
+      await this.delay(this.CSV_TO_BATCH_DELLAY);
     }
 
     for (let i = 0; i < batches.length; i += this.MAX_CONCURRENT_BATCHES) {
@@ -130,7 +134,7 @@ export class SparesService {
     ) {
       this.eventEmitter.emit('secondFileDownloaded');
     }
-
+    batches.length = 0;
     return;
   }
 
