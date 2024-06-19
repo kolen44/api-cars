@@ -38,15 +38,15 @@ export class CardProduct {
 
   @Index()
   @Column({ nullable: true })
-  version?: string;
+  version: string;
 
   @Index()
   @Column({ nullable: true })
-  body_type?: string;
+  body_type: string;
 
   @Index()
   @Column({ nullable: true, type: 'integer' })
-  year?: number;
+  year: number;
 
   @Index()
   @Column({ nullable: true })
@@ -58,7 +58,7 @@ export class CardProduct {
 
   @Index()
   @Column({ nullable: true })
-  engine_type?: string;
+  engine_type: string;
 
   @Index()
   @Column({ nullable: true })
@@ -66,13 +66,13 @@ export class CardProduct {
 
   @Index() // Добавление индекса для поля original_number
   @Column({ nullable: true })
-  original_number?: string;
+  original_number: string;
 
   @Column({ type: 'double precision', nullable: true })
   price: number;
 
   @Column({ nullable: true })
-  for_naked?: string;
+  for_naked: string;
 
   @Column({ nullable: true })
   currency: string;
@@ -92,10 +92,10 @@ export class CardProduct {
   url_photo_details: string;
 
   @Column({ nullable: true })
-  url_car_photo?: string;
+  url_car_photo: string;
 
   @Column({ nullable: true })
-  video?: string;
+  video: string;
 
   @Column({ nullable: true })
   phone: string;

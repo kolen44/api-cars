@@ -3,6 +3,8 @@ import axios from 'axios';
 import * as csv from 'csv-parser';
 import { createReadStream } from 'fs';
 import { CsvToJsonFirstFile } from 'libs/csv-files/classescsvtojson/firstfile/csvtojson.class';
+import { CsvToJsonThirdFile } from 'libs/csv-files/classescsvtojson/thirdfile/csvtojson.class';
+import { CardProductThirdFile } from 'libs/csv-files/interface/thirdfile/csvthird(102)';
 import { CsvParser } from 'nest-csv-parser';
 import { Readable } from 'stream';
 import { CsvToJsonSecondFile } from '../../classescsvtojson/secondfile/csvtojson.class';
@@ -91,7 +93,9 @@ export class SparesCsvService {
       return result as CardProductSecondFile;
     };
     const rows: CardProductSecondFile[] = [];
+    console.log('beign');
     const response = await axios.get(url);
+    console.log('end');
 
     return new Promise((resolve, reject) => {
       const readableStream = Readable.from(response.data);
@@ -100,6 +104,43 @@ export class SparesCsvService {
         .on('data', (row) => {
           rows.push(foo(row));
           // console.log(row)
+        })
+        .on('end', () => {
+          //console.log(rows);
+          //console.log('Чтение CSV файла завершено');
+          resolve(rows);
+        })
+        .on('error', (error) => {
+          reject(error);
+        });
+    });
+  }
+
+  public async parseCvsToJsonThirdFile(url: string) {
+    const csvToJson = new CsvToJsonThirdFile();
+
+    const foo = (obj: Record<string, string>) => {
+      let result: Partial<CardProductThirdFile> = {};
+
+      // value = value.replace(/"/g, '').split(';') as string[]
+      result = csvToJson.createObjectByArray(
+        Object.values(obj)[0].replace(/"/g, '').split(';'),
+      );
+      // console.log(value, '\n\n\n\n')
+
+      return result as CardProductThirdFile;
+    };
+    const rows: CardProductThirdFile[] = [];
+    console.log('beign');
+    const response = await axios.get(url);
+    console.log('end');
+
+    return new Promise((resolve, reject) => {
+      const readableStream = Readable.from(response.data);
+      readableStream
+        .pipe(csv())
+        .on('data', (row) => {
+          rows.push(foo(row));
         })
         .on('end', () => {
           //console.log(rows);

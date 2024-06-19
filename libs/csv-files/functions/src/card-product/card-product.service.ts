@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UpdateCardProductThirdFIleDto } from 'libs/csv-files/constructor/thirdfile/update-card-product-third.dto';
 import { CardProduct } from 'src/database/entities/product.entity';
 import {
   FindManyOptions,
@@ -113,13 +114,57 @@ export class CardProductService {
         } else if (dto.vin) {
           cardProduct.description = `${dto.description} (${dto.vin})`;
         }
-        if (cardProduct.article.length < 15 && cardProduct.year !== 0) {
+        if (
+          cardProduct.article.length < 15 &&
+          cardProduct.year !== 0 &&
+          cardProduct.phone !== '0'
+        ) {
           return cardProduct;
         }
       }
     });
 
     return await this.cardProductRepository.save(cardProducts);
+  }
+
+  async updateDatabaseForThirdFileBatch(
+    updateCardProductDtos: UpdateCardProductThirdFIleDto[],
+  ) {
+    const existingCards = await this.cardProductRepository.find({
+      where: updateCardProductDtos.map((dto) => ({
+        detail_name: dto.detail_name,
+        engine: dto.engine,
+        original_number: dto.original_number,
+      })),
+    });
+
+    const existingCardKeys = new Set(
+      existingCards.map(
+        (card) => `${card.detail_name}-${card.engine}-${card.original_number}`,
+      ),
+    );
+
+    const newCardProducts = updateCardProductDtos
+      .filter(
+        (dto) =>
+          dto.detail_name &&
+          !existingCardKeys.has(
+            `${dto.detail_name}-${dto.engine}-${dto.original_number}`,
+          ),
+      )
+      .map((dto) => {
+        const cardProduct = new CardProduct();
+        Object.assign(cardProduct, dto);
+        console.log('2 ' + dto.url_photo_details);
+        cardProduct.id_writer = 102;
+        cardProduct.phone = '+375 (29) 744-44-48, +375 (29) 644-60-60';
+        console.log(cardProduct);
+        cardProduct.year_start_production = dto.year;
+        cardProduct.year_end_production = dto.year;
+        return cardProduct;
+      });
+
+    return await this.cardProductRepository.save(newCardProducts);
   }
 
   // truncateText(text: string, maxLength: number = 25): string {
