@@ -121,19 +121,26 @@ export class SparesCsvService {
 
     const foo = (obj: Record<string, string>) => {
       let result: Partial<CardProductThirdFile> = {};
-
-      // value = value.replace(/"/g, '').split(';') as string[]
       result = csvToJson.createObjectByArray(
         Object.values(obj)[0].replace(/"/g, '').split(';'),
       );
-      // console.log(value, '\n\n\n\n')
 
+      const imageUrls = [];
+      Object.keys(obj).forEach((key) => {
+        if (key.startsWith('_') && !key.startsWith('_1')) {
+          const url = obj[key].split(';')[0];
+          if (url.startsWith('https://')) {
+            imageUrls.push(url);
+          }
+        }
+      });
+      if (imageUrls.length > 0) {
+        (result as any).url_photo_details = imageUrls.join(',');
+      }
       return result as CardProductThirdFile;
     };
     const rows: CardProductThirdFile[] = [];
-    console.log('beign');
     const response = await axios.get(url);
-    console.log('end');
 
     return new Promise((resolve, reject) => {
       const readableStream = Readable.from(response.data);
@@ -143,8 +150,6 @@ export class SparesCsvService {
           rows.push(foo(row));
         })
         .on('end', () => {
-          //console.log(rows);
-          //console.log('Чтение CSV файла завершено');
           resolve(rows);
         })
         .on('error', (error) => {

@@ -155,10 +155,8 @@ export class CardProductService {
       .map((dto) => {
         const cardProduct = new CardProduct();
         Object.assign(cardProduct, dto);
-        console.log('2 ' + dto.url_photo_details);
         cardProduct.id_writer = 102;
         cardProduct.phone = '+375 (29) 744-44-48, +375 (29) 644-60-60';
-        console.log(cardProduct);
         cardProduct.year_start_production = dto.year;
         cardProduct.year_end_production = dto.year;
         return cardProduct;

@@ -12,7 +12,7 @@ export interface CardProductThirdFile {
   description: string;
   price: number;
   currency: string;
-  no_save_db0: string;
+  article: string;
   url_photo_details: string;
   discount: number;
   new_arrival: string;

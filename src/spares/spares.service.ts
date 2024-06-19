@@ -145,10 +145,10 @@ export class SparesService {
     for (let i = 0; i < response.length; i += this.BATCH_SIZE) {
       const batch = response
         .slice(i, i + this.BATCH_SIZE)
-        .map((element: CardProductThirdFile) => {
-          console.log('1 ' + element.url_photo_details);
-          return new UpdateCardProductThirdFIleDto(element);
-        });
+        .map(
+          (element: CardProductThirdFile) =>
+            new UpdateCardProductThirdFIleDto(element),
+        );
       batches.push(batch);
       await this.delay(this.CSV_TO_BATCH_DELLAY);
     }
@@ -241,7 +241,6 @@ export class SparesService {
       limit,
       sort: { key: sort, order },
     });
-    console.timeEnd('searchProducts');
 
     // Оптимизация возвращаемых данных
     const data = this.sortAndReturnElementForCriteriaFunctions(result);

@@ -14,7 +14,7 @@ export const cardProductThirdFileKeys: (keyof CardProductThirdFile)[] = [
   'description',
   'price',
   'currency',
-  'no_save_db0',
+  'article',
   'url_photo_details',
   'discount',
   'new_arrival',

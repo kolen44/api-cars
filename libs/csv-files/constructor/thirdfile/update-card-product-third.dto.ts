@@ -18,11 +18,11 @@ export class UpdateCardProductThirdFIleDto
   public price: number;
   public currency: string;
   public no_save_db0: string;
-  public url_photo_details?: string;
+  public url_photo_details: string;
   public discount: number;
-  public new_arrival?: string;
+  public new_arrival: string;
   public phone: string;
-  public version?: string;
+  public version: string;
   public no_save_db1: string;
   public no_save_db2: string;
   public no_save_db3: string;
@@ -47,11 +47,11 @@ export class UpdateCardProductThirdFIleDto
             this.volume = parseFloat(
               (params[key] as unknown as string).replace(',', '.'),
             );
-            if (this.volume > 1000) {
-              this.volume = this.volume / 1000;
-            }
           } else {
             this[key as string] = params[key] as keyof CardProductThirdFileDB;
+          }
+          if (key === 'volume' && Number(params[key]) > 1000) {
+            this.volume = Number(params[key]) / 1000;
           }
         }
       },
