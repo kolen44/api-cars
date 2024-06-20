@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UpdateCardProductSecondFIleDto } from 'libs/csv-files/constructor/second-file/update-card-product-second.dto';
 import { UpdateCardProductThirdFIleDto } from 'libs/csv-files/constructor/thirdfile/update-card-product-third.dto';
 import { CardProduct } from 'src/database/entities/product.entity';
 import {
@@ -12,7 +13,6 @@ import {
 } from 'typeorm';
 import { CreateCardProductDto } from '../../../constructor/firstfile/create-card-product.dto';
 import { UpdateCardProductDto } from '../../../constructor/firstfile/update-card-product.dto';
-import { UpdateCardProductSecondFIleDto } from '../../../constructor/second-file/update-card-product-second.dto';
 
 @Injectable()
 export class CardProductService {
@@ -69,23 +69,35 @@ export class CardProductService {
 
     const existingCardIds = existingCards.map((card) => card.id);
 
-    if (existingCardIds.length) {
-      await this.cardProductRepository.delete(existingCardIds);
-    }
+    // if (existingCardIds.length) {
+    //   await this.cardProductRepository.delete(existingCardIds);
+    // }
 
-    const cardProducts = updateCardProductDtos.map((dto) => {
-      const cardProduct = new CardProduct();
-      cardProduct.id_writer = 165;
-      Object.assign(cardProduct, dto);
-      return cardProduct;
+    const existingCardsMap = new Map();
+    existingCards.forEach((card) => {
+      const key = `${card.detail_name}-${card.article}-${card.original_number}`;
+      existingCardsMap.set(key, card);
     });
 
-    return await this.cardProductRepository.save(cardProducts);
+    const cardProductsToSave = updateCardProductDtos
+      .map((dto) => {
+        const cardProduct = new CardProduct();
+        cardProduct.id_writer = 165;
+        Object.assign(cardProduct, dto);
+        return cardProduct;
+      })
+      .filter((cardProduct) => {
+        const key = `${cardProduct.detail_name}-${cardProduct.article}-${cardProduct.original_number}`;
+        return !existingCardsMap.has(key);
+      });
+
+    return await this.cardProductRepository.save(cardProductsToSave);
   }
 
   async updateDatabaseForSecondFileBatch(
     updateCardProductDtos: UpdateCardProductSecondFIleDto[],
   ) {
+    // Получаем существующие карточки из базы данных
     const existingCards = await this.cardProductRepository.find({
       where: updateCardProductDtos.map((dto) => ({
         detail_name: dto.detail_name,
@@ -94,37 +106,45 @@ export class CardProductService {
       })),
     });
 
-    const existingCardIds = existingCards.map((card) => card.id);
-
-    if (existingCardIds.length) {
-      await this.cardProductRepository.delete(existingCardIds);
-    }
-
-    const cardProducts = updateCardProductDtos.map((dto) => {
-      if (dto.brand && dto.model && dto.phone && dto.detail_name) {
-        const cardProduct = new CardProduct();
-        cardProduct.id_writer = 101;
-        Object.assign(cardProduct, dto);
-        cardProduct.year_start_production = dto.year;
-        cardProduct.year_end_production = dto.year;
-        if (dto.car && dto.vin) {
-          cardProduct.description = `${dto.description} (${dto.car} ${dto.vin})`;
-        } else if (dto.car) {
-          cardProduct.description = `${dto.description} (${dto.car})`;
-        } else if (dto.vin) {
-          cardProduct.description = `${dto.description} (${dto.vin})`;
-        }
-        if (
-          cardProduct.article.length < 15 &&
-          cardProduct.year !== 0 &&
-          cardProduct.phone !== '0'
-        ) {
-          return cardProduct;
-        }
-      }
+    // Создаем карту для быстрого поиска существующих карточек
+    const existingCardsMap = new Map();
+    existingCards.forEach((card) => {
+      const key = `${card.detail_name}-${card.article}-${card.original_number}`;
+      existingCardsMap.set(key, card);
     });
 
-    return await this.cardProductRepository.save(cardProducts);
+    // Создаем новые объекты карточек и фильтруем только те, которые отсутствуют в базе данных
+    const cardProductsToSave = updateCardProductDtos
+      .map((dto) => {
+        if (dto.brand && dto.model && dto.phone && dto.detail_name) {
+          const cardProduct = new CardProduct();
+          cardProduct.id_writer = 101;
+          Object.assign(cardProduct, dto);
+          cardProduct.year_start_production = dto.year;
+          cardProduct.year_end_production = dto.year;
+          if (dto.car && dto.vin) {
+            cardProduct.description = `${dto.description} (${dto.car} ${dto.vin})`;
+          } else if (dto.car) {
+            cardProduct.description = `${dto.description} (${dto.car})`;
+          } else if (dto.vin) {
+            cardProduct.description = `${dto.description} (${dto.vin})`;
+          }
+          if (
+            cardProduct.article.length < 15 &&
+            cardProduct.year !== 0 &&
+            cardProduct.phone !== '0'
+          ) {
+            return cardProduct;
+          }
+        }
+      })
+      .filter((cardProduct) => {
+        if (!cardProduct) return false; // Фильтруем undefined значения
+        const key = `${cardProduct.detail_name}-${cardProduct.article}-${cardProduct.original_number}`;
+        return !existingCardsMap.has(key);
+      });
+
+    return await this.cardProductRepository.save(cardProductsToSave);
   }
 
   async updateDatabaseForThirdFileBatch(
