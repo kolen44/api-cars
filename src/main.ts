@@ -8,7 +8,7 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   config();
   const app = await NestFactory.create(AppModule);
-  await app.listen(3600);
+  await app.listen(3000);
   app.enableCors();
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.use(bodyParser.json({ limit: '1mb' }));

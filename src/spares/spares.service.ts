@@ -4,9 +4,11 @@ import { EventEmitter } from 'events';
 import { SparesCsvService } from 'libs/csv-files/sparescsv/src';
 
 import { UpdateCardProductDto } from 'libs/csv-files/constructor/firstfile/update-card-product.dto';
+import { UpdateCardProductFourthFIleDto } from 'libs/csv-files/constructor/fourthfile/update-card-product-fourth.dto';
 import { UpdateCardProductSecondFIleDto } from 'libs/csv-files/constructor/second-file/update-card-product-second.dto';
 import { UpdateCardProductThirdFIleDto } from 'libs/csv-files/constructor/thirdfile/update-card-product-third.dto';
 import { CardProductService } from 'libs/csv-files/functions/src';
+import { CardProductFourthFile } from 'libs/csv-files/interface/fourthfile/csvfourth(103)';
 import { CardProductThirdFile } from 'libs/csv-files/interface/thirdfile/csvthird(102)';
 import { FindProductQueryDto } from './dto/find-product-query.dto';
 import { SearcherCardProductService } from './services/searcher-card-product.service';
@@ -48,6 +50,14 @@ export class SparesService {
       this.cvsDownloadSecondFile(
         'https://export.autostrong-m.ru/dataexports/2023/webston.ru_MinskMoskvaPiter.csv',
       );
+    });
+
+    this.eventEmitter.on('startThirdFileDownload', () => {
+      this.cvsDownloadThirdFile('http://i077r.ru/2100-2100.csv');
+    });
+
+    this.eventEmitter.on('startFourthFileDownload', () => {
+      this.cvsDownloadFourthFile('http://i077r.ru/2100-2100.csv');
     });
   }
 
@@ -132,6 +142,8 @@ export class SparesService {
       'https://export.autostrong-m.ru/dataexports/2023/webston.ru_Kross.csv'
     ) {
       this.eventEmitter.emit('secondFileDownloaded');
+    } else {
+      this.eventEmitter.emit('startThirdFileDownload');
     }
     batches.length = 0;
     return;
@@ -169,7 +181,46 @@ export class SparesService {
     }
 
     console.log('All batches processed');
-    this.eventEmitter.emit('thirdFileDownloaded');
+
+    batches.length = 0;
+    this.eventEmitter.emit('startFourthFileDownload');
+    return;
+  }
+
+  public async cvsDownloadFourthFile(url: string) {
+    console.log('started parsing 4 sort file');
+    const response: any =
+      await this.sparesService.parseCvsToJsonFourthFile(url);
+    console.log('ended parsing. starting db creating');
+    const batches = [];
+    for (let i = 0; i < response.length; i += this.BATCH_SIZE) {
+      const batch = response
+        .slice(i, i + this.BATCH_SIZE)
+        .map(
+          (element: CardProductFourthFile) =>
+            new UpdateCardProductFourthFIleDto(element),
+        );
+      batches.push(batch);
+      await this.delay(this.CSV_TO_BATCH_DELLAY);
+    }
+    for (let i = 0; i < batches.length; i += this.MAX_CONCURRENT_BATCHES) {
+      const batchPromises = batches
+        .slice(i, i + this.MAX_CONCURRENT_BATCHES)
+        .map(async (batch, index) => {
+          try {
+            await this.dbCreate.updateDatabaseForFourthFileBatch(batch);
+          } catch (error) {
+            console.error(`Error processing batch ${i + index}`, error);
+          }
+        });
+
+      await Promise.all(batchPromises);
+      // Добавляем небольшую задержку, чтобы уменьшить нагрузку на базу данных
+      await this.delay(this.CSV_DATABASE_SECOND_DELLAY);
+    }
+
+    console.log('All batches processed');
+    this.eventEmitter.emit('fourthFileDownloaded');
 
     batches.length = 0;
     return;
@@ -232,10 +283,10 @@ export class SparesService {
 
   public async getProduct(query: FindProductQueryDto) {
     const { page, limit, sort, order } = query;
-
     const skip = (page - 1) * limit;
 
     const findCardProduct = await this.searcherCardProduct.search(query);
+
     const result = await findCardProduct.getMany({
       skip,
       limit,
@@ -244,7 +295,6 @@ export class SparesService {
 
     // Оптимизация возвращаемых данных
     const data = this.sortAndReturnElementForCriteriaFunctions(result);
-
     return {
       page,
       limit,

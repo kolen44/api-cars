@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UpdateCardProductFourthFIleDto } from 'libs/csv-files/constructor/fourthfile/update-card-product-fourth.dto';
 import { UpdateCardProductSecondFIleDto } from 'libs/csv-files/constructor/second-file/update-card-product-second.dto';
 import { UpdateCardProductThirdFIleDto } from 'libs/csv-files/constructor/thirdfile/update-card-product-third.dto';
 import { CardProduct } from 'src/database/entities/product.entity';
@@ -176,7 +177,9 @@ export class CardProductService {
         const cardProduct = new CardProduct();
         Object.assign(cardProduct, dto);
         cardProduct.id_writer = 102;
-        cardProduct.phone = '+375 (29) 744-44-48, +375 (29) 644-60-60';
+        if (!cardProduct.phone) {
+          cardProduct.phone = '+375 (29) 744-44-48, +375 (29) 644-60-60';
+        }
         cardProduct.year_start_production = dto.year;
         cardProduct.year_end_production = dto.year;
         return cardProduct;
@@ -185,21 +188,46 @@ export class CardProductService {
     return await this.cardProductRepository.save(newCardProducts);
   }
 
-  // truncateText(text: string, maxLength: number = 25): string {
-  //   if (text.length <= maxLength) {
-  //     return text;
-  //   }
+  async updateDatabaseForFourthFileBatch(
+    updateCardProductDtos: UpdateCardProductFourthFIleDto[],
+  ) {
+    const existingCards = await this.cardProductRepository.find({
+      where: updateCardProductDtos.map((dto) => ({
+        detail_name: dto.detail_name,
+        engine: dto.engine,
+        original_number: dto.original_number,
+      })),
+    });
 
-  //   let truncated = text.slice(0, maxLength);
-  //   const remainder = text.slice(maxLength);
+    const existingCardKeys = new Set(
+      existingCards.map(
+        (card) => `${card.detail_name}-${card.engine}-${card.original_number}`,
+      ),
+    );
 
-  //   const firstSpaceIndex = remainder.indexOf(' ');
-  //   if (firstSpaceIndex !== -1) {
-  //     truncated += remainder.slice(0, firstSpaceIndex + 1);
-  //   }
-
-  //   return truncated;
-  // }
+    const newCardProducts = updateCardProductDtos
+      .filter(
+        (dto) =>
+          dto.detail_name &&
+          !existingCardKeys.has(
+            `${dto.detail_name}-${dto.engine}-${dto.original_number}`,
+          ),
+      )
+      .map((dto) => {
+        const cardProduct = new CardProduct();
+        Object.assign(cardProduct, dto);
+        cardProduct.id_writer = 102;
+        if (!cardProduct.phone) {
+          cardProduct.phone = '+375 (29) 311-28-98, +7 (915) 654-19-23';
+        }
+        if (!cardProduct.year) cardProduct.year = null;
+        if (!cardProduct.price) cardProduct.price = null;
+        cardProduct.year_start_production = dto.year;
+        cardProduct.year_end_production = dto.year;
+        return cardProduct;
+      });
+    return await this.cardProductRepository.save(newCardProducts);
+  }
 
   async removeMany(ids: number[]) {
     return await this.cardProductRepository

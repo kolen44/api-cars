@@ -1,0 +1,29 @@
+export interface CardProductFourthFile {
+  article: string;
+  brand: string;
+  model: string;
+  year: number;
+  detail_name: string;
+  engine: string;
+  volume: number;
+  engine_type: string;
+  gearbox: string;
+  body_type: string;
+  original_number: string;
+  description: string;
+  price: number;
+  currency: string;
+  discount: number;
+  phone: string;
+  address: string;
+  url_photo_details: string;
+  on_order: string;
+  new: string;
+  video: string;
+  r_diameter: number;
+  j_width: number;
+  holes_number: number;
+  et_offset: number;
+  dia: number;
+  pcd: string;
+}

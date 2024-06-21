@@ -21,11 +21,10 @@ export class FindCardProduct {
   }) {
     const sortOrder: 'ASC' | 'DESC' =
       sort?.order === SortDirection.DESC ? 'DESC' : 'ASC';
-
     return await this.queryBuilder
       .skip(skip || 0)
       .take(limit || 20)
-      .addOrderBy(sort.key, sortOrder)
+      .addOrderBy(sort.key || 'price', sortOrder)
       .addOrderBy('id', 'ASC')
       .getMany();
   }

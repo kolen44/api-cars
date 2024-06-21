@@ -38,7 +38,9 @@ export class SparesController {
   @HttpCode(201)
   async uploadThirdFileFile(@Body() data: { data: string }) {
     if (data.data === 'dkdkdkd583enwoofd') {
-      this.sparesService.cvsDownloadThirdFile('http://i077r.ru/2100-2100.csv');
+      this.sparesService.cvsDownloadFourthFile(
+        'https://api.filesmonster.ru/export/2663/bamperby-2663-5.csv',
+      );
     } else {
       return 'Неверный токен';
     }

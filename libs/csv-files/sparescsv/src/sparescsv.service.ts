@@ -3,7 +3,9 @@ import axios from 'axios';
 import * as csv from 'csv-parser';
 import { createReadStream } from 'fs';
 import { CsvToJsonFirstFile } from 'libs/csv-files/classescsvtojson/firstfile/csvtojson.class';
+import { CsvToJsonFourthFile } from 'libs/csv-files/classescsvtojson/fourthfile/csvtojson.class';
 import { CsvToJsonThirdFile } from 'libs/csv-files/classescsvtojson/thirdfile/csvtojson.class';
+import { CardProductFourthFile } from 'libs/csv-files/interface/fourthfile/csvfourth(103)';
 import { CardProductThirdFile } from 'libs/csv-files/interface/thirdfile/csvthird(102)';
 import { CsvParser } from 'nest-csv-parser';
 import { Readable } from 'stream';
@@ -140,6 +142,48 @@ export class SparesCsvService {
       return result as CardProductThirdFile;
     };
     const rows: CardProductThirdFile[] = [];
+    const response = await axios.get(url);
+
+    return new Promise((resolve, reject) => {
+      const readableStream = Readable.from(response.data);
+      readableStream
+        .pipe(csv())
+        .on('data', (row) => {
+          rows.push(foo(row));
+        })
+        .on('end', () => {
+          resolve(rows);
+        })
+        .on('error', (error) => {
+          reject(error);
+        });
+    });
+  }
+
+  public async parseCvsToJsonFourthFile(url: string) {
+    const csvToJson = new CsvToJsonFourthFile();
+
+    const foo = (obj: Record<string, string>) => {
+      let result: Partial<CardProductFourthFile> = {};
+      result = csvToJson.createObjectByArray(
+        Object.values(obj)[0].replace(/"/g, '').split(';'),
+      );
+
+      const imageUrls = [];
+      Object.keys(obj).forEach((key) => {
+        if (key.startsWith('_') && !key.startsWith('_1')) {
+          const url = obj[key].split(';')[0];
+          if (url.startsWith('https://')) {
+            imageUrls.push(url);
+          }
+        }
+      });
+      if (imageUrls.length > 0) {
+        (result as any).url_photo_details = imageUrls.join(',');
+      }
+      return result as CardProductFourthFile;
+    };
+    const rows: CardProductFourthFile[] = [];
     const response = await axios.get(url);
 
     return new Promise((resolve, reject) => {
