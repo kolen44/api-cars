@@ -85,6 +85,8 @@ export class CardProductService {
         const cardProduct = new CardProduct();
         cardProduct.id_writer = 165;
         Object.assign(cardProduct, dto);
+        if (!cardProduct.year) cardProduct.year = null;
+        if (!cardProduct.price) cardProduct.price = null;
         return cardProduct;
       })
       .filter((cardProduct) => {
@@ -123,6 +125,8 @@ export class CardProductService {
           Object.assign(cardProduct, dto);
           cardProduct.year_start_production = dto.year;
           cardProduct.year_end_production = dto.year;
+          if (!cardProduct.year) cardProduct.year = null;
+          if (!cardProduct.price) cardProduct.price = null;
           if (dto.car && dto.vin) {
             cardProduct.description = `${dto.description} (${dto.car} ${dto.vin})`;
           } else if (dto.car) {
@@ -177,6 +181,8 @@ export class CardProductService {
         const cardProduct = new CardProduct();
         Object.assign(cardProduct, dto);
         cardProduct.id_writer = 102;
+        if (!cardProduct.year) cardProduct.year = null;
+        if (!cardProduct.price) cardProduct.price = null;
         if (!cardProduct.phone) {
           cardProduct.phone = '+375 (29) 744-44-48, +375 (29) 644-60-60';
         }
@@ -219,7 +225,37 @@ export class CardProductService {
         cardProduct.id_writer = 102;
         if (!cardProduct.phone) {
           cardProduct.phone = '+375 (29) 311-28-98, +7 (915) 654-19-23';
+        } else {
+          cardProduct.phone = cardProduct.phone.replace(
+            / Viber| WhatsApp| Telegram/g,
+            '',
+          );
         }
+        let descriptionParts: string = '';
+
+        if (dto.r_diameter) {
+          descriptionParts += `R${dto.r_diameter}; `;
+        }
+        if (dto.j_width) {
+          descriptionParts += `J${dto.j_width}; `;
+        }
+        if (dto.holes_number) {
+          descriptionParts += `${dto.holes_number}; `;
+        }
+        if (dto.et_offset) {
+          descriptionParts += `ET${dto.et_offset}; `;
+        }
+        if (dto.dia) {
+          descriptionParts += `DIA${dto.dia}; `;
+        }
+        if (dto.pcd) {
+          descriptionParts += `PCD${dto.pcd}; `;
+        }
+
+        if (descriptionParts) {
+          cardProduct.description = `${descriptionParts} ${cardProduct.description}`;
+        }
+
         if (!cardProduct.year) cardProduct.year = null;
         if (!cardProduct.price) cardProduct.price = null;
         cardProduct.year_start_production = dto.year;

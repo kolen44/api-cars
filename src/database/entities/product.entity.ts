@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 
 @Entity('product_entity')
+@Index(['brand', 'year_start_production', 'year_start_production', 'engine'])
 export class CardProduct {
   @PrimaryGeneratedColumn({ type: 'integer' })
   id: number;
@@ -18,6 +19,7 @@ export class CardProduct {
   @Column({ nullable: true })
   article: string;
 
+  @Index()
   @Column({ nullable: true })
   in_stock: number;
 
@@ -64,10 +66,11 @@ export class CardProduct {
   @Column({ nullable: true })
   gearbox: string;
 
-  @Index() // Добавление индекса для поля original_number
+  @Index()
   @Column({ nullable: true })
   original_number: string;
 
+  @Index()
   @Column({ type: 'double precision', nullable: true })
   price: number;
 
@@ -97,6 +100,7 @@ export class CardProduct {
   @Column({ nullable: true })
   video: string;
 
+  @Index()
   @Column({ nullable: true })
   phone: string;
 

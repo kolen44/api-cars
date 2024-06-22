@@ -37,6 +37,9 @@ export class UpdateCardProductFourthFIleDto
     (cardProductThirdFileKeys as (keyof CardProductThirdFileDB)[]).forEach(
       (key) => {
         if (key in params) {
+          if (key === 'volume' && Number(params[key]) > 1000) {
+            this.volume = Number(params[key]) / 1000;
+          }
           if (key === 'price' && typeof params[key] === 'string') {
             this.price = parseFloat(
               (params[key] as unknown as string).replace(',', '.'),
@@ -47,9 +50,6 @@ export class UpdateCardProductFourthFIleDto
             );
           } else {
             this[key as string] = params[key] as keyof CardProductThirdFileDB;
-          }
-          if (key === 'volume' && Number(params[key]) > 1000) {
-            this.volume = Number(params[key]) / 1000;
           }
         }
       },
