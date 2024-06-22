@@ -8,6 +8,7 @@ import {
   FindManyOptions,
   FindOneOptions,
   ILike,
+  LessThan,
   LessThanOrEqual,
   MoreThanOrEqual,
   Repository,
@@ -28,6 +29,19 @@ export class CardProductService {
     );
 
     return await this.cardProductRepository.save(cardProduct);
+  }
+
+  async checkAndDeleteOldRecords() {
+    const hundredDaysAgo = new Date();
+    hundredDaysAgo.setDate(hundredDaysAgo.getDate() - 100); // Устанавливаем текущую дату минус 100 дней
+
+    const oldRecords = await this.cardProductRepository.find({
+      where: {
+        createdAt: LessThan(hundredDaysAgo),
+      },
+    });
+
+    await this.cardProductRepository.remove(oldRecords);
   }
 
   async createMany(createCardProductDto: CreateCardProductDto[]) {

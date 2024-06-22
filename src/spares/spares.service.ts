@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron } from '@nestjs/schedule';
 import { EventEmitter } from 'events';
 import { SparesCsvService } from 'libs/csv-files/sparescsv/src';
 
@@ -29,7 +29,7 @@ export class SparesService {
   ) {
     this.setupEventListeners();
   }
-  @Cron(CronExpression.EVERY_DAY_AT_3AM)
+  @Cron('0 3 * * 1')
   async handleCron() {
     try {
       await this.cvsDownload('https://db.f-opt.com/csvfiles/abw/spares.csv');
@@ -37,6 +37,11 @@ export class SparesService {
       console.log(error);
       return error;
     }
+  }
+
+  @Cron('0 0 * * 1')
+  async handleCronForDeleteOldParts() {
+    await this.dbCreate.checkAndDeleteOldRecords();
   }
 
   private setupEventListeners() {
