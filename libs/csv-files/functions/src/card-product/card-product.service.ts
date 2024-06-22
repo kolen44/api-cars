@@ -236,7 +236,7 @@ export class CardProductService {
       .map((dto) => {
         const cardProduct = new CardProduct();
         Object.assign(cardProduct, dto);
-        cardProduct.id_writer = 102;
+        cardProduct.id_writer = 103;
         if (!cardProduct.phone) {
           cardProduct.phone = '+375 (29) 311-28-98, +7 (915) 654-19-23';
         } else {
@@ -407,6 +407,7 @@ export class CardProductService {
     original_number: number,
     id: number,
   ) {
+    console.log(await this.cardProductRepository.count());
     const criteria: any = [];
 
     if (article !== undefined && article !== null) {
@@ -416,11 +417,12 @@ export class CardProductService {
       criteria.push({ original_number: ILike(`%${original_number}%`) });
     }
     if (id !== undefined && id !== null) {
-      criteria.push({ id: id });
+      criteria.push({ id_writer: id });
     }
 
     const result = await this.cardProductRepository.find({
       where: criteria.length ? criteria : {},
+      take: 30,
     });
     return result;
   }
