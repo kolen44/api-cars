@@ -410,13 +410,16 @@ export class CardProductService {
     console.log(await this.cardProductRepository.count());
     const criteria: any = [];
 
-    if (article !== undefined && article !== null) {
+    if (article !== undefined && article !== null && article !== 'id_writer') {
       criteria.push({ article: ILike(`%${article}%`) });
     }
     if (original_number !== undefined && original_number !== null) {
       criteria.push({ original_number: ILike(`%${original_number}%`) });
     }
     if (id !== undefined && id !== null) {
+      criteria.push({ id: id });
+    }
+    if (article == 'id_writer' && id !== null) {
       criteria.push({ id_writer: id });
     }
 
