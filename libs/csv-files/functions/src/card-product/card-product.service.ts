@@ -464,7 +464,7 @@ export class CardProductService {
     if (original_number !== undefined && original_number !== null) {
       criteria.push({ original_number: ILike(`%${original_number}%`) });
     }
-    if (id !== undefined && id !== null) {
+    if (id !== undefined && id !== null && article !== 'id_writer') {
       criteria.push({ id: id });
     }
     if (article == 'id_writer' && id !== null) {
