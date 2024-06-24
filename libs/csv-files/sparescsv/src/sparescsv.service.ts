@@ -50,7 +50,14 @@ export class SparesCsvService {
       return result as CardProduct;
     };
     const rows: CardProduct[] = [];
-    const response = await axios.get(url);
+    const source = axios.CancelToken.source();
+
+    const response = await axios({
+      method: 'get',
+      url: url,
+      responseType: 'stream',
+      cancelToken: source.token,
+    });
 
     return new Promise((resolve, reject) => {
       const readableStream = Readable.from(response.data);
@@ -60,6 +67,7 @@ export class SparesCsvService {
           rows.push(foo(row));
         })
         .on('end', () => {
+          source.cancel('Reached 633064 rows');
           resolve(rows);
         })
         .on('error', (error) => {
@@ -144,7 +152,14 @@ export class SparesCsvService {
       return result as CardProductThirdFile;
     };
     const rows: CardProductThirdFile[] = [];
-    const response = await axios.get(url);
+    const source = axios.CancelToken.source();
+
+    const response = await axios({
+      method: 'get',
+      url: url,
+      responseType: 'stream',
+      cancelToken: source.token,
+    });
 
     return new Promise((resolve, reject) => {
       const readableStream = Readable.from(response.data);
@@ -154,6 +169,7 @@ export class SparesCsvService {
           rows.push(foo(row));
         })
         .on('end', () => {
+          source.cancel('Reached 633064 rows');
           resolve(rows);
         })
         .on('error', (error) => {
@@ -186,7 +202,14 @@ export class SparesCsvService {
       return result as CardProductFourthFile;
     };
     const rows: CardProductFourthFile[] = [];
-    const response = await axios.get(url);
+    const source = axios.CancelToken.source();
+
+    const response = await axios({
+      method: 'get',
+      url: url,
+      responseType: 'stream',
+      cancelToken: source.token,
+    });
 
     return new Promise((resolve, reject) => {
       const readableStream = Readable.from(response.data);
@@ -196,6 +219,7 @@ export class SparesCsvService {
           rows.push(foo(row));
         })
         .on('end', () => {
+          source.cancel('Reached 633064 rows');
           resolve(rows);
         })
         .on('error', (error) => {
@@ -215,9 +239,14 @@ export class SparesCsvService {
       return result as CardProductFifthFile;
     };
     const rows: CardProductFifthFile[] = [];
-    console.log('beign');
-    const response = await axios.get(url);
-    console.log('end');
+    const source = axios.CancelToken.source();
+
+    const response = await axios({
+      method: 'get',
+      url: url,
+      responseType: 'stream',
+      cancelToken: source.token,
+    });
 
     return new Promise((resolve, reject) => {
       const readableStream = Readable.from(response.data);
@@ -227,6 +256,7 @@ export class SparesCsvService {
           rows.push(foo(row));
         })
         .on('end', () => {
+          source.cancel('Reached 633064 rows');
           resolve(rows);
         })
         .on('error', (error) => {
