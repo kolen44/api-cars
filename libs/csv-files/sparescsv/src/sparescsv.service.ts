@@ -2,9 +2,11 @@ import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import * as csv from 'csv-parser';
 import { createReadStream } from 'fs';
+import { CsvToJsonFifthFile } from 'libs/csv-files/classescsvtojson/fifthfile/csvtojson.class';
 import { CsvToJsonFirstFile } from 'libs/csv-files/classescsvtojson/firstfile/csvtojson.class';
 import { CsvToJsonFourthFile } from 'libs/csv-files/classescsvtojson/fourthfile/csvtojson.class';
 import { CsvToJsonThirdFile } from 'libs/csv-files/classescsvtojson/thirdfile/csvtojson.class';
+import { CardProductFifthFile } from 'libs/csv-files/interface/fifthfile/csvfifth(101)';
 import { CardProductFourthFile } from 'libs/csv-files/interface/fourthfile/csvfourth(103)';
 import { CardProductThirdFile } from 'libs/csv-files/interface/thirdfile/csvthird(102)';
 import { CsvParser } from 'nest-csv-parser';
@@ -192,6 +194,43 @@ export class SparesCsvService {
           resolve(rows);
         })
         .on('error', (error) => {
+          reject(error);
+        });
+    });
+  }
+
+  public async parseCvsToJsonFifthFile(
+    url: string,
+  ): Promise<CardProductFifthFile[]> {
+    const csvToJson = new CsvToJsonFifthFile();
+
+    const foo = (obj: Record<string, string>) => {
+      let result: Partial<CardProductFifthFile> = {};
+      result = csvToJson.createObjectByArray(
+        Object.values(obj)[0].replace(/"/g, '').split(';'),
+      );
+      return result as CardProductFifthFile;
+    };
+
+    const rows: CardProductFifthFile[] = [];
+    console.log('spares.service 91 line');
+
+    const response = await axios({
+      method: 'get',
+      url: url,
+    });
+
+    return new Promise((resolve, reject) => {
+      response.data
+        .pipe(csv())
+        .on('data', (row) => {
+          rows.push(foo(row));
+        })
+        .on('end', () => {
+          resolve(rows);
+        })
+        .on('error', (error) => {
+          console.log(error);
           reject(error);
         });
     });

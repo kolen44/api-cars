@@ -16,12 +16,8 @@ import { CardProduct } from './entities/product.entity';
       ): Promise<TypeOrmModuleOptions> => {
         const connectionOptions: ConnectionOptions = {
           type: 'postgres',
-          host: configService.get('DB_HOST'),
-          port: +configService.get<number>('DB_PORT'),
-          username: configService.get('DB_USERNAME'),
-          password: configService.get('DB_PASSWORD'),
-          database: configService.get('DB_DATABASE'),
-          synchronize: true,
+          url: configService.get('DB_LINK'),
+          synchronize: false,
           entities: [CardProduct, NewsUserCreateEntity, PostEntity],
           extra: {
             work_mem: '64MB',

@@ -3,6 +3,7 @@ import { Cron } from '@nestjs/schedule';
 import { EventEmitter } from 'events';
 import { SparesCsvService } from 'libs/csv-files/sparescsv/src';
 
+import { UpdateCardProductFifthFIleDto } from 'libs/csv-files/constructor/fifthfile/update-card-product-fifth.dto';
 import { UpdateCardProductDto } from 'libs/csv-files/constructor/firstfile/update-card-product.dto';
 import { UpdateCardProductFourthFIleDto } from 'libs/csv-files/constructor/fourthfile/update-card-product-fourth.dto';
 import { UpdateCardProductSecondFIleDto } from 'libs/csv-files/constructor/second-file/update-card-product-second.dto';
@@ -51,18 +52,18 @@ export class SparesService {
       );
     });
 
-    this.eventEmitter.on('secondFileDownloaded', () => {
-      this.cvsDownloadSecondFile(
-        'https://export.autostrong-m.ru/dataexports/2023/webston.ru_MinskMoskvaPiter.csv',
-      );
-    });
-
     this.eventEmitter.on('startThirdFileDownload', () => {
       this.cvsDownloadThirdFile('http://i077r.ru/2100-2100.csv');
     });
 
     this.eventEmitter.on('startFourthFileDownload', () => {
       this.cvsDownloadFourthFile('http://i077r.ru/2100-2100.csv');
+    });
+
+    this.eventEmitter.on('FourthFileDownloaded', () => {
+      this.cvsDownloadFifthFile(
+        'https://export.autostrong-m.ru/dataexports/2023/webston.ru_MinskMoskvaPiter.csv',
+      );
     });
   }
 
@@ -142,14 +143,7 @@ export class SparesService {
     }
 
     console.log('All batches processed');
-    if (
-      url ===
-      'https://export.autostrong-m.ru/dataexports/2023/webston.ru_Kross.csv'
-    ) {
-      this.eventEmitter.emit('secondFileDownloaded');
-    } else {
-      this.eventEmitter.emit('startThirdFileDownload');
-    }
+    this.eventEmitter.emit('secondFileDownloaded');
     batches.length = 0;
     return;
   }
@@ -225,7 +219,40 @@ export class SparesService {
     }
 
     console.log('All batches processed');
-    this.eventEmitter.emit('fourthFileDownloaded');
+    this.eventEmitter.emit('FourthFileDownloaded');
+
+    batches.length = 0;
+    return;
+  }
+
+  public async cvsDownloadFifthFile(url: string) {
+    console.log('started parsing 5 file');
+    const response: any = await this.sparesService.parseCvsToJsonFifthFile(url);
+    console.log('ended parsing. starting db creating');
+    const batches = [];
+    for (let i = 0; i < response.length; i += this.BATCH_SIZE) {
+      const batch = response
+        .slice(i, i + this.BATCH_SIZE)
+        .map((element) => new UpdateCardProductFifthFIleDto(element));
+      batches.push(batch);
+      await this.delay(this.CSV_TO_BATCH_DELLAY);
+    }
+    for (let i = 0; i < batches.length; i += this.MAX_CONCURRENT_BATCHES) {
+      const batchPromises = batches
+        .slice(i, i + this.MAX_CONCURRENT_BATCHES)
+        .map(async (batch, index) => {
+          try {
+            await this.dbCreate.updateDatabaseForFifthFileBatch(batch);
+          } catch (error) {
+            console.error(`Error processing batch ${i + index}`, error);
+          }
+        });
+
+      await Promise.all(batchPromises);
+      await this.delay(this.CSV_DATABASE_SECOND_DELLAY);
+    }
+
+    this.eventEmitter.emit('FifthFileDownloaded');
 
     batches.length = 0;
     return;
