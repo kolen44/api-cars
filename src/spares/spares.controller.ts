@@ -27,7 +27,7 @@ export class SparesController {
   async uploadSecondFileFile(@Body() data: { data: string }) {
     if (data.data === 'dkdkdkd53enwoofd') {
       this.sparesService.cvsDownloadSecondFile(
-        'https://export.autostrong-m.ru/dataexports/2023/webston.ru_MinskMoskvaPiter.csv',
+        'https://export.autostrong-m.ru/dataexports/2023/webston.ru_Kross.csv',
       );
     } else {
       return 'Неверный токен';

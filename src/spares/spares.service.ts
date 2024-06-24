@@ -45,23 +45,23 @@ export class SparesService {
     await this.dbCreate.checkAndDeleteOldRecords();
   }
 
-  private setupEventListeners() {
-    this.eventEmitter.on('firstFileDownloaded', () => {
-      this.cvsDownloadSecondFile(
+  private async setupEventListeners() {
+    this.eventEmitter.on('firstFileDownloaded', async () => {
+      await this.cvsDownloadSecondFile(
         'https://export.autostrong-m.ru/dataexports/2023/webston.ru_Kross.csv',
       );
     });
 
-    this.eventEmitter.on('startThirdFileDownload', () => {
-      this.cvsDownloadThirdFile('http://i077r.ru/2100-2100.csv');
+    this.eventEmitter.on('secondFileDownloaded', async () => {
+      await this.cvsDownloadThirdFile('http://i077r.ru/2100-2100.csv');
     });
 
-    this.eventEmitter.on('startFourthFileDownload', () => {
-      this.cvsDownloadFourthFile('http://i077r.ru/2100-2100.csv');
+    this.eventEmitter.on('startFourthFileDownload', async () => {
+      await this.cvsDownloadFourthFile('http://i077r.ru/2100-2100.csv');
     });
 
-    this.eventEmitter.on('FourthFileDownloaded', () => {
-      this.cvsDownloadFifthFile(
+    this.eventEmitter.on('FourthFileDownloaded', async () => {
+      await this.cvsDownloadFifthFile(
         'https://export.autostrong-m.ru/dataexports/2023/webston.ru_MinskMoskvaPiter.csv',
       );
     });
@@ -253,6 +253,7 @@ export class SparesService {
     }
 
     this.eventEmitter.emit('FifthFileDownloaded');
+    console.log('All batches processed');
 
     batches.length = 0;
     return;
