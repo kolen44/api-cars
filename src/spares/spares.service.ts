@@ -18,7 +18,7 @@ import { SearcherCardProductService } from './services/searcher-card-product.ser
 export class SparesService {
   private eventEmitter = new EventEmitter();
   private BATCH_SIZE = 200; // Выберите оптимальный размер батча
-  private MAX_CONCURRENT_BATCHES = 6; // Ограничение на количество параллельных запросов
+  private MAX_CONCURRENT_BATCHES = 3; // Ограничение на количество параллельных запросов
   private CSV_TO_BATCH_DELLAY = 50;
   private CSV_DATABASE_DELLAY = 300; // Время на передышку для бд
   private CSV_DATABASE_SECOND_DELLAY = 300; // Время на передышку для бд
@@ -114,38 +114,43 @@ export class SparesService {
   }
 
   public async cvsDownloadSecondFile(url: string) {
-    console.log('started parsing');
-    const response: any =
-      await this.sparesService.parseCvsToJsonSecondFile(url);
-    console.log('ended parsing. starting db creating');
-    const batches = [];
-    for (let i = 0; i < response.length; i += this.BATCH_SIZE) {
-      const batch = response
-        .slice(i, i + this.BATCH_SIZE)
-        .map((element) => new UpdateCardProductSecondFIleDto(element));
-      batches.push(batch);
-      await this.delay(this.CSV_TO_BATCH_DELLAY);
-    }
-    for (let i = 0; i < batches.length; i += this.MAX_CONCURRENT_BATCHES) {
-      const batchPromises = batches
-        .slice(i, i + this.MAX_CONCURRENT_BATCHES)
-        .map(async (batch, index) => {
-          try {
-            await this.dbCreate.updateDatabaseForSecondFileBatch(batch);
-          } catch (error) {
-            console.error(`Error processing batch ${i + index}`, error);
-          }
-        });
+    try {
+      console.log('started parsing');
+      const response: any =
+        await this.sparesService.parseCvsToJsonSecondFile(url);
+      console.log('ended parsing. starting db creating');
+      const batches = [];
+      for (let i = 0; i < response.length; i += this.BATCH_SIZE) {
+        const batch = response
+          .slice(i, i + this.BATCH_SIZE)
+          .map((element) => new UpdateCardProductSecondFIleDto(element));
+        batches.push(batch);
+        await this.delay(this.CSV_TO_BATCH_DELLAY);
+      }
+      for (let i = 0; i < batches.length; i += this.MAX_CONCURRENT_BATCHES) {
+        const batchPromises = batches
+          .slice(i, i + this.MAX_CONCURRENT_BATCHES)
+          .map(async (batch, index) => {
+            try {
+              await this.dbCreate.updateDatabaseForSecondFileBatch(batch);
+            } catch (error) {
+              console.error(`Error processing batch ${i + index}`, error);
+            }
+          });
 
-      await Promise.all(batchPromises);
-      // Добавляем небольшую задержку, чтобы уменьшить нагрузку на базу данных
-      await this.delay(this.CSV_DATABASE_SECOND_DELLAY);
-    }
+        await Promise.all(batchPromises);
+        // Добавляем небольшую задержку, чтобы уменьшить нагрузку на базу данных
+        await this.delay(this.CSV_DATABASE_SECOND_DELLAY);
+      }
 
-    console.log('All batches processed');
-    this.eventEmitter.emit('secondFileDownloaded');
-    batches.length = 0;
-    return;
+      console.log('All batches processed');
+      this.eventEmitter.emit('secondFileDownloaded');
+      batches.length = 0;
+    } catch (error) {
+      console.log(error);
+    } finally {
+      return;
+    }
   }
 
   public async cvsDownloadThirdFile(url: string) {
@@ -190,7 +195,7 @@ export class SparesService {
     console.log('started parsing 4 sort file');
     const response: any =
       await this.sparesService.parseCvsToJsonFourthFile(url);
-    console.log('ended parsing. starting db creating');
+
     const batches = [];
     for (let i = 0; i < response.length; i += this.BATCH_SIZE) {
       const batch = response
@@ -200,8 +205,9 @@ export class SparesService {
             new UpdateCardProductFourthFIleDto(element),
         );
       batches.push(batch);
-      await this.delay(this.CSV_TO_BATCH_DELLAY);
+      //await this.delay(this.CSV_TO_BATCH_DELLAY);
     }
+    console.log('ended parsing. starting db creating');
     for (let i = 0; i < batches.length; i += this.MAX_CONCURRENT_BATCHES) {
       const batchPromises = batches
         .slice(i, i + this.MAX_CONCURRENT_BATCHES)

@@ -43,6 +43,7 @@ export class CardProductService {
     });
 
     await this.cardProductRepository.remove(oldRecords);
+    await this.cardProductRepository.query('VACUUM');
   }
 
   async createMany(createCardProductDto: CreateCardProductDto[]) {
@@ -75,7 +76,12 @@ export class CardProductService {
   }
 
   async updateDatabaseBatch(updateCardProductDtos: UpdateCardProductDto[]) {
-    //console.log(await this.cardProductRepository.clear());
+    // // Очистка базы данных
+    // await this.cardProductRepository.clear();
+
+    // // Выполнение команды VACUUM
+    // await this.cardProductRepository.query('VACUUM');
+    // console.log('vacuum');
     const existingCards = await this.cardProductRepository.find({
       where: updateCardProductDtos.map((dto) => ({
         detail_name: dto.detail_name,
