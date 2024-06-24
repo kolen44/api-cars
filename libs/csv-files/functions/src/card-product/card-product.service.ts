@@ -74,6 +74,7 @@ export class CardProductService {
   }
 
   async updateDatabaseBatch(updateCardProductDtos: UpdateCardProductDto[]) {
+    //console.log(await this.cardProductRepository.clear());
     const existingCards = await this.cardProductRepository.find({
       where: updateCardProductDtos.map((dto) => ({
         detail_name: dto.detail_name,
@@ -114,6 +115,7 @@ export class CardProductService {
   async updateDatabaseForSecondFileBatch(
     updateCardProductDtos: UpdateCardProductSecondFIleDto[],
   ) {
+    //console.log(await this.cardProductRepository.)
     // Получаем существующие карточки из базы данных
     const existingCards = await this.cardProductRepository.find({
       where: updateCardProductDtos.map((dto) => ({
@@ -123,14 +125,12 @@ export class CardProductService {
       })),
     });
 
-    // Создаем карту для быстрого поиска существующих карточек
     const existingCardsMap = new Map();
     existingCards.forEach((card) => {
       const key = `${card.detail_name}-${card.article}-${card.original_number}`;
       existingCardsMap.set(key, card);
     });
 
-    // Создаем новые объекты карточек и фильтруем только те, которые отсутствуют в базе данных
     const cardProductsToSave = updateCardProductDtos
       .map((dto) => {
         if (dto.brand && dto.model && dto.phone && dto.detail_name) {
@@ -158,7 +158,7 @@ export class CardProductService {
         }
       })
       .filter((cardProduct) => {
-        if (!cardProduct) return false; // Фильтруем undefined значения
+        if (!cardProduct) return false;
         const key = `${cardProduct.detail_name}-${cardProduct.article}-${cardProduct.original_number}`;
         return !existingCardsMap.has(key);
       });
@@ -283,7 +283,7 @@ export class CardProductService {
     return await this.cardProductRepository
       .createQueryBuilder()
       .delete()
-      .whereInIds(ids) // Указываем массив идентификаторов для удаления
+      .whereInIds(ids)
       .execute();
   }
 
@@ -407,7 +407,6 @@ export class CardProductService {
     original_number: number,
     id: number,
   ) {
-    console.log(await this.cardProductRepository.count());
     const criteria: any = [];
 
     if (article !== undefined && article !== null && article !== 'id_writer') {

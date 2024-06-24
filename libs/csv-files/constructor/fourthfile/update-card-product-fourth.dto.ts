@@ -1,6 +1,5 @@
+import { cardProductFourthFileKeys } from 'libs/csv-files/keysparsecsv/fourthfile/card-product-fourth.dto.';
 import { CardProductFourthFileDB } from 'libs/csv-files/keysparsecsv/fourthfile/types/card-product-db-fourth';
-import { cardProductThirdFileKeys } from 'libs/csv-files/keysparsecsv/thirdfile/create-card-product-third.dto';
-import { CardProductThirdFileDB } from 'libs/csv-files/keysparsecsv/thirdfile/types/card-product-db-third';
 
 export class UpdateCardProductFourthFIleDto
   implements Partial<CardProductFourthFileDB>
@@ -33,8 +32,8 @@ export class UpdateCardProductFourthFIleDto
   public dia: number;
   public pcd: string;
 
-  constructor(params: Partial<CardProductThirdFileDB>) {
-    (cardProductThirdFileKeys as (keyof CardProductThirdFileDB)[]).forEach(
+  constructor(params: Partial<CardProductFourthFileDB>) {
+    (cardProductFourthFileKeys as (keyof CardProductFourthFileDB)[]).forEach(
       (key) => {
         if (key in params) {
           if (key === 'volume' && Number(params[key]) > 1000) {
@@ -49,7 +48,7 @@ export class UpdateCardProductFourthFIleDto
               (params[key] as unknown as string).replace(',', '.'),
             );
           } else {
-            this[key as string] = params[key] as keyof CardProductThirdFileDB;
+            this[key as string] = params[key] as keyof CardProductFourthFileDB;
           }
         }
       },
@@ -57,14 +56,14 @@ export class UpdateCardProductFourthFIleDto
   }
 
   public getUpdateData() {
-    const updateData: Partial<CardProductThirdFileDB> = {};
+    const updateData: Partial<CardProductFourthFileDB> = {};
 
-    cardProductThirdFileKeys.forEach((key) => {
+    cardProductFourthFileKeys.forEach((key) => {
       if (key in this && !!this[key]) {
         updateData[key as string] = this[key];
       }
     });
 
-    return updateData as CardProductThirdFileDB;
+    return updateData as CardProductFourthFileDB;
   }
 }

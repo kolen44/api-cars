@@ -76,43 +76,38 @@ export class SparesCsvService {
     });
   }
 
-  public async parseCvsToJsonSecondFile(url: string) {
-    // const readStream = fs.createReadStream('data/spares.csv')
-
-    // const writeStream = fs.createWriteStream('data/test.json')
-
+  public async parseCvsToJsonSecondFile(
+    url: string,
+  ): Promise<CardProductSecondFile[]> {
     const csvToJson = new CsvToJsonSecondFile();
 
     const foo = (obj: Record<string, string>) => {
       let result: Partial<CardProductSecondFile> = {};
-
-      // value = value.replace(/"/g, '').split(';') as string[]
       result = csvToJson.createObjectByArray(
         Object.values(obj)[0].replace(/"/g, '').split(';'),
       );
-      // console.log(value, '\n\n\n\n')
-
       return result as CardProductSecondFile;
     };
+
     const rows: CardProductSecondFile[] = [];
-    console.log('beign');
-    const response = await axios.get(url);
-    console.log('end');
+    console.log('spares.service 91 line');
+
+    const response = await axios({
+      method: 'get',
+      url: url,
+    });
 
     return new Promise((resolve, reject) => {
-      const readableStream = Readable.from(response.data);
-      readableStream
+      response.data
         .pipe(csv())
         .on('data', (row) => {
           rows.push(foo(row));
-          // console.log(row)
         })
         .on('end', () => {
-          //console.log(rows);
-          //console.log('Чтение CSV файла завершено');
           resolve(rows);
         })
         .on('error', (error) => {
+          console.log(error);
           reject(error);
         });
     });

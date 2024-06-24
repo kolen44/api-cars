@@ -183,21 +183,53 @@ export class BlogService {
   }
 
   //Дальше идет все что связано с парсингом
+  async fetchDataWithRetry(
+    url: string,
+    retries: number = 3,
+    timeout: number = 10000,
+  ): Promise<any> {
+    for (let i = 0; i < retries; i++) {
+      try {
+        const response = await axios.get(url, { timeout });
+        return response.data;
+      } catch (error) {
+        if (i === 3) return;
+        console.warn(`Retrying... (${i + 1}/${retries})`);
+        // Экспоненциальная задержка между повторными попытками
+        await new Promise((resolve) =>
+          setTimeout(resolve, Math.pow(2, i) * 1000),
+        );
+      }
+    }
+  }
+
   async parsingAvtoparusHtml() {
     try {
-      const response = await axios.get(
+      const data = await this.fetchDataWithRetry(
         'https://www.autoparus.by/people/user-posts',
       );
-      const $ = cheerio.load(response.data); // Загрузка HTML с помощью Cheerio
+      if (!data) {
+        return console.log('failed load data in parsingavtoparushtml');
+      }
+      const $ = cheerio.load(data);
       const articles = $('article.content-item');
 
       const results = articles
         .map((index, element) => {
-          const title = $(element).find('h4.user__post_title_default').text();
-          const lead = $(element).find('div.post__lead').text();
-          const author = $(element).find('p.name').text();
-          const timestampHours = $(element).find('span.time.ng-binding').text();
-          const timestampDays = $(element).find('span.date.ng-binding').text();
+          const title = $(element)
+            .find('h4.user__post_title_default')
+            .text()
+            .trim();
+          const lead = $(element).find('div.post__lead').text().trim();
+          const author = $(element).find('p.name').text().trim();
+          const timestampHours = $(element)
+            .find('span.time.ng-binding')
+            .text()
+            .trim();
+          const timestampDays = $(element)
+            .find('span.date.ng-binding')
+            .text()
+            .trim();
           const timestamp = timestampHours + ' ' + timestampDays;
           const imgSrc = $(element).find('.img-photo').attr('src');
           const contentBlocks = $(element).find('div.post__text').html();
@@ -217,9 +249,6 @@ export class BlogService {
           where: { author: item.author, title: item.title },
         });
         if (!existPost) {
-          // const content = item.lead
-          //   ? `<p>${this.cleanHtmlString(item.content.replace(/"/g, "'"))}</p>`
-          //   : `<p>${item.lead}</p><p>${this.cleanHtmlString(item.contentBlocks.replace(/"/g, "'"))}</p>`;
           await this.blogRepository.save({
             author: item.author,
             id_writer: 0,
@@ -239,7 +268,7 @@ export class BlogService {
       return results;
     } catch (error) {
       console.error('Error occurred while extracting data:', error);
-      throw new Error(error);
+      throw new Error('Failed to parse Avtoparus HTML data');
     }
   }
 

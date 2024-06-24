@@ -45,6 +45,7 @@
     "date-fns": "^3.6.0",
     "dotenv": "^16.4.5",
     "events": "^3.3.0",
+    "fast-csv": "^5.0.1",
     "fs": "^0.0.1-security",
     "global": "^4.4.0",
     "html-to-text": "^9.0.5",
