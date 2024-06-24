@@ -1,4 +1,4 @@
-import { CardProductFifthFile } from 'libs/csv-files/interface/fifthfile/csvfifth(101)';
+import { CardProductFifthFile } from 'libs/csv-files/interface/fifthfile/csvfifth(104)';
 
 export const cardProductFifthFileKeys: (keyof CardProductFifthFile)[] = [
   'article',

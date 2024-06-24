@@ -184,7 +184,7 @@ export class CardProductService {
       .map((dto) => {
         if (dto.brand && dto.model && dto.phone && dto.detail_name) {
           const cardProduct = new CardProduct();
-          cardProduct.id_writer = 101;
+          cardProduct.id_writer = 104;
           Object.assign(cardProduct, dto);
           cardProduct.year_start_production = dto.year;
           cardProduct.year_end_production = dto.year;
@@ -243,7 +243,7 @@ export class CardProductService {
       .map((dto) => {
         const cardProduct = new CardProduct();
         Object.assign(cardProduct, dto);
-        cardProduct.id_writer = 101;
+        cardProduct.id_writer = 102;
         if (!cardProduct.year) cardProduct.year = null;
         if (!cardProduct.price) cardProduct.price = null;
         if (!cardProduct.phone) {

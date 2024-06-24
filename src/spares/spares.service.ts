@@ -77,40 +77,44 @@ export class SparesService {
   }
 
   public async cvsDownload(url: string) {
-    console.log('started parsing');
+    try {
+      console.log('started parsing');
 
-    const response: any = await this.sparesService.parseCvsToJson(url);
-    console.log('ended parsing. starting db creating');
+      const response: any = await this.sparesService.parseCvsToJson(url);
+      console.log('ended parsing. starting db creating');
 
-    const batches = [];
-    for (let i = 0; i < response.length; i += this.BATCH_SIZE) {
-      const batch = response
-        .slice(i, i + this.BATCH_SIZE)
-        .map((element) => new UpdateCardProductDto(element));
-      await this.delay(this.CSV_TO_BATCH_DELLAY);
-      batches.push(batch);
+      const batches = [];
+      for (let i = 0; i < response.length; i += this.BATCH_SIZE) {
+        const batch = response
+          .slice(i, i + this.BATCH_SIZE)
+          .map((element) => new UpdateCardProductDto(element));
+        await this.delay(this.CSV_TO_BATCH_DELLAY);
+        batches.push(batch);
+      }
+
+      for (let i = 0; i < batches.length; i += this.MAX_CONCURRENT_BATCHES) {
+        const batchPromises = batches
+          .slice(i, i + this.MAX_CONCURRENT_BATCHES)
+          .map(async (batch, index) => {
+            try {
+              await this.dbCreate.updateDatabaseBatch(batch);
+            } catch (error) {
+              console.error(`Error processing batch ${i + index}`, error);
+            }
+          });
+
+        await Promise.all(batchPromises);
+        // Добавляем небольшую задержку, чтобы уменьшить нагрузку на базу данных
+        await this.delay(this.CSV_DATABASE_DELLAY);
+      }
+
+      console.log('All batches processed');
+      batches.length = 0;
+      this.eventEmitter.emit('firstFileDownloaded');
+      return;
+    } catch (error) {
+      console.log(error);
     }
-
-    for (let i = 0; i < batches.length; i += this.MAX_CONCURRENT_BATCHES) {
-      const batchPromises = batches
-        .slice(i, i + this.MAX_CONCURRENT_BATCHES)
-        .map(async (batch, index) => {
-          try {
-            await this.dbCreate.updateDatabaseBatch(batch);
-          } catch (error) {
-            console.error(`Error processing batch ${i + index}`, error);
-          }
-        });
-
-      await Promise.all(batchPromises);
-      // Добавляем небольшую задержку, чтобы уменьшить нагрузку на базу данных
-      await this.delay(this.CSV_DATABASE_DELLAY);
-    }
-
-    console.log('All batches processed');
-    batches.length = 0;
-    this.eventEmitter.emit('firstFileDownloaded');
-    return;
   }
 
   public async cvsDownloadSecondFile(url: string) {
@@ -154,115 +158,129 @@ export class SparesService {
   }
 
   public async cvsDownloadThirdFile(url: string) {
-    console.log('started parsing');
-    const response: any = await this.sparesService.parseCvsToJsonThirdFile(url);
-    console.log('ended parsing. starting db creating');
-    const batches = [];
-    for (let i = 0; i < response.length; i += this.BATCH_SIZE) {
-      const batch = response
-        .slice(i, i + this.BATCH_SIZE)
-        .map(
-          (element: CardProductThirdFile) =>
-            new UpdateCardProductThirdFIleDto(element),
-        );
-      batches.push(batch);
-      await this.delay(this.CSV_TO_BATCH_DELLAY);
+    try {
+      console.log('started parsing');
+      const response: any =
+        await this.sparesService.parseCvsToJsonThirdFile(url);
+      console.log('ended parsing. starting db creating');
+      const batches = [];
+      for (let i = 0; i < response.length; i += this.BATCH_SIZE) {
+        const batch = response
+          .slice(i, i + this.BATCH_SIZE)
+          .map(
+            (element: CardProductThirdFile) =>
+              new UpdateCardProductThirdFIleDto(element),
+          );
+        batches.push(batch);
+        await this.delay(this.CSV_TO_BATCH_DELLAY);
+      }
+      for (let i = 0; i < batches.length; i += this.MAX_CONCURRENT_BATCHES) {
+        const batchPromises = batches
+          .slice(i, i + this.MAX_CONCURRENT_BATCHES)
+          .map(async (batch, index) => {
+            try {
+              await this.dbCreate.updateDatabaseForThirdFileBatch(batch);
+            } catch (error) {
+              console.error(`Error processing batch ${i + index}`, error);
+            }
+          });
+
+        await Promise.all(batchPromises);
+        // Добавляем небольшую задержку, чтобы уменьшить нагрузку на базу данных
+        await this.delay(this.CSV_DATABASE_SECOND_DELLAY);
+      }
+
+      console.log('All batches processed');
+
+      batches.length = 0;
+      this.eventEmitter.emit('startFourthFileDownload');
+      return;
+    } catch (error) {
+      console.log(error);
     }
-    for (let i = 0; i < batches.length; i += this.MAX_CONCURRENT_BATCHES) {
-      const batchPromises = batches
-        .slice(i, i + this.MAX_CONCURRENT_BATCHES)
-        .map(async (batch, index) => {
-          try {
-            await this.dbCreate.updateDatabaseForThirdFileBatch(batch);
-          } catch (error) {
-            console.error(`Error processing batch ${i + index}`, error);
-          }
-        });
-
-      await Promise.all(batchPromises);
-      // Добавляем небольшую задержку, чтобы уменьшить нагрузку на базу данных
-      await this.delay(this.CSV_DATABASE_SECOND_DELLAY);
-    }
-
-    console.log('All batches processed');
-
-    batches.length = 0;
-    this.eventEmitter.emit('startFourthFileDownload');
-    return;
   }
 
   public async cvsDownloadFourthFile(url: string) {
-    console.log('started parsing 4 sort file');
-    const response: any =
-      await this.sparesService.parseCvsToJsonFourthFile(url);
+    try {
+      console.log('started parsing 4 sort file');
+      const response: any =
+        await this.sparesService.parseCvsToJsonFourthFile(url);
 
-    const batches = [];
-    for (let i = 0; i < response.length; i += this.BATCH_SIZE) {
-      const batch = response
-        .slice(i, i + this.BATCH_SIZE)
-        .map(
-          (element: CardProductFourthFile) =>
-            new UpdateCardProductFourthFIleDto(element),
-        );
-      batches.push(batch);
-      //await this.delay(this.CSV_TO_BATCH_DELLAY);
+      const batches = [];
+      for (let i = 0; i < response.length; i += this.BATCH_SIZE) {
+        const batch = response
+          .slice(i, i + this.BATCH_SIZE)
+          .map(
+            (element: CardProductFourthFile) =>
+              new UpdateCardProductFourthFIleDto(element),
+          );
+        batches.push(batch);
+        //await this.delay(this.CSV_TO_BATCH_DELLAY);
+      }
+      console.log('ended parsing. starting db creating');
+      for (let i = 0; i < batches.length; i += this.MAX_CONCURRENT_BATCHES) {
+        const batchPromises = batches
+          .slice(i, i + this.MAX_CONCURRENT_BATCHES)
+          .map(async (batch, index) => {
+            try {
+              await this.dbCreate.updateDatabaseForFourthFileBatch(batch);
+            } catch (error) {
+              console.error(`Error processing batch ${i + index}`, error);
+            }
+          });
+
+        await Promise.all(batchPromises);
+        // Добавляем небольшую задержку, чтобы уменьшить нагрузку на базу данных
+        await this.delay(this.CSV_DATABASE_SECOND_DELLAY);
+      }
+
+      console.log('All batches processed');
+      this.eventEmitter.emit('FourthFileDownloaded');
+
+      batches.length = 0;
+      return;
+    } catch (error) {
+      console.log(error);
     }
-    console.log('ended parsing. starting db creating');
-    for (let i = 0; i < batches.length; i += this.MAX_CONCURRENT_BATCHES) {
-      const batchPromises = batches
-        .slice(i, i + this.MAX_CONCURRENT_BATCHES)
-        .map(async (batch, index) => {
-          try {
-            await this.dbCreate.updateDatabaseForFourthFileBatch(batch);
-          } catch (error) {
-            console.error(`Error processing batch ${i + index}`, error);
-          }
-        });
-
-      await Promise.all(batchPromises);
-      // Добавляем небольшую задержку, чтобы уменьшить нагрузку на базу данных
-      await this.delay(this.CSV_DATABASE_SECOND_DELLAY);
-    }
-
-    console.log('All batches processed');
-    this.eventEmitter.emit('FourthFileDownloaded');
-
-    batches.length = 0;
-    return;
   }
 
   public async cvsDownloadFifthFile(url: string) {
-    console.log('started parsing 5 file');
-    const response: any = await this.sparesService.parseCvsToJsonFifthFile(url);
-    console.log('ended parsing. starting db creating');
-    const batches = [];
-    for (let i = 0; i < response.length; i += this.BATCH_SIZE) {
-      const batch = response
-        .slice(i, i + this.BATCH_SIZE)
-        .map((element) => new UpdateCardProductFifthFIleDto(element));
-      batches.push(batch);
-      await this.delay(this.CSV_TO_BATCH_DELLAY);
+    try {
+      console.log('started parsing 5 file');
+      const response: any =
+        await this.sparesService.parseCvsToJsonFifthFile(url);
+      console.log('ended parsing. starting db creating');
+      const batches = [];
+      for (let i = 0; i < response.length; i += this.BATCH_SIZE) {
+        const batch = response
+          .slice(i, i + this.BATCH_SIZE)
+          .map((element) => new UpdateCardProductFifthFIleDto(element));
+        batches.push(batch);
+        await this.delay(this.CSV_TO_BATCH_DELLAY);
+      }
+      for (let i = 0; i < batches.length; i += this.MAX_CONCURRENT_BATCHES) {
+        const batchPromises = batches
+          .slice(i, i + this.MAX_CONCURRENT_BATCHES)
+          .map(async (batch, index) => {
+            try {
+              await this.dbCreate.updateDatabaseForFifthFileBatch(batch);
+            } catch (error) {
+              console.error(`Error processing batch ${i + index}`, error);
+            }
+          });
+
+        await Promise.all(batchPromises);
+        await this.delay(this.CSV_DATABASE_SECOND_DELLAY);
+      }
+
+      this.eventEmitter.emit('FifthFileDownloaded');
+      console.log('All batches processed');
+
+      batches.length = 0;
+      return;
+    } catch (error) {
+      console.log(error);
     }
-    for (let i = 0; i < batches.length; i += this.MAX_CONCURRENT_BATCHES) {
-      const batchPromises = batches
-        .slice(i, i + this.MAX_CONCURRENT_BATCHES)
-        .map(async (batch, index) => {
-          try {
-            await this.dbCreate.updateDatabaseForFifthFileBatch(batch);
-          } catch (error) {
-            console.error(`Error processing batch ${i + index}`, error);
-          }
-        });
-
-      await Promise.all(batchPromises);
-      await this.delay(this.CSV_DATABASE_SECOND_DELLAY);
-    }
-
-    this.eventEmitter.emit('FifthFileDownloaded');
-    console.log('All batches processed');
-
-    batches.length = 0;
-    return;
   }
 
   private sortAndReturnElementForCriteriaFunctions(response) {
