@@ -18,7 +18,7 @@ import { CardProductSecondFile } from '../../interface/secondfile/cvssecond(101)
 @Injectable()
 export class SparesCsvService {
   private BATCH_SIZE = 10;
-  private PAUSE_DURATION = 150; // 150 ms пауза
+  private PAUSE_DURATION = 300; // 150 ms пауза
   constructor(public csvParser: CsvParser) {}
 
   public async cvsUpdate(file) {
@@ -117,7 +117,10 @@ export class SparesCsvService {
         stream
           .pipe(csv())
           .on('data', async (row) => {
-            rows.push(foo(row));
+            if (row) {
+              rows.push(foo(row));
+            }
+
             processedRows++;
 
             //для облегчения пиковой нагрузки
@@ -125,10 +128,6 @@ export class SparesCsvService {
               stream.pause();
               await processBatch();
               stream.resume();
-            }
-
-            if (rows.length >= 633064) {
-              source.cancel('Reached 633064 rows');
             }
           })
           .on('end', () => {
