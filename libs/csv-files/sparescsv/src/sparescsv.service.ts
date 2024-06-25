@@ -17,6 +17,8 @@ import { CardProductSecondFile } from '../../interface/secondfile/cvssecond(101)
 
 @Injectable()
 export class SparesCsvService {
+  private BATCH_SIZE = 5000;
+  private PAUSE_DURATION = 500; // 100 ms pause
   constructor(public csvParser: CsvParser) {}
 
   public async cvsUpdate(file) {
@@ -109,11 +111,9 @@ export class SparesCsvService {
 
       return new Promise(async (resolve, reject) => {
         let processedRows = 0;
-        const BATCH_SIZE = 25000;
-        const PAUSE_DURATION = 100; // 100 ms pause
 
         const processBatch = async () => {
-          await this.delay(PAUSE_DURATION);
+          await this.delay(this.PAUSE_DURATION);
         };
 
         stream
@@ -122,7 +122,7 @@ export class SparesCsvService {
             rows.push(foo(row));
             processedRows++;
 
-            if (processedRows % BATCH_SIZE === 0) {
+            if (processedRows % this.BATCH_SIZE === 0) {
               stream.pause();
               await processBatch();
               stream.resume();
