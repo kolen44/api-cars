@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
+import axiosRetry from 'axios-retry';
 import * as csv from 'csv-parser';
 import { createReadStream } from 'fs';
 import { CsvToJsonFifthFile } from 'libs/csv-files/classescsvtojson/fifthfile/csvtojson.class';
@@ -19,7 +20,21 @@ import { CardProductSecondFile } from '../../interface/secondfile/cvssecond(101)
 export class SparesCsvService {
   private BATCH_SIZE = 10;
   private PAUSE_DURATION = 300; // 150 ms пауза
-  constructor(public csvParser: CsvParser) {}
+  constructor(public csvParser: CsvParser) {
+    axiosRetry(axios, {
+      retries: 3, // Количество повторных попыток
+      retryDelay: (retryCount) => {
+        console.log(`Retry attempt: ${retryCount}`);
+        return retryCount * 3000; // Интервал между попытками (2 секунды)
+      },
+      retryCondition: (error) => {
+        // Повторять запрос только в случае сетевых ошибок
+        return (
+          axiosRetry.isNetworkError(error) || axiosRetry.isRetryableError(error)
+        );
+      },
+    });
+  }
 
   public async cvsUpdate(file) {
     const results = [];
@@ -93,7 +108,6 @@ export class SparesCsvService {
     };
 
     const rows: CardProductSecondFile[] = [];
-    console.log('begin');
 
     const source = axios.CancelToken.source();
 
@@ -123,7 +137,7 @@ export class SparesCsvService {
 
             processedRows++;
 
-            //для облегчения пиковой нагрузки
+            //для облегчения пиковой нагрузки так как в этом файле более 600 000 записей .В будущем возможно применение такого метода и на другие функции с такой же загруженностью
             if (processedRows % this.BATCH_SIZE === 0) {
               stream.pause();
               await processBatch();
@@ -142,8 +156,7 @@ export class SparesCsvService {
           });
       });
     } catch (error) {
-      console.error('Error during CSV parsing:', error);
-      throw error;
+      console.log('Error during CSV parsing:', error);
     }
   }
 

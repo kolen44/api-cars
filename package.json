@@ -36,6 +36,7 @@
     "amqplib": "^0.10.4",
     "argon2": "^0.40.1",
     "axios": "^0.21.4",
+    "axios-retry": "^4.4.1",
     "body-parser": "^1.20.2",
     "cache-manager": "^5.5.2",
     "cheerio": "^1.0.0-rc.12",

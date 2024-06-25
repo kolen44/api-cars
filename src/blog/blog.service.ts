@@ -209,7 +209,9 @@ export class BlogService {
         'https://www.autoparus.by/people/user-posts',
       );
       if (!data) {
-        return console.log('failed load data in parsingavtoparushtml');
+        return console.log(
+          'ошибка загрузки в parsingavtoparushtml. нормально при высокой загрузке',
+        );
       }
       const $ = cheerio.load(data);
       const articles = $('article.content-item');

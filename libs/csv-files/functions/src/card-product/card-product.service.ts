@@ -85,20 +85,12 @@ export class CardProductService {
     const existingCards = await this.cardProductRepository.find({
       where: updateCardProductDtos.map((dto) => ({
         detail_name: dto.detail_name,
-        article: dto.article,
-        original_number: dto.original_number,
+        url_photo_details: dto.url_photo_details,
       })),
     });
-
-    const existingCardIds = existingCards.map((card) => card.id);
-
-    // if (existingCardIds.length) {
-    //   await this.cardProductRepository.delete(existingCardIds);
-    // }
-
     const existingCardsMap = new Map();
     existingCards.forEach((card) => {
-      const key = `${card.detail_name}-${card.article}-${card.original_number}`;
+      const key = `${card.detail_name}-${card.url_photo_details}`;
       existingCardsMap.set(key, card);
     });
 
@@ -112,7 +104,7 @@ export class CardProductService {
         return cardProduct;
       })
       .filter((cardProduct) => {
-        const key = `${cardProduct.detail_name}-${cardProduct.article}-${cardProduct.original_number}`;
+        const key = `${cardProduct.detail_name}-${cardProduct.url_photo_details}`;
         return !existingCardsMap.has(key);
       });
 
@@ -126,41 +118,47 @@ export class CardProductService {
       where: updateCardProductDtos.map((dto) => ({
         detail_name: dto.detail_name,
         article: dto.article,
-        original_number: dto.original_number,
       })),
     });
 
-    const existingCardIds = existingCards.map((card) => card.id);
-
-    if (existingCardIds.length) {
-      await this.cardProductRepository.delete(existingCardIds);
-    }
-
-    const cardProducts = updateCardProductDtos.map((dto) => {
-      if (dto.brand && dto.model && dto.phone && dto.detail_name) {
-        const cardProduct = new CardProduct();
-        cardProduct.id_writer = 101;
-        Object.assign(cardProduct, dto);
-        cardProduct.year_start_production = dto.year;
-        cardProduct.year_end_production = dto.year;
-        if (dto.car && dto.vin) {
-          cardProduct.description = `${dto.description} (${dto.car} ${dto.vin})`;
-        } else if (dto.car) {
-          cardProduct.description = `${dto.description} (${dto.car})`;
-        } else if (dto.vin) {
-          cardProduct.description = `${dto.description} (${dto.vin})`;
-        }
-        if (
-          cardProduct.article.length < 15 &&
-          cardProduct.year !== 0 &&
-          cardProduct.phone !== '0'
-        ) {
-          return cardProduct;
-        }
-      }
+    const existingCardsMap = new Map<string, CardProduct>();
+    existingCards.forEach((card) => {
+      const key = `${card.detail_name}-${card.article}`;
+      existingCardsMap.set(key, card);
     });
 
-    return await this.cardProductRepository.save(cardProducts);
+    const cardProductsToSave = updateCardProductDtos
+      .map((dto) => {
+        if (dto.brand && dto.model && dto.phone && dto.detail_name) {
+          const cardProduct = new CardProduct();
+          cardProduct.id_writer = 101;
+          Object.assign(cardProduct, dto);
+          cardProduct.year_start_production = dto.year;
+          cardProduct.year_end_production = dto.year;
+          if (dto.car && dto.vin) {
+            cardProduct.description = `${dto.description} (${dto.car} ${dto.vin})`;
+          } else if (dto.car) {
+            cardProduct.description = `${dto.description} (${dto.car})`;
+          } else if (dto.vin) {
+            cardProduct.description = `${dto.description} (${dto.vin})`;
+          }
+          if (
+            cardProduct.article.length < 15 &&
+            cardProduct.year !== 0 &&
+            cardProduct.phone !== '0'
+          ) {
+            return cardProduct;
+          }
+        }
+      })
+      .filter((cardProduct) => {
+        if (!cardProduct) return false; // Filter out undefined values
+
+        const key = `${cardProduct.detail_name}-${cardProduct.article}`;
+        return !existingCardsMap.has(key);
+      });
+
+    return await this.cardProductRepository.save(cardProductsToSave);
   }
 
   async updateDatabaseForFifthFileBatch(
@@ -170,13 +168,12 @@ export class CardProductService {
       where: updateCardProductDtos.map((dto) => ({
         detail_name: dto.detail_name,
         article: dto.article,
-        original_number: dto.original_number,
       })),
     });
 
     const existingCardsMap = new Map();
     existingCards.forEach((card) => {
-      const key = `${card.detail_name}-${card.article}-${card.original_number}`;
+      const key = `${card.detail_name}-${card.article}`;
       existingCardsMap.set(key, card);
     });
 
@@ -208,7 +205,7 @@ export class CardProductService {
       })
       .filter((cardProduct) => {
         if (!cardProduct) return false;
-        const key = `${cardProduct.detail_name}-${cardProduct.article}-${cardProduct.original_number}`;
+        const key = `${cardProduct.detail_name}-${cardProduct.article}`;
         return !existingCardsMap.has(key);
       });
 
@@ -263,14 +260,13 @@ export class CardProductService {
     const existingCards = await this.cardProductRepository.find({
       where: updateCardProductDtos.map((dto) => ({
         detail_name: dto.detail_name,
-        engine: dto.engine,
         original_number: dto.original_number,
       })),
     });
 
     const existingCardKeys = new Set(
       existingCards.map(
-        (card) => `${card.detail_name}-${card.engine}-${card.original_number}`,
+        (card) => `${card.detail_name}-${card.original_number}`,
       ),
     );
 
@@ -278,9 +274,7 @@ export class CardProductService {
       .filter(
         (dto) =>
           dto.detail_name &&
-          !existingCardKeys.has(
-            `${dto.detail_name}-${dto.engine}-${dto.original_number}`,
-          ),
+          !existingCardKeys.has(`${dto.detail_name}-${dto.original_number}`),
       )
       .map((dto) => {
         const cardProduct = new CardProduct();
