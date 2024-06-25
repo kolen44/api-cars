@@ -38,9 +38,7 @@ export class SparesController {
   @HttpCode(201)
   async uploadThirdFileFile(@Body() data: { data: string }) {
     if (data.data === 'dkdkdkd583enwoofd') {
-      await this.sparesService.cvsDownloadThirdFile(
-        'http://i077r.ru/2100-2100.csv',
-      );
+      this.sparesService.cvsDownloadThirdFile('http://i077r.ru/2100-2100.csv');
     } else {
       return 'Неверный токен';
     }

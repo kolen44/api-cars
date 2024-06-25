@@ -117,13 +117,14 @@ export class CardProductService {
     const existingCards = await this.cardProductRepository.find({
       where: updateCardProductDtos.map((dto) => ({
         detail_name: dto.detail_name,
-        article: dto.article,
+        description: dto.description,
+        price: dto.price,
       })),
     });
 
     const existingCardsMap = new Map<string, CardProduct>();
     existingCards.forEach((card) => {
-      const key = `${card.detail_name}-${card.article}`;
+      const key = `${card.detail_name}-${card.description}-${card.price}`;
       existingCardsMap.set(key, card);
     });
 
@@ -154,7 +155,7 @@ export class CardProductService {
       .filter((cardProduct) => {
         if (!cardProduct) return false; // Filter out undefined values
 
-        const key = `${cardProduct.detail_name}-${cardProduct.article}`;
+        const key = `${cardProduct.detail_name}-${cardProduct.description}-${cardProduct.price}`;
         return !existingCardsMap.has(key);
       });
 
@@ -167,13 +168,14 @@ export class CardProductService {
     const existingCards = await this.cardProductRepository.find({
       where: updateCardProductDtos.map((dto) => ({
         detail_name: dto.detail_name,
-        article: dto.article,
+        description: dto.description,
+        price: dto.price,
       })),
     });
 
     const existingCardsMap = new Map();
     existingCards.forEach((card) => {
-      const key = `${card.detail_name}-${card.article}`;
+      const key = `${card.detail_name}-${card.description}-${card.price}`;
       existingCardsMap.set(key, card);
     });
 
@@ -205,7 +207,7 @@ export class CardProductService {
       })
       .filter((cardProduct) => {
         if (!cardProduct) return false;
-        const key = `${cardProduct.detail_name}-${cardProduct.article}`;
+        const key = `${cardProduct.detail_name}-${cardProduct.article}-${cardProduct.price}`;
         return !existingCardsMap.has(key);
       });
 
@@ -219,13 +221,13 @@ export class CardProductService {
       where: updateCardProductDtos.map((dto) => ({
         detail_name: dto.detail_name,
         engine: dto.engine,
-        original_number: dto.original_number,
+        description: dto.description,
       })),
     });
 
     const existingCardKeys = new Set(
       existingCards.map(
-        (card) => `${card.detail_name}-${card.engine}-${card.original_number}`,
+        (card) => `${card.detail_name}-${card.engine}-${card.description}`,
       ),
     );
 
@@ -234,7 +236,7 @@ export class CardProductService {
         (dto) =>
           dto.detail_name &&
           !existingCardKeys.has(
-            `${dto.detail_name}-${dto.engine}-${dto.original_number}`,
+            `${dto.detail_name}-${dto.engine}-${dto.description}`,
           ),
       )
       .map((dto) => {
@@ -260,13 +262,14 @@ export class CardProductService {
     const existingCards = await this.cardProductRepository.find({
       where: updateCardProductDtos.map((dto) => ({
         detail_name: dto.detail_name,
-        original_number: dto.original_number,
+        description: dto.description,
+        price: dto.price,
       })),
     });
 
     const existingCardKeys = new Set(
       existingCards.map(
-        (card) => `${card.detail_name}-${card.original_number}`,
+        (card) => `${card.detail_name}-${card.description}-${card.price}`,
       ),
     );
 
@@ -274,7 +277,9 @@ export class CardProductService {
       .filter(
         (dto) =>
           dto.detail_name &&
-          !existingCardKeys.has(`${dto.detail_name}-${dto.original_number}`),
+          !existingCardKeys.has(
+            `${dto.detail_name}-${dto.description}-${dto.price}`,
+          ),
       )
       .map((dto) => {
         const cardProduct = new CardProduct();
