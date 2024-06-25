@@ -21,7 +21,7 @@ export class SparesService {
   private MAX_CONCURRENT_BATCHES = 3; // Ограничение на количество параллельных запросов
   private CSV_TO_BATCH_DELLAY = 50;
   private CSV_DATABASE_DELLAY = 300; // Время на передышку для бд
-  private CSV_DATABASE_SECOND_DELLAY = 300; // Время на передышку для бд
+  private CSV_DATABASE_SECOND_DELLAY = 500; // Время на передышку для бд
 
   constructor(
     public sparesService: SparesCsvService,

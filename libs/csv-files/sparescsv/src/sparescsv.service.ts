@@ -76,16 +76,17 @@ export class SparesCsvService {
     });
   }
 
-  public async parseCvsToJsonSecondFile(url: string) {
+  delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  public async parseCvsToJsonSecondFile(
+    url: string,
+  ): Promise<CardProductSecondFile[]> {
     const csvToJson = new CsvToJsonSecondFile();
 
-    const foo = (obj: Record<string, string>) => {
-      let result: Partial<CardProductSecondFile> = {};
-
-      result = csvToJson.createObjectByArray(
+    const foo = (obj: Record<string, string>): CardProductSecondFile => {
+      const result = csvToJson.createObjectByArray(
         Object.values(obj)[0].replace(/"/g, '').split(';'),
       );
-
       return result as CardProductSecondFile;
     };
 
@@ -94,38 +95,58 @@ export class SparesCsvService {
 
     const source = axios.CancelToken.source();
 
-    const response = await axios({
-      method: 'get',
-      url: url,
-      responseType: 'stream',
-      cancelToken: source.token,
-    });
+    try {
+      const response = await axios({
+        method: 'get',
+        url: url,
+        responseType: 'stream',
+        cancelToken: source.token,
+      });
 
-    console.log('end');
+      console.log('end');
 
-    return new Promise((resolve, reject) => {
-      response.data
-        .pipe(csv())
-        .on('data', (row) => {
-          rows.push(foo(row));
-          //console.log(rows.length);
-          // if (rows.length === 633064) {
+      const stream = response.data as Readable;
 
-          //   resolve(rows);
-          // }
-        })
-        .on('end', () => {
-          source.cancel('Reached 633064 rows');
-          resolve(rows);
-        })
-        .on('error', (error) => {
-          if (axios.isCancel(error)) {
-            console.log('Request canceled:', error.message);
-          } else {
-            reject(error);
-          }
-        });
-    });
+      return new Promise(async (resolve, reject) => {
+        let processedRows = 0;
+        const BATCH_SIZE = 25000;
+        const PAUSE_DURATION = 100; // 100 ms pause
+
+        const processBatch = async () => {
+          await this.delay(PAUSE_DURATION);
+        };
+
+        stream
+          .pipe(csv())
+          .on('data', async (row) => {
+            rows.push(foo(row));
+            processedRows++;
+
+            if (processedRows % BATCH_SIZE === 0) {
+              stream.pause();
+              await processBatch();
+              stream.resume();
+            }
+
+            if (rows.length >= 633064) {
+              source.cancel('Reached 633064 rows');
+            }
+          })
+          .on('end', () => {
+            resolve(rows);
+          })
+          .on('error', (error) => {
+            if (axios.isCancel(error)) {
+              console.log('Request canceled:', error.message);
+            } else {
+              reject(error);
+            }
+          });
+      });
+    } catch (error) {
+      console.error('Error during CSV parsing:', error);
+      throw error;
+    }
   }
 
   public async parseCvsToJsonThirdFile(url: string) {
