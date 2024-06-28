@@ -27,7 +27,8 @@ export class BlogService {
   @Cron('0,30 * * * *')
   handleCron() {
     try {
-      this.startAllParsers();
+      //в связи с тем что сайт avtopatus не отвечает на запросы
+      //this.startAllParsers();
     } catch (error) {
       console.log(error);
       return error;
@@ -270,7 +271,6 @@ export class BlogService {
       return results;
     } catch (error) {
       console.error('Error occurred while extracting data:', error);
-      throw new Error('Failed to parse Avtoparus HTML data');
     }
   }
 
