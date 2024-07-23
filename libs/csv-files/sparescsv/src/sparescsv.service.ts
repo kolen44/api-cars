@@ -18,7 +18,7 @@ import { CardProductSecondFile } from '../../interface/secondfile/cvssecond(101)
 
 @Injectable()
 export class SparesCsvService {
-  private BATCH_SIZE = 10;
+  private BATCH_SIZE = 2;
   private PAUSE_DURATION = 300; // 150 ms пауза
   constructor(public csvParser: CsvParser) {
     axiosRetry(axios, {
@@ -138,10 +138,12 @@ export class SparesCsvService {
             processedRows++;
 
             //для облегчения пиковой нагрузки так как в этом файле более 600 000 записей .В будущем возможно применение такого метода и на другие функции с такой же загруженностью
-            if (processedRows % this.BATCH_SIZE === 0) {
+            if (rows.length < 600000) {
               stream.pause();
               await processBatch();
               stream.resume();
+            } else {
+              resolve(rows);
             }
           })
           .on('end', () => {

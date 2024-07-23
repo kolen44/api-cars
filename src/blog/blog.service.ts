@@ -27,8 +27,7 @@ export class BlogService {
   @Cron('0,30 * * * *')
   handleCron() {
     try {
-      //в связи с тем что сайт avtopatus не отвечает на запросы
-      //this.startAllParsers();
+      this.startAllParsers();
     } catch (error) {
       console.log(error);
       return error;

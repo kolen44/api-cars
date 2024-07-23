@@ -17,11 +17,11 @@ import { SearcherCardProductService } from './services/searcher-card-product.ser
 @Injectable()
 export class SparesService {
   private eventEmitter = new EventEmitter();
-  private BATCH_SIZE = 200; // Выберите оптимальный размер батча
-  private MAX_CONCURRENT_BATCHES = 3; // Ограничение на количество параллельных запросов
-  private CSV_TO_BATCH_DELLAY = 50;
-  private CSV_DATABASE_DELLAY = 300; // Время на передышку для бд
-  private CSV_DATABASE_SECOND_DELLAY = 500; // Время на передышку для бд
+  private BATCH_SIZE = 150; // Выберите оптимальный размер батча
+  private MAX_CONCURRENT_BATCHES = 1; // Ограничение на количество параллельных запросов
+  private CSV_TO_BATCH_DELLAY = 1000;
+  private CSV_DATABASE_DELLAY = 500; // Время на передышку для бд
+  private CSV_DATABASE_SECOND_DELLAY = 1000; // Время на передышку для бд
 
   constructor(
     public sparesService: SparesCsvService,
