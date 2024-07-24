@@ -1,11 +1,4 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import { NewsUserCreateEntity } from './newscrud_route.entity';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('post_entity')
 export class PostEntity {
@@ -29,12 +22,6 @@ export class PostEntity {
 
   @Column({ nullable: true })
   image_url: string;
-
-  @ManyToOne(() => NewsUserCreateEntity, (user) => user.id, {
-    onDelete: 'CASCADE',
-  })
-  @JoinColumn({ name: 'user_id' })
-  user: NewsUserCreateEntity;
 
   @Column({ nullable: true })
   url_video?: string;

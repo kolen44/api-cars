@@ -1,5 +1,4 @@
 import { IsNumber, IsOptional, IsString, MinLength } from 'class-validator';
-import { NewsUserCreateEntity } from 'src/database/entities/newscrud_route.entity';
 
 export class CreatePostDto {
   @IsOptional()
@@ -13,9 +12,6 @@ export class CreatePostDto {
   @IsString()
   @IsOptional()
   content: string;
-
-  @IsOptional()
-  user?: NewsUserCreateEntity;
 
   @IsOptional()
   @IsString()

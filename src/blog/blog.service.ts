@@ -9,10 +9,8 @@ import axios from 'axios';
 import cheerio from 'cheerio';
 import { format, parse } from 'date-fns';
 import { PostEntity } from 'src/database/entities/post.entity';
-import { NewscrudRoutesService } from 'src/newscrud_routes/newscrud_routes.service';
 import { Repository } from 'typeorm';
 import { parseStringPromise } from 'xml2js';
-import { CreatePostDto } from './dto/create-blog.dto';
 import { UpdatePostDto } from './dto/update-blog.dto';
 
 @Injectable()
@@ -22,7 +20,6 @@ export class BlogService {
   constructor(
     @InjectRepository(PostEntity)
     private readonly blogRepository: Repository<PostEntity>,
-    private readonly userService: NewscrudRoutesService,
   ) {}
   @Cron('0,30 * * * *')
   handleCron() {
@@ -43,37 +40,6 @@ export class BlogService {
     const year = now.getFullYear();
 
     return `${hours}:${minutes} ${day}-${month}-${year}`;
-  }
-
-  async create(createBlogDto: CreatePostDto, id: number) {
-    const newPost: PostEntity = new PostEntity();
-    const user = await this.userService.findById(id);
-    newPost.user = user;
-    newPost.author = user.fio;
-    newPost.rating = 0;
-    newPost.timestamp = this.getDateNow();
-    if (createBlogDto.content) {
-      newPost.content = createBlogDto.content;
-    }
-    if (createBlogDto.title) {
-      newPost.title = createBlogDto.title;
-    }
-    if (createBlogDto.avatar_url) {
-      newPost.image_url = createBlogDto.avatar_url;
-    }
-    if (createBlogDto.url_video) {
-      newPost.url_video = createBlogDto.url_video;
-    }
-
-    await this.blogRepository.save(newPost);
-    return newPost.id;
-  }
-
-  async findAll(id: number) {
-    return await this.blogRepository.find({
-      where: { user: { id } },
-      relations: ['user'],
-    });
   }
 
   async findOne(id: number) {
