@@ -30,20 +30,6 @@ export class SparesService {
   ) {
     this.setupEventListeners();
   }
-  @Cron('0 3 * * 1')
-  async handleCron() {
-    try {
-      await this.cvsDownload('https://db.f-opt.com/csvfiles/abw/spares.csv');
-    } catch (error) {
-      console.log(error);
-      return error;
-    }
-  }
-
-  @Cron('0 0 * * 1')
-  async handleCronForDeleteOldParts() {
-    await this.dbCreate.checkAndDeleteOldRecords();
-  }
 
   private async setupEventListeners() {
     this.eventEmitter.on('firstFileDownloaded', async () => {
